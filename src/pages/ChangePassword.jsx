@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import '../assets/styles/ChangePassword.css';
@@ -17,6 +17,12 @@ const ChangePassword = () => {
   const params = useParams();
   const [show, setShow] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+    if (!/^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$/.test(params.token)) {
+      return navigate('/', { replace: true });
+    }
+  }, []);
 
   const formik = useFormik({
     initialValues: {

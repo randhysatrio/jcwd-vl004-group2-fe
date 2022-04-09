@@ -60,6 +60,7 @@ const ForgetPasswordModal = () => {
                 className="font-bold text-xl text-bold absolute top-3 right-3 text-sky-500 outline-none hover:rotate-180 transition duration-300 active:scale-90"
                 onClick={() => {
                   setError('');
+                  setEmail('');
                   setOpen(!open);
                 }}
               >
@@ -113,6 +114,10 @@ const ForgetPasswordModal = () => {
                           const response = await Axios.post(`${API_URL}/auth/passwordlink`, {
                             email,
                           });
+
+                          if (response.data.userNotFound) {
+                            setError(response.data.userNotFound);
+                          }
 
                           if (response.data.sent) {
                             setSent(!sent);

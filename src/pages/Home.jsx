@@ -1,43 +1,11 @@
-import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import Axios from 'axios';
 import { API_URL } from '../assets/constants';
 
 const Home = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const userGlobal = useSelector((state) => state.user);
-
-  useEffect(() => {
-    const persistentLogin = async () => {
-      const userToken = localStorage.getItem('userToken');
-      let response;
-
-      if (userToken) {
-        response = await Axios.get(`${API_URL}/auth/persistent`, {
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-          },
-        });
-      } else {
-        response = await Axios.get(`${API_URL}/auth/login/success`, { withCredentials: true });
-      }
-
-      if (response.data.ignore) {
-        return;
-      } else {
-        localStorage.setItem('userToken', response.data.token);
-
-        dispatch({
-          type: 'USER_LOGIN',
-          payload: response.data.user,
-        });
-      }
-    };
-
-    persistentLogin();
-  }, []);
 
   return (
     <div className="h-screen bg-rose-400">

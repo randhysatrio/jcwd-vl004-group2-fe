@@ -6,18 +6,23 @@ import { API_URL } from '../assets/constants';
 
 import '../assets/styles/Verify.css';
 import { BsFillPatchCheckFill } from 'react-icons/bs';
+import { BiErrorCircle } from 'react-icons/bi';
 import { AiOutlineHome } from 'react-icons/ai';
-import { toast } from 'react-toastify';
 
 const Verify = () => {
   const params = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [success, setSuccess] = useState(false);
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const verifyAccount = async () => {
       try {
+        if (!/^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$/.test(params.token)) {
+          return navigate('/', { replace: true });
+        }
+
         const response = await Axios.post(
           `${API_URL}/auth/verify`,
           {},
@@ -29,7 +34,7 @@ const Verify = () => {
         );
 
         if (response.data.success) {
-          setSuccess(true);
+          setDone(true);
 
           localStorage.setItem('userToken', response.data.token);
 
@@ -43,7 +48,8 @@ const Verify = () => {
           }, 2500);
         }
       } catch (err) {
-        toast.error('Server Error', { position: 'bottom-left', theme: 'colored' });
+        setError(true);
+        setDone(true);
       }
     };
     verifyAccount();
@@ -55,31 +61,42 @@ const Verify = () => {
         <div className="w-full h-max flex justify-center mb-[74px]">
           <span className="text-3xl font-bold text-sky-500">Logo</span>
         </div>
-        {success ? (
-          <>
-            <div className="w-full h-max flex justify-center space-x-2 items-center">
-              <span className="text-2xl font-bold text-blue-400 mb-1">This account has been verified!</span>
-              <BsFillPatchCheckFill className="text-sky-500" />
-            </div>
-            <div className="w-full flex justify-center mb-20">
-              <span className="text-[15px] font-medium text-zinc-500">Thankyou for completing your verification process</span>
-            </div>
-            <div className="w-full flex justify-center">
-              <span className="text-sm font-semibold text-zinc-400">Redirecting you to home..</span>
-            </div>
-          </>
+        {done ? (
+          error ? (
+            <>
+              <div className="w-full flex flex-col items-center">
+                <div className="w-full h-16 flex justify-center items-center text-xl gap-2 mb-20">
+                  <BiErrorCircle className="text-red-400" />
+                  <span className="font-semibold text-sky-600">Whoops.. it seems we cannot verify your account right now..</span>
+                </div>
+                <div
+                  onClick={() => {
+                    navigate('/', { replace: true });
+                  }}
+                  className="flex justify-center items-center space-x-2 text-zinc-500 hover:brightness-120 text-md font-bold transition cursor-pointer active:scale-95"
+                >
+                  <AiOutlineHome />
+                  <span className="">Back to Home</span>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="w-full h-max flex justify-center space-x-2 items-center">
+                <span className="text-2xl font-bold text-blue-400 mb-1">This account has been verified!</span>
+                <BsFillPatchCheckFill className="text-sky-500" />
+              </div>
+              <div className="w-full flex justify-center mb-20">
+                <span className="text-[15px] font-medium text-zinc-500">Thankyou for completing your verification process</span>
+              </div>
+              <div className="w-full flex justify-center">
+                <span className="text-sm font-semibold text-zinc-400">Redirecting you to home..</span>
+              </div>
+            </>
+          )
         ) : (
           <div className="w-full flex flex-col items-center pt-3">
-            <span className="text-2xl font-bold text-sky-500 mb-24">Please wait while we verify your account..</span>
-            <div
-              onClick={() => {
-                navigate('/', { replace: true });
-              }}
-              className="flex justify-center items-center space-x-2 text-zinc-500 hover:brightness-120 text-md font-bold transition cursor-pointer active:scale-95"
-            >
-              <AiOutlineHome />
-              <span className="">Back to Home</span>
-            </div>
+            <span className="text-2xl font-bold text-sky-500">Please wait while we verify your account..</span>
           </div>
         )}
       </div>
