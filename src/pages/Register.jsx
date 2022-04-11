@@ -49,6 +49,8 @@ const Register = () => {
         password: values.password,
       });
 
+      console.log(response.data.user);
+
       if (response.data.errMsg) {
         return setErrMsg(response.data.errMsg);
       } else {
