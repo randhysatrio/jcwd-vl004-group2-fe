@@ -6,7 +6,14 @@ import Categories from "../components/Categories";
 import ProductCard from "../components/ProductCard";
 import Footer from "../components/Footer";
 
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { API_URL } from "../assets/constants";
+
 function Home() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const userGlobal = useSelector((state) => state.user);
   return (
     <>
       <Header />
