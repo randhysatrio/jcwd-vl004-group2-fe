@@ -8,7 +8,8 @@ const Home = () => {
   const userGlobal = useSelector((state) => state.user);
 
   return (
-    <div className="h-screen bg-rose-400">
+    <div className="h-screen">
+      {/* silahkan di timpa dgn navbar yg asli.. hanya placeholder utk tes functionality */}
       <div className="h-[80px] w-full px-8 bg-pink-200 flex items-center">
         <div className="h-full w-max mr-auto flex items-center">
           {userGlobal.name ? (
