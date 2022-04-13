@@ -304,7 +304,6 @@ const AllProducts = () => {
                   setCurrentCategory('');
                   setCurrentAppearance([]);
                   setCurrentPage(1);
-                  params.delete('keyword');
                 }}
                 className="w-max h-[55px] my-2 pr-6 flex items-center gap-2 shadow-md rounded-lg overflow-hidden"
               >
@@ -388,7 +387,6 @@ const AllProducts = () => {
                         setCurrentCategory('');
                         setCurrentAppearance([]);
                         setCurrentPage(1);
-                        params.delete('keyword');
                       }}
                       className="text-lg font-bold text-gray-500 hover:text-sky-500 transition cursor-pointer"
                     >
