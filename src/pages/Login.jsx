@@ -5,11 +5,9 @@ import Axios from 'axios';
 import { API_URL } from '../assets/constants';
 
 import '../assets/styles/Login.css';
-import { AiOutlineInfoCircle, AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
+import { AiOutlineInfoCircle, AiFillEye, AiFillEyeInvisible, AiOutlineLoading3Quarters } from 'react-icons/ai';
 import { FiAlertTriangle } from 'react-icons/fi';
 import { FcGoogle } from 'react-icons/fc';
-
-import { Dialog, Transition } from '@headlessui/react';
 
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -20,6 +18,7 @@ const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [show, setShow] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [invalid, setInvalid] = useState('');
 
   useEffect(() => {
@@ -40,16 +39,22 @@ const Login = () => {
       password: Yup.string().required('This field cannot be empty'),
     }),
     onSubmit: async (values) => {
+      setIsLoading(true);
+
       const response = await Axios.post(`${API_URL}/auth/login`, {
         email: values.email,
         password: values.password,
       });
 
       if (response.data.invalid) {
+        setIsLoading(false);
+
         return setInvalid('Please check your email or password!');
       }
 
       if (response.data.user) {
+        setIsLoading(false);
+
         localStorage.setItem('userToken', response.data.token);
 
         dispatch({
@@ -63,18 +68,20 @@ const Login = () => {
   });
 
   return (
-    <div className="flex justify-end items-center relative loginBody">
-      <div className="absolute top-5 left-7">
+    <div className="flex justify-center md:justify-end items-center relative loginBody">
+      <div className="absolute top-6 left-4 md:top-5 md:left-7">
         <span className="text-2xl font-bold text-sky-500 hover:brightness-110 cursor-pointer transition" onClick={() => navigate('/')}>
           Logo Here
         </span>
       </div>
-      <div className="w-[850px] h-[500px] rounded-l-3xl shadow-md bg-slate-50 flex flex-col justify-center pl-8 loginWrapper">
-        <div className="h-[80px] w-max bg-gradient-to-r from-sky-500 to-emerald-400 flex bg-clip-text items-center mt-4">
-          <span className="text-3xl font-bold text-transparent">Login</span>
+      <div className="w-full overflow-y-hidden md:w-[850px] h-[500px] md:rounded-l-3xl shadow-md bg-slate-50 flex flex-col justify-center items-center md:items-start pl-2 md:pl-8 loginWrapper">
+        <div className="h-[80px] w-full flex items-center md:mt-4">
+          <span className="text-3xl leading-10 w-max bg-gradient-to-r from-sky-500 to-emerald-400 flex bg-clip-text font-bold text-transparent">
+            Login
+          </span>
         </div>
         <div className="h-[300px] w-full flex pt-4">
-          <div className="h-full w-1/2 flex flex-col">
+          <div className="h-full w-full md:w-1/2 flex flex-col">
             <form onSubmit={formik.handleSubmit}>
               <div className="h-[80px] w-full flex flex-col relative">
                 <input
@@ -139,12 +146,22 @@ const Login = () => {
                   {show ? <AiFillEyeInvisible /> : <AiFillEye />}
                 </span>
               </div>
-              <div className="w-full h-11 flex items-center mb-2">
+              <div className="flex w-full h-11 items-center mb-2">
                 <button
                   type="submit"
-                  className="w-[350px] h-full rounded-lg flex items-center justify-center text-lg text-white font-bold bg-sky-400 hover:brightness-110 transition cursor-pointer active:scale-95 shadow"
+                  disabled={isLoading}
+                  className={`w-[350px] h-full rounded-lg flex items-center justify-center gap-2 text-lg text-white font-bold ${
+                    isLoading ? 'bg-slate-400 cursor-not-allowed' : 'bg-sky-400 cursor-pointer hover:brightness-110 active:scale-95'
+                  } transition shadow`}
                 >
-                  Login
+                  {isLoading ? (
+                    <>
+                      <AiOutlineLoading3Quarters className="animate-spin" />
+                      <span>Logging in..</span>
+                    </>
+                  ) : (
+                    <span>Login</span>
+                  )}
                 </button>
               </div>
             </form>
@@ -154,7 +171,7 @@ const Login = () => {
               <span className="absolute font-semibold text-sky-400 w-8 text-center bg-slate-50">Or</span>
             </div>
           </div>
-          <div className="w-1/2 h-full">
+          <div className="hidden md:flex md:w-1/2 md:h-full">
             {invalid && (
               <div className="h-[90px] w-[350px] flex justify-center items-center rounded-xl gap-2 bg-rose-600 bg-opacity-80 text-white">
                 <AiOutlineInfoCircle />

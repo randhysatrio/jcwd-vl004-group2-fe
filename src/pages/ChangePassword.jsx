@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import '../assets/styles/ChangePassword.css';
 import { BsCheckAll, BsFillUnlockFill } from 'react-icons/bs';
-import { AiOutlineInfoCircle, AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
+import { AiOutlineInfoCircle, AiOutlineLoading3Quarters, AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 import { toast } from 'react-toastify';
 
 import { useFormik } from 'formik';
@@ -17,6 +17,7 @@ const ChangePassword = () => {
   const params = useParams();
   const [show, setShow] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (!/^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$/.test(params.token)) {
@@ -38,7 +39,8 @@ const ChangePassword = () => {
     }),
     onSubmit: async (values) => {
       try {
-        const response = await Axios.post(
+        setIsLoading(true);
+        await Axios.post(
           `${API_URL}/auth/updatepassword`,
           {
             password: values.password,
@@ -49,6 +51,7 @@ const ChangePassword = () => {
             },
           }
         );
+        setIsLoading(false);
         setSuccess(true);
         setTimeout(() => {
           navigate('/', { replace: true });
@@ -119,10 +122,22 @@ const ChangePassword = () => {
               </div>
               <div className="w-full h-max flex justify-center items-center mb-4">
                 <button
+                  disabled={isLoading}
                   type="submit"
-                  className="py-3 px-10 rounded-full bg-gradient-to-r from-sky-500 to-emerald-500 font-bold text-sky-50 hover:brightness-110 transition active:scale-95"
+                  className={`py-3 px-10 rounded-full flex justify-center items-center gap-2 ${
+                    isLoading
+                      ? 'bg-slate-400 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-sky-500 to-emerald-500 hover:brightness-110 active:scale-95'
+                  } font-bold text-sky-50 transition-all`}
                 >
-                  Submit
+                  {isLoading ? (
+                    <>
+                      <AiOutlineLoading3Quarters className="animate-spin" />
+                      <span>Changing your password..</span>
+                    </>
+                  ) : (
+                    <span>Submit</span>
+                  )}
                 </button>
               </div>
               <div className="text-center">

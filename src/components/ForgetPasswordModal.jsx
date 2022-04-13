@@ -1,6 +1,6 @@
 import { useState, Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { AiOutlineClose } from 'react-icons/ai';
+import { AiOutlineClose, AiOutlineLoading3Quarters } from 'react-icons/ai';
 import { toast } from 'react-toastify';
 
 import Axios from 'axios';
@@ -11,6 +11,7 @@ const ForgetPasswordModal = () => {
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   return (
     <>
@@ -83,9 +84,9 @@ const ForgetPasswordModal = () => {
                     <input
                       type="email"
                       onChange={(e) => setEmail(e.target.value)}
-                      className={`w-2/3 h-10 px-4 rounded-lg focus:outline-none border-2 ${
+                      className={`w-2/3 h-11 px-4 rounded-lg focus:outline-none border-2 ${
                         error ? 'border-red-400' : 'border-slate-400'
-                      } focus:ring-2 focus:ring-offset-2 focus:ring-emerald-400 transition cursor-pointer mb-1`}
+                      } focus:ring-2 focus:ring-offset-2 focus:ring-emerald-400 transition cursor-pointer`}
                     />
                     {error && <span className="text-sm text-red-400">{error}</span>}
                   </>
@@ -94,14 +95,19 @@ const ForgetPasswordModal = () => {
               <div className="w-full flex justify-center">
                 {sent ? (
                   <button
-                    className="py-2 px-10 bg-sky-400 rounded-xl hover:brightness-110 text-lg text-slate-50 font-semibold transition cursor-pointer active:scale-95"
+                    className="h-12 px-10 bg-sky-400 rounded-xl hover:brightness-110 text-lg text-slate-50 font-semibold transition cursor-pointer active:scale-95"
                     onClick={() => setOpen(!open)}
                   >
                     Ok, got it!
                   </button>
                 ) : (
                   <button
-                    className="py-2 px-10 bg-sky-400 rounded-xl hover:brightness-110 text-lg text-slate-50 font-semibold transition cursor-pointer active:scale-95"
+                    disabled={isLoading}
+                    className={`h-12 px-10 ${
+                      isLoading
+                        ? 'bg-slate-400 cursor-not-allowed text-md'
+                        : 'bg-sky-400 cursor-pointer hover:brightness-110 text-lg active:scale-95'
+                    } rounded-xl text-slate-50 font-semibold transition flex justify-center items-center gap-2`}
                     onClick={async () => {
                       setError('');
 
@@ -111,15 +117,21 @@ const ForgetPasswordModal = () => {
                         setError('Please enter a valid email address!');
                       } else {
                         try {
+                          setIsLoading(true);
+
                           const response = await Axios.post(`${API_URL}/auth/passwordlink`, {
                             email,
                           });
 
                           if (response.data.userNotFound) {
+                            setIsLoading(false);
+
                             setError(response.data.userNotFound);
                           }
 
                           if (response.data.sent) {
+                            setIsLoading(false);
+
                             setSent(!sent);
                           }
                         } catch (err) {
@@ -128,7 +140,14 @@ const ForgetPasswordModal = () => {
                       }
                     }}
                   >
-                    Submit
+                    {isLoading ? (
+                      <>
+                        <AiOutlineLoading3Quarters className="animate-spin" />
+                        <span>Sending you the link..</span>
+                      </>
+                    ) : (
+                      <span>Submit</span>
+                    )}
                   </button>
                 )}
               </div>

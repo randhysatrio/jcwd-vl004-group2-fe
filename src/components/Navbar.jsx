@@ -111,7 +111,7 @@ const Navbar = () => {
         {/* login / register */}
         {userGlobal.name ? (
           <div className="flex items-center">
-            <span>Hello, {userGlobal.name}!</span>
+            <span className="text-md font-semibold text-white">Hello, {userGlobal.name}!</span>
           </div>
         ) : (
           <div className="flex items-center gap-4 ml-auto">
