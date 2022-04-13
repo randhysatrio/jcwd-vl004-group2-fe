@@ -1,22 +1,25 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import ProductCardAll from '../components/ProductCardAll';
 import Axios from 'axios';
 import { API_URL } from '../assets/constants';
 
-import Navbar from '../components/Navbar';
-import { AiOutlineUnorderedList, AiOutlineLeft, AiOutlineRight, AiOutlineClose } from 'react-icons/ai';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import { AiOutlineUnorderedList, AiOutlineLeft, AiOutlineRight, AiOutlineClose, AiOutlineInfoCircle } from 'react-icons/ai';
 import { BsFillGridFill } from 'react-icons/bs';
 import { toast } from 'react-toastify';
 
 const AllProducts = () => {
   const [view, setView] = useState('list');
+  const [searchParams, setSearchParams] = useSearchParams();
   const [productsList, setProductsList] = useState([]);
   const [totalProducts, setTotalProducts] = useState(0);
   const [categoryList, setCategoryList] = useState([]);
   const [appearancesList, setAppearancesList] = useState([]);
   const [currentCategory, setCurrentCategory] = useState('');
   const [currentAppearance, setCurrentAppearance] = useState([]);
+  const [keyword, setKeyword] = useState('');
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [priceRange, setPriceRange] = useState([]);
@@ -25,7 +28,6 @@ const AllProducts = () => {
   const [maxPage, setMaxPage] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const [sort, setSort] = useState('');
-  const navigate = useNavigate();
 
   useEffect(() => {
     const getAppearences = async () => {
@@ -49,15 +51,29 @@ const AllProducts = () => {
   }, []);
 
   useEffect(() => {
+    const category = searchParams.get('category');
+    const keyword = searchParams.get('keyword');
+
+    if (category) {
+      setCurrentCategory(parseInt(category));
+    }
+
+    if (keyword) {
+      setKeyword(keyword);
+    }
+  }, []);
+
+  useEffect(() => {
     const getProductQuery = async () => {
       try {
-        // const keyword = searchParams.get('keyword');
-        // const category = searchParams.get('category');
-
         const query = {
           limit: productPerPage,
           offset: productPerPage * currentPage - productPerPage,
         };
+
+        if (keyword) {
+          query.name = keyword;
+        }
 
         if (currentCategory) {
           query.category = currentCategory;
@@ -94,13 +110,13 @@ const AllProducts = () => {
         setProductsList(response.data.products);
         setTotalProducts(response.data.length);
         setMaxPage(Math.ceil(response.data.length / productPerPage) || 1);
-        window.scrollTo({ top: 100, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } catch (err) {
         toast.error('Unable to fetch products', { position: 'bottom-left', theme: 'colored' });
       }
     };
     getProductQuery();
-  }, [currentCategory, productPerPage, currentPage, currentAppearance, sort, priceRange]);
+  }, [currentCategory, productPerPage, keyword, currentPage, currentAppearance, sort, priceRange]);
 
   const renderProducts = () => {
     return productsList.map((product) => <ProductCardAll key={product.id} product={product} view={view} />);
@@ -164,7 +180,7 @@ const AllProducts = () => {
 
   return (
     <>
-      <Navbar />
+      <Header />
       <div className="container mx-auto">
         <div className="flex h-max w-full">
           <div className="w-1/5 h-max flex flex-col items-center pt-2">
@@ -172,38 +188,38 @@ const AllProducts = () => {
               <span className="font-bold text-lg w-max bg-gradient-to-r from-sky-500 to-emerald-500 bg-clip-text text-transparent">
                 Categories
               </span>
-              {currentCategory && (
-                <div
-                  onClick={() => {
-                    setCurrentCategory('');
-                    setCurrentPage(1);
-                  }}
-                  className="px-2 rounded-full flex gap-1 items-center bg-rose-100 text-sm text-red-400 hover:brightness-105 transition cursor-pointer"
-                >
-                  <AiOutlineClose />
-                  <span>Reset</span>
-                </div>
-              )}
+              <div
+                onClick={() => {
+                  setCurrentCategory('');
+                  setCurrentPage(1);
+                }}
+                className={`px-2 rounded-full flex gap-1 items-center bg-rose-100 text-sm text-red-400 hover:brightness-105 transition cursor-pointer ${
+                  currentCategory ? 'opacity-100' : 'opacity-0 invisible'
+                }`}
+              >
+                <AiOutlineClose />
+                <span>Reset</span>
+              </div>
             </div>
             <div className="w-4/5 py-2 px-2 flex flex-col gap-1 pl-2 border-b border-slate-200 mb-2">{renderCategories()}</div>
             <div className="w-4/5 py-2 border-b border-slate-400 flex items-center justify-between">
               <span className="font-bold text-lg w-max bg-gradient-to-r from-sky-500 to-emerald-500 bg-clip-text text-transparent cursor-pointer">
                 Price
               </span>
-              {minPrice || maxPrice ? (
-                <div
-                  onClick={() => {
-                    setMinPrice('');
-                    setMaxPrice('');
-                    setPriceRange([]);
-                    setCurrentPage(1);
-                  }}
-                  className="px-2 rounded-full flex gap-1 items-center bg-rose-100 text-sm text-red-400 hover:brightness-105 transition cursor-pointer"
-                >
-                  <AiOutlineClose />
-                  <span>Clear</span>
-                </div>
-              ) : null}
+              <div
+                onClick={() => {
+                  setMinPrice('');
+                  setMaxPrice('');
+                  setPriceRange([]);
+                  setCurrentPage(1);
+                }}
+                className={`px-2 rounded-full flex gap-1 items-center bg-rose-100 text-sm text-red-400 hover:brightness-105 transition cursor-pointer ${
+                  minPrice || maxPrice ? 'opacity-100' : 'opacity-0 invisible'
+                }`}
+              >
+                <AiOutlineClose />
+                <span>Clear</span>
+              </div>
             </div>
             <div className="w-4/5 py-1 flex flex-col gap-1 items-center">
               <div className="w-full p-1 flex flex-col">
@@ -265,22 +281,41 @@ const AllProducts = () => {
               <span className="font-bold text-lg w-max bg-gradient-to-r from-sky-500 to-emerald-500 bg-clip-text text-transparent">
                 Appearence
               </span>
-              {currentAppearance.length ? (
-                <div
-                  onClick={() => {
-                    setCurrentAppearance('');
-                    setCurrentPage(1);
-                  }}
-                  className="px-2 rounded-full flex gap-1 items-center bg-rose-100 text-sm text-red-400 hover:brightness-105 transition cursor-pointer"
-                >
-                  <AiOutlineClose />
-                  <span>Clear</span>
-                </div>
-              ) : null}
+              <div
+                onClick={() => {
+                  setCurrentAppearance('');
+                  setCurrentPage(1);
+                }}
+                className={`px-2 rounded-full flex gap-1 items-center bg-rose-100 text-sm text-red-400 hover:brightness-105 transition cursor-pointer ${
+                  currentAppearance.length ? 'opacity-100' : 'opacity-0 invisible'
+                }`}
+              >
+                <AiOutlineClose />
+                <span>Clear</span>
+              </div>
             </div>
             <div className="w-4/5 py-2 px-2 flex flex-col gap-2 pl-2 border-b border-slate-200 mb-2">{renderAppearences()}</div>
           </div>
           <div className="w-4/5 p-2 flex flex-col">
+            {keyword && productsList.length ? (
+              <div
+                onClick={() => {
+                  setKeyword('');
+                  setCurrentCategory('');
+                  setCurrentAppearance([]);
+                  setCurrentPage(1);
+                  params.delete('keyword');
+                }}
+                className="w-max h-[55px] my-2 pr-6 flex items-center gap-2 shadow-md rounded-lg overflow-hidden"
+              >
+                <div className="h-full w-2 bg-sky-500" />
+                <AiOutlineInfoCircle className="text-slate-600" />
+                <span className="font-semibold text-slate-600">
+                  Currently showing results for <i>'{keyword}'</i>.
+                </span>
+                <span className="font-semibold text-sky-600 hover:text-emerald-400 transition cursor-pointer">See All Products?</span>
+              </div>
+            ) : null}
             <div className="w-full p-4 flex items-center border-b-2 border-slate-100">
               <span className="text-3xl font-bold w-max bg-gradient-to-r mr-auto from-sky-500 to-sky-300 bg-clip-text text-transparent">
                 Products
@@ -344,8 +379,22 @@ const AllProducts = () => {
               {productsList.length ? (
                 renderProducts()
               ) : (
-                <div className="w-full h-[500px]  flex items-center justify-center">
-                  <span className="text-3xl font-semibold text-slate-400">No results found..</span>
+                <div className="w-full h-[600px] flex flex-col items-center justify-center">
+                  <span className="text-3xl font-semibold text-slate-400 mb-10">No results found..</span>
+                  {keyword && (
+                    <span
+                      onClick={() => {
+                        setKeyword('');
+                        setCurrentCategory('');
+                        setCurrentAppearance([]);
+                        setCurrentPage(1);
+                        params.delete('keyword');
+                      }}
+                      className="text-lg font-bold text-gray-500 hover:text-sky-500 transition cursor-pointer"
+                    >
+                      See All Products
+                    </span>
+                  )}
                 </div>
               )}
             </div>
@@ -386,6 +435,7 @@ const AllProducts = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </>
   );
 };
