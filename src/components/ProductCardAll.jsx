@@ -19,7 +19,7 @@ const ProductCardAll = ({ view, product }) => {
             </div>
             <div className="w-full flex items-center">
               <span className="text-lg font-bold w-max bg-gradient-to-r from-emerald-500 to-emerald-700 bg-clip-text text-transparent">
-                Rp. {product.price}/{product.unit}
+                Rp. {product.price_sell}/{product.unit}
               </span>
             </div>
             <div className="flex w-full items-center gap-2 text-sm">
@@ -73,7 +73,7 @@ const ProductCardAll = ({ view, product }) => {
           <div className="w-[25%] h-full pt-4 pr-4">
             <div className="w-full flex flex-col items-end gap-2 mb-3">
               <span className="text-2xl w-max bg-gradient-to-r from-emerald-500 to-emerald-700 bg-clip-text text-transparent font-bold">
-                Rp. {product.price}/{product.unit}
+                Rp. {product.price_sell}/{product.unit}
               </span>
               <div className="text-lg flex items-center gap-2">
                 <AiOutlineCheckCircle className="text-sky-400" />
