@@ -7,6 +7,7 @@ import { useDispatch } from 'react-redux';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import AllProducts from './pages/AllProducts';
 import ChangePassword from './pages/ChangePassword';
 import LoginAdmin from './pages/LoginAdmin';
 import Verify from './pages/Verify';
@@ -85,13 +86,11 @@ function App() {
         <Route path="/verify/:token" element={<Verify />} />
         <Route path="/admin/login" element={<LoginAdmin />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/products" element={<AllProducts />} />
         <Route path="/admin" element={<HomeAdmin />} />
         <Route path="/admin/login" element={<LoginAdmin />} />
         <Route path="/admin/reset" element={<ResetAdmin />} />
-        <Route
-          path="/admin/change-password/:token"
-          element={<ChangePassAdmin />}
-        />
+        <Route path="/admin/change-password/:token" element={<ChangePassAdmin />} />
       </Routes>
       <ToastContainer />
     </BrowserRouter>

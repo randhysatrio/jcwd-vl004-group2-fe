@@ -4,7 +4,6 @@ module.exports = {
   theme: {
     container: {
       center: true,
-      padding: '1rem',
     },
     extend: {
       colors: {
@@ -30,5 +29,13 @@ module.exports = {
         },
       },
     ],
+    styled: true,
+    themes: true,
+    base: true,
+    utils: true,
+    logs: true,
+    rtl: false,
+    prefix: '',
+    darkTheme: 'light',
   },
 };
