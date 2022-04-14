@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { useNavigate, Link, createSearchParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 import { FaHeart, FaSearch, FaUserAlt, FaShoppingBag } from 'react-icons/fa';
+import AccountButton from './AccountButton';
 
 const Header = () => {
-  const [keyword, setKeyword] = useState('');
   const navigate = useNavigate();
+  const userGlobal = useSelector((state) => state.user);
+  const [keyword, setKeyword] = useState('');
 
   return (
     // header
@@ -37,8 +40,8 @@ const Header = () => {
             </button>
           </div>
         </form>
-        <div className="flex items-center space-x-4">
-          <a href="#" className="text-center text-gray-700 hover:text-primary transition relative">
+        <div className="flex items-center space-x-4 p-1">
+          {/* <a href="#" className="text-center text-gray-700 hover:text-primary transition relative">
             <div className="text-2xl">
               <FaHeart className="ml-2" />
             </div>
@@ -46,22 +49,28 @@ const Header = () => {
             <span className="absolute right-0 -top-1 w-5 h-5 rounded-full flex items-center justify-center bg-red-500 text-white text-xs">
               8
             </span>
-          </a>
-          <a href="#" className="text-center text-gray-700 hover:text-primary transition relative">
-            <div className="text-2xl">
+          </a> */}
+          <div className="text-center text-gray-700 hover:text-primary transition relative">
+            <div className="text-2xl mb-1">
               <FaShoppingBag />
             </div>
             <div className="text-xs leading-3">Cart</div>
             <span className="absolute -right-2 -top-1 w-5 h-5 rounded-full flex items-center justify-center bg-red-500 text-white text-xs">
               8
             </span>
-          </a>
-          <a href="#" className="text-center text-gray-700 hover:text-primary transition relative group">
-            <div className="text-2xl">
-              <FaUserAlt className="ml-2" />
-            </div>
-            <div className="text-xs leading-3">Account</div>
-          </a>
+          </div>
+          {userGlobal.name ? (
+            <AccountButton>{userGlobal.name}</AccountButton>
+          ) : (
+            <Link to="/login">
+              <div className="text-center text-gray-700 hover:text-primary transition relative group">
+                <div className="text-2xl mb-1">
+                  <FaUserAlt className="ml-2" />
+                </div>
+                <div className="text-xs leading-3">Account</div>
+              </div>
+            </Link>
+          )}
         </div>
       </div>
     </header>

@@ -217,8 +217,8 @@ const Register = () => {
               type="submit"
               disabled={isLoading}
               className={`w-[80%] md:w-9/12 h-9 md:h-11 mt-2 rounded-lg text-white font-semibold flex justify-center items-center gap-2 ${
-                isLoading ? 'bg-slate-400 cursor-not-allowed' : 'bg-sky-400 cursor-pointer active:scale-95'
-              } hover:brightness-110 transition shadow-sm`}
+                isLoading ? 'bg-slate-400 cursor-not-allowed' : 'bg-sky-400 cursor-pointer active:scale-95 hover:brightness-110'
+              } transition shadow-sm`}
             >
               {isLoading ? (
                 <>
@@ -248,7 +248,7 @@ const Register = () => {
           >
             {' '}
             <FcGoogle />
-            Sign-in with Google
+            Sign-up with Google
           </button>
           <span
             onClick={() => navigate('/login')}
