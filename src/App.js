@@ -26,8 +26,8 @@ function App() {
       try {
         const token = localStorage.getItem('tokenAdmin');
         if (token.length) {
-          const response = await axios.post(
-            'http://localhost:5000/admin/auth/get',
+          const response = await Axios.post(
+            `${API_URL}/admin/auth/get`,
             {},
             {
               headers: {
