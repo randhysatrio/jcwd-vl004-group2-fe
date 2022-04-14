@@ -1,33 +1,34 @@
 module.exports = {
-  content: ["./src/**/*.{js,jsx,ts,tsx}"],
-  mode: "jit",
+  content: ['./src/**/*.{js,jsx,ts,tsx}'],
+  mode: 'jit',
   theme: {
     container: {
       center: true,
-      padding: "1rem",
+      padding: '1rem',
     },
     extend: {
       colors: {
-        primary: "#0EA5E9",
-        secondary: "#64748B",
+        primary: '#0EA5E9',
+        secondary: '#64748B',
       },
     },
   },
   variants: {
     extend: {
-      display: ["group-hover"],
-      visibility: ["group-hover"],
+      display: ['group-hover'],
+      visibility: ['group-hover'],
     },
   },
-  plugins: [require("daisyui")],
+  plugins: [require('daisyui')],
   daisyui: {
-    styled: true,
-    themes: true,
-    base: true,
-    utils: true,
-    logs: true,
-    rtl: false,
-    prefix: "",
-    darkTheme: "light",
+    themes: [
+      {
+        light: {
+          ...require('daisyui/src/colors/themes')['[data-theme=light]'],
+          primary: '#0EA5E9',
+          'primary-focus': '#0369A1',
+        },
+      },
+    ],
   },
 };

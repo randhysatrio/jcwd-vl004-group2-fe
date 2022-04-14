@@ -1,26 +1,50 @@
-import { useEffect } from "react";
-import Axios from "axios";
-import { API_URL } from "./assets/constants";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useEffect } from 'react';
+import Axios from 'axios';
+import { API_URL } from './assets/constants';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import ChangePassword from "./pages/ChangePassword";
-import LoginAdmin from "./pages/LoginAdmin";
-import Verify from "./pages/Verify";
-import Dashboard from "./pages/Dashboard";
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import ChangePassword from './pages/ChangePassword';
+import LoginAdmin from './pages/LoginAdmin';
+import Verify from './pages/Verify';
+import Dashboard from './pages/Dashboard';
+import ChangePassAdmin from './pages/ChangePassAdmin';
+import HomeAdmin from './pages/HomeAdmin';
+import ResetAdmin from './pages/ResetAdmin';
 
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    const keepLoginAdmin = async () => {
+      try {
+        const token = localStorage.getItem('tokenAdmin');
+        if (token.length) {
+          const response = await Axios.post(
+            `${API_URL}/admin/auth/get`,
+            {},
+            {
+              headers: {
+                Authorization: token,
+              },
+            }
+          );
+
+          dispatch({ type: 'AUTH_ADMIN', payload: response.data.data });
+        }
+      } catch (error) {
+        console.log(error.response.data.message);
+      }
+    };
+
     const persistentLogin = async () => {
-      const userToken = localStorage.getItem("userToken");
+      const userToken = localStorage.getItem('userToken');
       let response;
 
       if (userToken) {
@@ -38,15 +62,16 @@ function App() {
       if (response.data.ignore) {
         return;
       } else {
-        localStorage.setItem("userToken", response.data.token);
+        localStorage.setItem('userToken', response.data.token);
 
         dispatch({
-          type: "USER_LOGIN",
+          type: 'USER_LOGIN',
           payload: response.data.user,
         });
       }
     };
 
+    keepLoginAdmin();
     persistentLogin();
   }, []);
 
@@ -60,6 +85,13 @@ function App() {
         <Route path="/verify/:token" element={<Verify />} />
         <Route path="/admin/login" element={<LoginAdmin />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/admin" element={<HomeAdmin />} />
+        <Route path="/admin/login" element={<LoginAdmin />} />
+        <Route path="/admin/reset" element={<ResetAdmin />} />
+        <Route
+          path="/admin/change-password/:token"
+          element={<ChangePassAdmin />}
+        />
       </Routes>
       <ToastContainer />
     </BrowserRouter>

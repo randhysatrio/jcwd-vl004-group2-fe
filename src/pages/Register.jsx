@@ -6,7 +6,11 @@ import { API_URL } from '../assets/constants';
 
 import '../assets/styles/Register.css';
 import { FcGoogle } from 'react-icons/fc';
-import { AiOutlineInfoCircle, AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
+import {
+  AiOutlineInfoCircle,
+  AiFillEye,
+  AiFillEyeInvisible,
+} from 'react-icons/ai';
 
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -34,7 +38,9 @@ const Register = () => {
       name: Yup.string()
         .matches(/^[a-zA-Z0-9 ]*$/, 'Name cannot contain special characters')
         .required('This field is required'),
-      email: Yup.string().email('Please enter a valid email address').required('This field is required'),
+      email: Yup.string()
+        .email('Please enter a valid email address')
+        .required('This field is required'),
       password: Yup.string()
         .matches(
           /^(?!.* )(?=.*\d)(?=.*[A-Z]).{6,}$/,
@@ -67,13 +73,22 @@ const Register = () => {
   return (
     <div className="flex justify-center relative overflow-y-hidden registerBody">
       <div className="absolute top-5 left-8">
-        <span className="text-2xl font-bold text-orange-100 hover:brightness-110 cursor-pointer transition" onClick={() => navigate('/')}>
+        <span
+          className="text-2xl font-bold text-orange-100 hover:brightness-110 cursor-pointer transition"
+          onClick={() => navigate('/')}
+        >
           Logo Here
         </span>
       </div>
-      <div className={`h-full w-1/3 flex-col items-center ${errMsg ? 'pt-0' : 'pt-4'} shadow-md registerWrapper`}>
+      <div
+        className={`h-full w-1/3 flex-col items-center ${
+          errMsg ? 'pt-0' : 'pt-4'
+        } shadow-md registerWrapper`}
+      >
         <div className="h-[75px] w-max bg-gradient-to-r from-sky-500 to-emerald-500 bg-clip-text mx-auto pt-5">
-          <span className="text-[27px] text-transparent font-bold">Create Account</span>
+          <span className="text-[27px] text-transparent font-bold">
+            Create Account
+          </span>
         </div>
         {errMsg && (
           <div className="h-[85px] w-full mb-1 py-2 flex justify-center">
@@ -86,7 +101,10 @@ const Register = () => {
         <form onSubmit={formik.handleSubmit}>
           <div className="w-full h-max flex flex-col items-center">
             <div className="w-9/12 h-[90px] flex flex-col">
-              <label htmlFor="name" className="text-md font-bold text-sky-400 mb-[3px] cursor-pointer">
+              <label
+                htmlFor="name"
+                className="text-md font-bold text-sky-400 mb-[3px] cursor-pointer"
+              >
                 Name
               </label>
               <div className="relative">
@@ -95,7 +113,9 @@ const Register = () => {
                   id="name"
                   placeholder="Insert your name.."
                   className={`h-11 pl-3 rounded-lg border-2 w-full ${
-                    formik.touched.name && formik.errors.name ? 'border-red-400' : 'border-gray-300 '
+                    formik.touched.name && formik.errors.name
+                      ? 'border-red-400'
+                      : 'border-gray-300 '
                   } focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-sky-300 transition placeholder:text-sky-300 placeholder:font-semibold mb-[3px] cursor-pointer`}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
@@ -105,10 +125,17 @@ const Register = () => {
                   <AiOutlineInfoCircle className="text-red-400 text-lg absolute top-3 right-3" />
                 ) : null}
               </div>
-              {formik.touched.name && formik.errors.name ? <span className="text-xs text-red-400 pl-2">{formik.errors.name}</span> : null}
+              {formik.touched.name && formik.errors.name ? (
+                <span className="text-xs text-red-400 pl-2">
+                  {formik.errors.name}
+                </span>
+              ) : null}
             </div>
             <div className="w-9/12 h-[90px] flex flex-col">
-              <label htmlFor="email" className="text-md font-bold text-sky-400 mb-[3px] cursor-pointer">
+              <label
+                htmlFor="email"
+                className="text-md font-bold text-sky-400 mb-[3px] cursor-pointer"
+              >
                 Email
               </label>
               <div className="relative">
@@ -117,7 +144,9 @@ const Register = () => {
                   id="email"
                   placeholder="Insert your email.."
                   className={`h-11 w-full pl-3 rounded-lg border-2 ${
-                    formik.touched.email && formik.errors.email ? 'border-red-400' : 'border-gray-300 '
+                    formik.touched.email && formik.errors.email
+                      ? 'border-red-400'
+                      : 'border-gray-300 '
                   } focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-sky-300 transition placeholder:text-sky-300 placeholder:font-semibold mb-[3px] cursor-pointer`}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
@@ -128,18 +157,25 @@ const Register = () => {
                 ) : null}
               </div>
               {formik.touched.email && formik.errors.email ? (
-                <span className="text-xs text-red-400 pl-2">{formik.errors.email}</span>
+                <span className="text-xs text-red-400 pl-2">
+                  {formik.errors.email}
+                </span>
               ) : null}
             </div>
             <div className="w-9/12 h-[102px] flex flex-col">
-              <label htmlFor="password" className="text-md font-bold text-sky-400 mb-[3px] cursor-pointer">
+              <label
+                htmlFor="password"
+                className="text-md font-bold text-sky-400 mb-[3px] cursor-pointer"
+              >
                 Password
               </label>
               <div className="relative">
                 <span
                   className="absolute h-fit top-[14px] left-3 cursos-pointer text-lg text-sky-300 hover:text-sky-200 transition cursor-pointer"
                   onClick={() => {
-                    if (document.getElementById('password').type === 'password') {
+                    if (
+                      document.getElementById('password').type === 'password'
+                    ) {
                       document.getElementById('password').type = 'text';
                     } else {
                       document.getElementById('password').type = 'password';
@@ -154,7 +190,9 @@ const Register = () => {
                   id="password"
                   placeholder="Insert your password.."
                   className={`h-11 w-full pl-9 rounded-lg ${
-                    formik.touched.password && formik.errors.password ? 'border-red-400' : 'border-gray-300 '
+                    formik.touched.password && formik.errors.password
+                      ? 'border-red-400'
+                      : 'border-gray-300 '
                   } border-2 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-sky-300 transition placeholder:text-sky-300 placeholder:font-semibold mb-[3px] cursor-pointer`}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
@@ -165,7 +203,9 @@ const Register = () => {
                 ) : null}
               </div>
               {formik.touched.password && formik.errors.password ? (
-                <span className="text-xs text-red-400 pl-2">{formik.errors.password}</span>
+                <span className="text-xs text-red-400 pl-2">
+                  {formik.errors.password}
+                </span>
               ) : null}
             </div>
             <button
@@ -176,13 +216,17 @@ const Register = () => {
             </button>
             <div className="w-9/12 flex gap-1 text-sm justify-center mt-2">
               <span>By signing-up I agrees to our</span>
-              <span className="font-semibold text-sky-400 hover:brightness-125 transition cursor-pointer">Terms and Condition</span>
+              <span className="font-semibold text-sky-400 hover:brightness-125 transition cursor-pointer">
+                Terms and Condition
+              </span>
             </div>
           </div>
         </form>
         <div className="w-full h-8 relative flex items-center justify-center my-2">
           <div className="h-[2px] w-9/12 bg-slate-300 mx-auto" />
-          <span className="w-8 bg-white font-semibold text-sky-400 text-center absolute">Or</span>
+          <span className="w-8 bg-white font-semibold text-sky-400 text-center absolute">
+            Or
+          </span>
         </div>
         <div className="w-full h-24 flex flex-col items-center">
           <button
