@@ -11,6 +11,7 @@ import {
 import { AiOutlineClose } from "react-icons/ai";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import ProductTable from "../components/ProductTable";
 import Pagination from "../components/Pagination";
@@ -81,6 +82,101 @@ const Dashboard = () => {
   };
 
   const handleReset = () => {
+    fetchProducts();
+  };
+
+  const [products, setProducts] = useState([]);
+
+  const [editFormData, setEditFormData] = useState({
+    name: "",
+    price_buy: "",
+    price_sell: "",
+    stock: "",
+    unit: "",
+    volume: "",
+    description: "",
+    image: "",
+    appearance: "",
+    categoryId: "",
+  });
+
+  const handleEditFormChange = (event) => {
+    event.preventDefault();
+
+    //event.target.getAttribute("name") is not working
+    const fieldName = event.target.name;
+    const fieldValue = event.target.value;
+
+    const newFormData = { ...editFormData };
+    newFormData[fieldName] = fieldValue;
+
+    setEditFormData(newFormData);
+  };
+
+  const [editProductId, setEditProductId] = useState(null);
+
+  const handleEditClick = async (event, value) => {
+    event.preventDefault();
+    setEditProductId(value.id);
+
+    const formValues = {
+      id: value.id,
+      name: value.name,
+      price_buy: value.price_buy,
+      price_sell: value.price_sell,
+      stock: value.stock,
+      unit: value.unit,
+      volume: value.volume,
+      stock_in_unit: value.stock_in_unit,
+      description: value.description,
+      image: value.image,
+      appearance: value.appearance,
+      categoryId: value.categoryId,
+    };
+    setEditFormData(formValues);
+  };
+
+  const handleEditFormSubmit = async (event) => {
+    event.preventDefault();
+    const id = editProductId;
+
+    const editedProduct = {
+      id: editProductId,
+      name: editFormData.name,
+      price_buy: editFormData.price_buy,
+      price_sell: editFormData.price_sell,
+      stock: editFormData.stock,
+      unit: editFormData.unit,
+      volume: editFormData.volume,
+      description: editFormData.description,
+      image: editFormData.image,
+      appearance: editFormData.appearance,
+      categoryId: editFormData.categoryId,
+    };
+
+    try {
+      await axios.patch(
+        `http://localhost:5000/product/edit/${id}`,
+        editedProduct
+      );
+    } catch (error) {
+      console.log(error);
+    }
+
+    setEditProductId(null);
+    fetchProducts();
+  };
+
+  const handleCancelClick = () => {
+    setEditProductId(null);
+  };
+
+  const handleDeleteClick = async (id) => {
+    try {
+      await axios.delete(`http://localhost:5000/product/delete/${id}`);
+    } catch (error) {
+      console.log(error);
+    }
     fetchProducts();
   };
 
