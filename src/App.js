@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import AllProducts from './pages/AllProducts';
+import ProductDetail from './pages/ProductDetail';
 import ChangePassword from './pages/ChangePassword';
 import LoginAdmin from './pages/LoginAdmin';
 import Verify from './pages/Verify';
@@ -84,9 +85,10 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/changepassword/:token" element={<ChangePassword />} />
         <Route path="/verify/:token" element={<Verify />} />
+        <Route path="/products" element={<AllProducts />} />
+        <Route path="/products/:id" element={<ProductDetail />} />
         <Route path="/admin/login" element={<LoginAdmin />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/products" element={<AllProducts />} />
         <Route path="/admin" element={<HomeAdmin />} />
         <Route path="/admin/login" element={<LoginAdmin />} />
         <Route path="/admin/reset" element={<ResetAdmin />} />

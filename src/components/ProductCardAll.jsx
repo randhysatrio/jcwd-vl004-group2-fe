@@ -1,6 +1,10 @@
+import { useNavigate } from 'react-router-dom';
+
 import { AiOutlineCheckCircle, AiOutlineMail, AiFillStar } from 'react-icons/ai';
 
 const ProductCardAll = ({ view, product }) => {
+  const navigate = useNavigate();
+
   return (
     <>
       {view === 'grid' ? (
@@ -13,7 +17,10 @@ const ProductCardAll = ({ view, product }) => {
           <div className="w-full h-60 flex flex-col pb-2 px-3">
             <span className="text-sm font-light text-slate-400">{product.category.name}</span>
             <div className="w-full h-max flex items-center break-words overflow-hidden">
-              <span className="text-base text-slate-800 font-semibold hover:text-sky-500 transition">
+              <span
+                onClick={() => navigate(`/products/${product.id}`)}
+                className="text-base text-slate-800 font-semibold hover:text-sky-500 transition"
+              >
                 {product.name.length > 40 ? product.name.slice(0, 40) + '...' : product.name}
               </span>
             </div>
@@ -51,7 +58,10 @@ const ProductCardAll = ({ view, product }) => {
           </div>
           <div className="w-[45%] h-full flex flex-col pt-4">
             <div className="w-full flex flex-col gap-1 mb-2">
-              <span className="text-xl font-semibold text-zinc-800 hover:text-sky-500 transition cursor-pointer">
+              <span
+                onClick={() => navigate(`/products/${product.id}`)}
+                className="text-xl font-semibold text-zinc-800 hover:text-sky-500 transition cursor-pointer"
+              >
                 {product.name.length > 42 ? product.name.slice(0, 42) + '...' : product.name}
               </span>
               <span className="font-semibold text-slate-400">{product.category.name}</span>
@@ -85,7 +95,10 @@ const ProductCardAll = ({ view, product }) => {
               </div> */}
             </div>
             <div className="w-full flex justify-end">
-              <button className="w-[75%] h-10 rounded-lg bg-gradient-to-r from-sky-400 to-sky-600 text-white font-bold hover:brightness-110 cursor-pointer transition active:scale-95 text-md gap-2 flex justify-center items-center shadow">
+              <button
+                onClick={() => alert('Inquiry send')}
+                className="w-[75%] h-10 rounded-lg bg-gradient-to-r from-sky-400 to-sky-600 text-white font-bold hover:brightness-110 cursor-pointer transition active:scale-95 text-md gap-2 flex justify-center items-center shadow"
+              >
                 <AiOutlineMail />
                 <span className="font-semibold">Send Inquiry</span>
               </button>
