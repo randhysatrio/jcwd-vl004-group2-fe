@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Axios from 'axios';
 import { API_URL } from '../assets/constants';
 
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ProductDetailsImage from '../components/ProductDetailsImage';
+import ProductDetailCarousel from './ProductDetailCarousel';
 import { AiFillStar, AiOutlineCheckCircle, AiOutlineCloseCircle, AiOutlinePlus, AiOutlineMinus, AiFillFire } from 'react-icons/ai';
 import { BsCartPlus } from 'react-icons/bs';
 import { IoBagCheckOutline } from 'react-icons/io5';
@@ -14,9 +15,11 @@ import { toast } from 'react-toastify';
 const ProductDetail = () => {
   const params = useParams();
   const [productData, setProductData] = useState({});
+  const [relatedProducts, setRelatedProducts] = useState([]);
   const [category, setCategory] = useState({});
   const [quantity, setQuantity] = useState(0);
   const [qtyError, setQtyError] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProductData = async () => {
@@ -39,7 +42,23 @@ const ProductDetail = () => {
     };
     fetchProductData();
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, []);
+  }, [params.id]);
+
+  useEffect(() => {
+    const fetchRelatedCategory = async () => {
+      try {
+        const response = await Axios.post(`${API_URL}/product/query`, {
+          category: productData.categoryId,
+          limit: 6,
+          offset: 0,
+        });
+        setRelatedProducts(response.data.products.filter((product) => product.id !== productData.id));
+      } catch (err) {
+        toast.error('Unable to fetch product carousel!', { position: 'bottom-left', theme: 'colored' });
+      }
+    };
+    fetchRelatedCategory();
+  }, [productData]);
 
   useEffect(() => {
     if (!quantity && productData.stock_in_unit) {
@@ -54,7 +73,7 @@ const ProductDetail = () => {
   return (
     <>
       <Header />
-      <div className="h-screen flex justify-center">
+      <div className="h-max py-3 flex flex-col items-center">
         <div className="w-3/4 h-[600px] flex">
           <div className="w-[60%] h-full flex justify-center items-center">
             <ProductDetailsImage img={productData.image} name={productData.name} />
@@ -89,7 +108,7 @@ const ProductDetail = () => {
               <div className="w-full h-6 flex items-center ">
                 <span className="font-bold">Description</span>
               </div>
-              <div className="w-full h-24 rounded-lg flex items-center bg-slate-100 p-1">
+              <div className="w-full h-24 rounded-lg flex items-center bg-gray-100 p-1">
                 <span className="text-slate-800">{productData.description}</span>
               </div>
             </div>
@@ -98,7 +117,7 @@ const ProductDetail = () => {
                 <div className="w-full flex items-center border-b mb-1">
                   <span className="font-bold">Details</span>
                 </div>
-                <div className="w-full h-full p-2 bg-slate-100 rounded-lg flex flex-col justify-center gap-2">
+                <div className="w-full h-full p-2 bg-gray-100 rounded-lg flex flex-col justify-center gap-2">
                   <div className="w-full flex justify-between">
                     <span className="font-semibold text-slate-600">Volume</span>
                     <span className="font-bold text-slate-800">{productData.volume}</span>
@@ -118,7 +137,7 @@ const ProductDetail = () => {
                   <span className="font-bold">Stock</span>
                   <div className="flex items-center gap-1 font-semibold">
                     {productData.stock_in_unit ? (
-                      productData.stock <= 5 * productData.volume ? (
+                      productData.stock_in_unit <= 5 * productData.volume ? (
                         <>
                           <AiFillFire className="text-orange-500" />
                           <span>
@@ -155,19 +174,13 @@ const ProductDetail = () => {
                 <div className="w-full h-12 flex">
                   <div className="h-full w-[90%] flex items-center justify-center p-1 relative">
                     <button
-                      onClick={() => setQuantity(quantity + productData.volume)}
-                      disabled={
-                        quantity >= productData.stock_in_unit ||
-                        quantity + productData.volume > productData.stock_in_unit ||
-                        !productData.stock_in_unit
-                      }
+                      onClick={() => setQuantity(quantity - productData.volume)}
+                      disabled={quantity <= productData.volume || !productData.stock_in_unit}
                       className="w-11 h-[43px] bg-transparent text-xl border-r flex items-center justify-center absolute top-[3px] left-1 group"
                     >
-                      <AiOutlinePlus
+                      <AiOutlineMinus
                         className={`${
-                          quantity >= productData.stock_in_unit ||
-                          quantity + productData.volume > productData.stock_in_unit ||
-                          !productData.stock_in_unit
+                          quantity <= productData.volume || !productData.stock_in_unit
                             ? 'text-slate-400'
                             : 'group-active:scale-90 group-hover:text-sky-500'
                         } transition`}
@@ -186,13 +199,19 @@ const ProductDetail = () => {
                       }  transition px-12 text-center cursor-pointer font-semibold`}
                     />
                     <button
-                      onClick={() => setQuantity(quantity - productData.volume)}
-                      disabled={quantity <= productData.volume || !productData.stock_in_unit}
+                      onClick={() => setQuantity(quantity + productData.volume)}
+                      disabled={
+                        quantity >= productData.stock_in_unit ||
+                        quantity + productData.volume > productData.stock_in_unit ||
+                        !productData.stock_in_unit
+                      }
                       className="w-11 h-[43px] bg-transparent text-xl border-l flex items-center justify-center absolute top-[3px] right-1 group"
                     >
-                      <AiOutlineMinus
+                      <AiOutlinePlus
                         className={`${
-                          quantity <= productData.volume || !productData.stock_in_unit
+                          quantity >= productData.stock_in_unit ||
+                          quantity + productData.volume > productData.stock_in_unit ||
+                          !productData.stock_in_unit
                             ? 'text-slate-400'
                             : 'group-active:scale-90 group-hover:text-sky-500'
                         } transition`}
@@ -213,9 +232,7 @@ const ProductDetail = () => {
               <button
                 disabled={qtyError || !productData.stock_in_unit}
                 className={`h-full w-1/2 rounded-lg flex justify-center items-center gap-1 text-white font-semibold ${
-                  qtyError || !productData.stock_in_unit
-                    ? 'bg-emerald-300 cursor-not-allowed'
-                    : 'bg-emerald-500 hover:brightness-110 active:scale-95'
+                  qtyError || !productData.stock_in_unit ? 'bg-emerald-300' : 'bg-emerald-500 hover:brightness-110 active:scale-95'
                 } transition`}
               >
                 <IoBagCheckOutline />
@@ -224,9 +241,7 @@ const ProductDetail = () => {
               <button
                 disabled={qtyError || !productData.stock_in_unit}
                 className={`h-full w-1/2 rounded-lg flex justify-center items-center gap-1 text-white font-semibold ${
-                  qtyError || !productData.stock_in_unit
-                    ? 'bg-sky-300 cursor-not-allowed'
-                    : 'bg-sky-500 hover:brightness-110 active:scale-95'
+                  qtyError || !productData.stock_in_unit ? 'bg-sky-300' : 'bg-sky-500 hover:brightness-110 active:scale-95'
                 } transition`}
               >
                 <BsCartPlus />
@@ -234,6 +249,13 @@ const ProductDetail = () => {
               </button>
             </div>
           </div>
+        </div>
+        <div className="w-screen h-max flex flex-col items-center">
+          <div className="w-2/3 h-16 flex items-center gap-2 border-b">
+            <span className="text-2xl font-bold text-slate-700">More from</span>
+            <span className="text-2xl font-bold text-sky-500">{category.name}</span>
+          </div>
+          <ProductDetailCarousel relatedProducts={relatedProducts} navigate={navigate} />
         </div>
       </div>
       <Footer />

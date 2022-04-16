@@ -45,11 +45,11 @@ const ProductDetailsImage = ({ img, name }) => {
             <div className="w-max h-max pt-4 px-4 bg-white rounded-xl flex flex-col justify-center relative">
               <button
                 onClick={() => setOpen(false)}
-                className="absolute h-7 w-7 rounded-full -top-[11px] -right-[11px] flex justify-center items-center bg-white text-slate-300 hover:text-sky-500 transition group"
+                className="absolute h-7 w-7 rounded-full -top-[11px] -right-[11px] focus:outline-none flex justify-center items-center bg-white text-slate-300 hover:text-sky-500 transition group"
               >
                 <AiOutlineCloseCircle className="text-2xl group-active:scale-90 transition" />
               </button>
-              <div className="h-[540px] w-max rounded-sm border overflow-hidden">
+              <div className="h-[540px] w-max rounded-md border overflow-hidden">
                 <img src={img} className="h-full w-full object-contain" />
               </div>
               <div className="w-full py-3 flex justify-center items-center">
