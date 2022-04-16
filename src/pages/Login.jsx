@@ -62,7 +62,7 @@ const Login = () => {
           payload: response.data.user,
         });
 
-        navigate('/', { replace: true });
+        navigate(-1, { replace: true });
       }
     },
   });
