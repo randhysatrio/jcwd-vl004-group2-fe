@@ -11,8 +11,8 @@ import { BsFillGridFill } from 'react-icons/bs';
 import { toast } from 'react-toastify';
 
 const AllProducts = () => {
+  const [searchParams] = useSearchParams();
   const [view, setView] = useState('list');
-  const [searchParams, setSearchParams] = useSearchParams();
   const [productsList, setProductsList] = useState([]);
   const [totalProducts, setTotalProducts] = useState(0);
   const [categoryList, setCategoryList] = useState([]);

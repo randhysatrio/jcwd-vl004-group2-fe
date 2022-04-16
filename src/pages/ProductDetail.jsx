@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import Axios from 'axios';
 import { API_URL } from '../assets/constants';
 
@@ -8,18 +9,20 @@ import Footer from '../components/Footer';
 import ProductDetailsImage from '../components/ProductDetailsImage';
 import ProductDetailCarousel from './ProductDetailCarousel';
 import { AiFillStar, AiOutlineCheckCircle, AiOutlineCloseCircle, AiOutlinePlus, AiOutlineMinus, AiFillFire } from 'react-icons/ai';
-import { BsCartPlus } from 'react-icons/bs';
+import { BsCartPlus, BsChevronRight } from 'react-icons/bs';
 import { IoBagCheckOutline } from 'react-icons/io5';
 import { toast } from 'react-toastify';
 
 const ProductDetail = () => {
   const params = useParams();
+  const navigate = useNavigate();
   const [productData, setProductData] = useState({});
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [category, setCategory] = useState({});
   const [quantity, setQuantity] = useState(0);
   const [qtyError, setQtyError] = useState('');
-  const navigate = useNavigate();
+  const userGlobal = useSelector((state) => state.user);
+  const userToken = localStorage.getItem('userToken');
 
   useEffect(() => {
     const fetchProductData = async () => {
@@ -41,6 +44,7 @@ const ProductDetail = () => {
       }
     };
     fetchProductData();
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [params.id]);
 
@@ -49,7 +53,7 @@ const ProductDetail = () => {
       try {
         const response = await Axios.post(`${API_URL}/product/query`, {
           category: productData.categoryId,
-          limit: 6,
+          limit: 8,
           offset: 0,
         });
         setRelatedProducts(response.data.products.filter((product) => product.id !== productData.id));
@@ -70,11 +74,60 @@ const ProductDetail = () => {
     }
   }, [quantity]);
 
+  const addToCart = async () => {
+    try {
+      if (!userToken) {
+        navigate('/login');
+      } else {
+        const response = await Axios.post(`${API_URL}/cart/add`, {
+          userId: userGlobal.id,
+          productId: productData.id,
+          quantity,
+        });
+
+        if (response.data.conflict) {
+          toast.warning(response.data.message, { theme: 'colored', position: 'bottom-left' });
+        } else {
+          toast.success(response.data, { position: 'bottom-left', theme: 'colored' });
+
+          if (!productData.stock) {
+            setQuantity(productData.stock_in_unit);
+          } else {
+            setQuantity(productData.volume);
+          }
+        }
+      }
+    } catch (error) {
+      toast.error('Unable to add this item to your cart!', { theme: 'colored', position: 'bottom-left' });
+    }
+  };
+
   return (
     <>
       <Header />
       <div className="h-max py-3 flex flex-col items-center">
-        <div className="w-3/4 h-[600px] flex">
+        <div className="w-3/4 flex gap-1 items-center text-gray-700 text-sm">
+          <span
+            onClick={() => {
+              navigate('/login');
+            }}
+            className="hover:text-sky-500 hover:underline transition-all cursor-pointer"
+          >
+            Home
+          </span>
+          <BsChevronRight className="text-xs" />
+          <span
+            onClick={() => {
+              navigate('/products');
+            }}
+            className="hover:text-sky-500 hover:underline transition-all cursor-pointer"
+          >
+            Shop
+          </span>
+          <BsChevronRight className="text-xs" />
+          <span className="underline underline-offset-1">{productData.name}</span>
+        </div>
+        <div className="w-3/4 h-[570px] flex">
           <div className="w-[60%] h-full flex justify-center items-center">
             <ProductDetailsImage img={productData.image} name={productData.name} />
           </div>
@@ -86,7 +139,7 @@ const ProductDetail = () => {
               </div>
               <div className="w-full h-9 flex items-center">
                 <span className="text-xl leading-snug font-bold w-max bg-gradient-to-r from-emerald-600 to-sky-500 bg-clip-text text-transparent">
-                  Rp. {productData.price_sell}
+                  Rp. {productData.price_sell ? productData.price_sell.toLocaleString('id') : null},-
                 </span>
               </div>
               <div className="w-full h-7 flex items-center gap-2">
@@ -104,11 +157,11 @@ const ProductDetail = () => {
               <span className="font-bold">Category:</span>
               <span className="text-slate-800">{category.name}</span>
             </div>
-            <div className="w-full h-32 flex flex-col text-sm">
-              <div className="w-full h-6 flex items-center ">
+            <div className="w-full h-[140px] flex flex-col text-sm mb-1">
+              <div className="w-full h-6 flex items-center">
                 <span className="font-bold">Description</span>
               </div>
-              <div className="w-full h-24 rounded-lg flex items-center bg-gray-100 p-1">
+              <div className="w-full h-full rounded-lg flex items-center bg-gray-100 p-1">
                 <span className="text-slate-800">{productData.description}</span>
               </div>
             </div>
@@ -120,7 +173,7 @@ const ProductDetail = () => {
                 <div className="w-full h-full p-2 bg-gray-100 rounded-lg flex flex-col justify-center gap-2">
                   <div className="w-full flex justify-between">
                     <span className="font-semibold text-slate-600">Volume</span>
-                    <span className="font-bold text-slate-800">{productData.volume}</span>
+                    <span className="font-bold text-slate-800">{productData.volume ? productData.volume.toLocaleString('id') : null}</span>
                   </div>
                   <div className="w-full flex justify-between">
                     <span className="font-semibold text-slate-600">Unit</span>
@@ -162,12 +215,12 @@ const ProductDetail = () => {
                 </div>
                 <div className="w-full flex justify-between items-center my-2">
                   <div className="flex gap-1">
-                    <span className="font-semibold">{productData.stock}</span>
+                    <span className="font-semibold">{productData.stock ? productData.stock.toLocaleString('id') : 0}</span>
                     <span>{productData.unit === 'g' ? 'pack(s)' : 'bottle(s)'}</span>
                   </div>
                   <span>/</span>
                   <div className="flex gap-1">
-                    <span className="font-semibold">{productData.stock_in_unit}</span>
+                    <span className="font-semibold">{productData.stock_in_unit ? productData.stock_in_unit.toLocaleString('id') : 0}</span>
                     <span>{productData.unit}</span>
                   </div>
                 </div>
@@ -239,6 +292,7 @@ const ProductDetail = () => {
                 Checkout
               </button>
               <button
+                onClick={addToCart}
                 disabled={qtyError || !productData.stock_in_unit}
                 className={`h-full w-1/2 rounded-lg flex justify-center items-center gap-1 text-white font-semibold ${
                   qtyError || !productData.stock_in_unit ? 'bg-sky-300' : 'bg-sky-500 hover:brightness-110 active:scale-95'
@@ -250,13 +304,13 @@ const ProductDetail = () => {
             </div>
           </div>
         </div>
-        <div className="w-screen h-max flex flex-col items-center">
-          <div className="w-2/3 h-16 flex items-center gap-2 border-b">
-            <span className="text-2xl font-bold text-slate-700">More from</span>
-            <span className="text-2xl font-bold text-sky-500">{category.name}</span>
-          </div>
-          <ProductDetailCarousel relatedProducts={relatedProducts} navigate={navigate} />
-        </div>
+        <ProductDetailCarousel
+          header={'More from'}
+          category={category.name}
+          categoryId={category.id}
+          relatedProducts={relatedProducts}
+          navigate={navigate}
+        />
       </div>
       <Footer />
     </>
