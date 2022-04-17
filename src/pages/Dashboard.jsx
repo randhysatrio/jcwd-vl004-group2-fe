@@ -117,7 +117,19 @@ const Dashboard = () => {
 
   const handleEditClick = async (event, value) => {
     event.preventDefault();
-    setEditProductId(value.id);
+    navigate("/editproduct", editFormData);
+    // setEditProductId(value.id);
+
+    const element = (
+      <EditableRow
+        editFormData={editFormData}
+        handleEditFormChange={handleEditFormChange}
+        handleCancelClick={handleCancelClick}
+      />
+    );
+    // editFormData = { editFormData };
+    // handleEditFormChange = { handleEditFormChange };
+    // handleCancelClick = { handleCancelClick };
 
     const formValues = {
       id: value.id,
