@@ -7,7 +7,7 @@ import { API_URL } from '../assets/constants';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ProductDetailsImage from '../components/ProductDetailsImage';
-import ProductDetailCarousel from './ProductDetailCarousel';
+import ProductDetailCarousel from '../components/ProductDetailCarousel';
 import { AiFillStar, AiOutlineCheckCircle, AiOutlineCloseCircle, AiOutlinePlus, AiOutlineMinus, AiFillFire } from 'react-icons/ai';
 import { BsCartPlus, BsChevronRight } from 'react-icons/bs';
 import { IoBagCheckOutline } from 'react-icons/io5';

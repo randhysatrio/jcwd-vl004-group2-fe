@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import ProductCardAll from '../components/ProductCardAll';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import Axios from 'axios';
 import { API_URL } from '../assets/constants';
 
+import ProductCardAll from '../components/ProductCardAll';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { AiOutlineUnorderedList, AiOutlineLeft, AiOutlineRight, AiOutlineClose, AiOutlineInfoCircle } from 'react-icons/ai';
@@ -11,6 +11,7 @@ import { BsFillGridFill } from 'react-icons/bs';
 import { toast } from 'react-toastify';
 
 const AllProducts = () => {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [view, setView] = useState('list');
   const [productsList, setProductsList] = useState([]);
@@ -298,21 +299,24 @@ const AllProducts = () => {
           </div>
           <div className="w-4/5 p-2 flex flex-col">
             {keyword && productsList.length ? (
-              <div
-                onClick={() => {
-                  setKeyword('');
-                  setCurrentCategory('');
-                  setCurrentAppearance([]);
-                  setCurrentPage(1);
-                }}
-                className="w-max h-[55px] my-2 pr-6 flex items-center gap-2 shadow-md rounded-lg overflow-hidden"
-              >
+              <div className="w-max h-[55px] my-2 pr-6 flex items-center gap-2 shadow-md rounded-lg overflow-hidden">
                 <div className="h-full w-2 bg-sky-500" />
                 <AiOutlineInfoCircle className="text-slate-600" />
                 <span className="font-semibold text-slate-600">
                   Currently showing results for <i>'{keyword}'</i>.
                 </span>
-                <span className="font-semibold text-sky-600 hover:text-emerald-400 transition cursor-pointer">See All Products?</span>
+                <span
+                  onClick={() => {
+                    setKeyword('');
+                    setCurrentCategory('');
+                    setCurrentAppearance([]);
+                    setCurrentPage(1);
+                    navigate('/products');
+                  }}
+                  className="font-semibold text-sky-600 hover:text-emerald-400 transition cursor-pointer"
+                >
+                  See All Products?
+                </span>
               </div>
             ) : null}
             <div className="w-full p-4 flex items-center border-b-2 border-slate-100">
@@ -387,6 +391,7 @@ const AllProducts = () => {
                         setCurrentCategory('');
                         setCurrentAppearance([]);
                         setCurrentPage(1);
+                        navigate('/products');
                       }}
                       className="text-lg font-bold text-gray-500 hover:text-sky-500 transition cursor-pointer"
                     >
