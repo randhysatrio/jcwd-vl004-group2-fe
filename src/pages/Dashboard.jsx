@@ -117,37 +117,8 @@ const Dashboard = () => {
 
   const handleEditClick = async (event, value) => {
     event.preventDefault();
-    // navigate("/editproduct", editFormData);
-    // setEditProductId(value.id);
     const id = value.id;
     navigate(`editproduct/?${id}`);
-
-    // const element = (
-    //   <EditableRow
-    //     editFormData={editFormData}
-    //     handleEditFormChange={handleEditFormChange}
-    //     handleCancelClick={handleCancelClick}
-    // />
-    // );
-    // editFormData = { editFormData };
-    // handleEditFormChange = { handleEditFormChange };
-    // handleCancelClick = { handleCancelClick };
-
-    // const formValues = {
-    //   id: value.id,
-    //   name: value.name,
-    //   price_buy: value.price_buy,
-    //   price_sell: value.price_sell,
-    //   stock: value.stock,
-    //   unit: value.unit,
-    //   volume: value.volume,
-    //   stock_in_unit: value.stock_in_unit,
-    //   description: value.description,
-    //   image: value.image,
-    //   appearance: value.appearance,
-    //   categoryId: value.categoryId,
-    // };
-    // setEditFormData(formValues);
   };
 
   const handleEditFormSubmit = async (event) => {
