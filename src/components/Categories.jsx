@@ -20,6 +20,12 @@ const Categories = () => {
     fetchCategories();
   }, []);
 
+  const renderCategories = () => {
+    return categories.map((category, index) => (
+      <CategoryCard key={category.id} name={category.name} img={images[index]} id={category.id} />
+    ));
+  };
+
   return (
     <div className="container py-10">
       <div className="w-full">
@@ -27,11 +33,7 @@ const Categories = () => {
           Shop by Categories
         </span>
       </div>
-      <div className="w-full flex py-6 divide-x-2">
-        {categories.map((category, index) => (
-          <CategoryCard name={category.name} img={images[index]} id={category.id} />
-        ))}
-      </div>
+      <div className="w-full flex py-6 divide-x-2">{renderCategories()}</div>
     </div>
   );
 };

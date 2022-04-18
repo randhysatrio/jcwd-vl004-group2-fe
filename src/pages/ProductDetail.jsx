@@ -8,7 +8,15 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ProductDetailsImage from '../components/ProductDetailsImage';
 import ProductDetailCarousel from '../components/ProductDetailCarousel';
-import { AiFillStar, AiOutlineCheckCircle, AiOutlineCloseCircle, AiOutlinePlus, AiOutlineMinus, AiFillFire } from 'react-icons/ai';
+import {
+  AiFillStar,
+  AiOutlineCheckCircle,
+  AiOutlineCloseCircle,
+  AiOutlinePlus,
+  AiOutlineMinus,
+  AiFillFire,
+  AiOutlineLoading3Quarters,
+} from 'react-icons/ai';
 import { BsCartPlus, BsChevronRight } from 'react-icons/bs';
 import { IoBagCheckOutline } from 'react-icons/io5';
 import { toast } from 'react-toastify';
@@ -21,6 +29,7 @@ const ProductDetail = () => {
   const [category, setCategory] = useState({});
   const [quantity, setQuantity] = useState(0);
   const [qtyError, setQtyError] = useState('');
+  const [cartLoading, setCartLoading] = useState(false);
   const userGlobal = useSelector((state) => state.user);
   const userToken = localStorage.getItem('userToken');
 
@@ -79,6 +88,8 @@ const ProductDetail = () => {
       if (!userToken) {
         navigate('/login');
       } else {
+        setCartLoading(true);
+
         const response = await Axios.post(`${API_URL}/cart/add`, {
           userId: userGlobal.id,
           productId: productData.id,
@@ -86,8 +97,12 @@ const ProductDetail = () => {
         });
 
         if (response.data.conflict) {
+          setCartLoading(false);
+
           toast.warning(response.data.message, { theme: 'colored', position: 'bottom-left' });
         } else {
+          setCartLoading(false);
+
           toast.success(response.data, { position: 'bottom-left', theme: 'colored' });
 
           if (!productData.stock) {
@@ -109,7 +124,7 @@ const ProductDetail = () => {
         <div className="w-3/4 flex gap-1 items-center text-gray-700 text-sm">
           <span
             onClick={() => {
-              navigate('/login');
+              navigate('/');
             }}
             className="hover:text-sky-500 hover:underline transition-all cursor-pointer"
           >
@@ -293,13 +308,22 @@ const ProductDetail = () => {
               </button>
               <button
                 onClick={addToCart}
-                disabled={qtyError || !productData.stock_in_unit}
+                disabled={qtyError || !productData.stock_in_unit || cartLoading}
                 className={`h-full w-1/2 rounded-lg flex justify-center items-center gap-1 text-white font-semibold ${
-                  qtyError || !productData.stock_in_unit ? 'bg-sky-300' : 'bg-sky-500 hover:brightness-110 active:scale-95'
+                  qtyError || !productData.stock_in_unit || cartLoading ? 'bg-sky-300' : 'bg-sky-500 hover:brightness-110 active:scale-95'
                 } transition`}
               >
-                <BsCartPlus />
-                Add to Cart
+                {cartLoading ? (
+                  <>
+                    <AiOutlineLoading3Quarters className="animate-spin" />
+                    Adding item..
+                  </>
+                ) : (
+                  <>
+                    <BsCartPlus />
+                    Add to Cart
+                  </>
+                )}
               </button>
             </div>
           </div>

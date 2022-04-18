@@ -11,7 +11,6 @@ const Banner = () => {
 
   return (
     <>
-      <span className="h-3 w-3 rounded-full bg-sky-500 bannerBullet"></span>
       <Swiper
         modules={[Pagination]}
         pagination={{
@@ -24,9 +23,12 @@ const Banner = () => {
       >
         <SwiperSlide>
           <div className="w-full h-full bg-center bg-cover bg-no-repeat slide1">
-            <div className="w-1/2 h-full flex flex-col justify-center items-center gap-10">
-              <div className="w-96 font-bold text-6xl leading-[60px] text-white">
+            <div className="w-1/2 h-full flex flex-col justify-center items-center">
+              <div className="w-96 font-bold text-6xl leading-[60px] text-white mb-3">
                 <span>Best materials for the best medicines</span>
+              </div>
+              <div className="w-96 text-lg font-semibold text-gray-50 mb-7">
+                <span>We offer only the best products for the best price. What are you waiting for?</span>
               </div>
               <div className="w-96 h-14 px-10">
                 <button
@@ -47,7 +49,7 @@ const Banner = () => {
                 <span className="text-sky-700">Reinvented.</span>
               </div>
               <div className="w-[400px] text-center text-gray-50 text-lg font-semibold mb-8">
-                <span>We're revolutionizing the pharmacy industry and we would like you to be a part of it</span>
+                <span>We're revolutionizing the pharmaceutical industry and we would like you to be a part of it</span>
               </div>
               <div className="w-96 h-14 px-10">
                 <button className="h-full w-full border-2 rounded-lg border-white font-bold text-2xl text-white hover:bg-white hover:text-sky-500 transition duration-200 active:scale-95">
@@ -58,21 +60,24 @@ const Banner = () => {
           </div>
         </SwiperSlide>
         <SwiperSlide>
-          <div className="w-full h-full flex flex-col justify-center items-center gap-12 bg-center bg-cover bg-no-repeat slide3">
-            <div className="w-full flex justify-center text-5xl font-bold text-gray-50">
-              <span>The 6 type of vaccines technologies</span>
-            </div>
-            <div className="w-2/3 flex justify-center text-justify text-lg font-semibold text-white">
-              <span>
-                Ever since the first vaccine was developed in 1796 to treat smallpox, several different methods have been created to develop
-                successful vaccines. Today, those methods, known as vaccine technologies, are more advanced and use the latest technology to
-                help protect the world from preventable diseases. Do you know all of them?
-              </span>
-            </div>
-            <div className="w-96 h-14 px-10">
-              <button className="h-full w-full rounded-lg font-bold text-2xl bg-gradient-to-r from-sky-400 to-sky-500 text-white hover:brightness-110 transition duration-200 active:scale-95">
-                Read More
-              </button>
+          <div className="w-full h-full relative bg-center bg-cover bg-no-repeat slide3">
+            <div className="absolute inset-0 bg-black bg-opacity-50" />
+            <div className="w-full h-full absolute z-2 flex flex-col justify-center items-center gap-12 ">
+              <div className="w-full flex justify-center text-5xl font-bold text-gray-50">
+                <span>The 6 type of vaccines technologies</span>
+              </div>
+              <div className="w-2/3 flex justify-center text-justify text-lg font-semibold text-white">
+                <span>
+                  Ever since the first vaccine was developed in 1796 to treat smallpox, several different methods have been created to
+                  develop successful vaccines. Today, those methods, known as vaccine technologies, are more advanced and use the latest
+                  technology to help protect the world from preventable diseases. Do you know all of them?
+                </span>
+              </div>
+              <div className="w-96 h-14 px-10">
+                <button className="h-full w-full border-2 rounded-lg border-white font-bold text-2xl text-white hover:bg-white hover:text-sky-500 transition duration-200 active:scale-95">
+                  Read More
+                </button>
+              </div>
             </div>
           </div>
         </SwiperSlide>

@@ -4,15 +4,15 @@ const CategoryCard = ({ name, img, id }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="py-2 w-1/3 px-3 flex items-center">
+    <div className="h-60 flex-1 px-3 flex items-center">
       <div
         onClick={() => {
           navigate(`/products?category=${id}`);
         }}
-        className="w-full h-60 cursor-pointer shadow active:scale-95 transition"
+        className="w-full h-52 cursor-pointer active:scale-95 transition"
       >
         <div className="w-full h-full flex items-center justify-center overflow-hidden rounded-lg relative group">
-          <img src={img} className="w-full object-contain scale-105 -translate-y-5 group-hover:translate-y-4 transition-all" />
+          <img src={img} className="w-full object-contain -translate-y-3 group-hover:translate-y-3 transition-all" />
           <span className="absolute z-10 text-2xl textShadow font-bold text-white brightness-110 group-hover:text-sky-400 transition">
             {name}
           </span>

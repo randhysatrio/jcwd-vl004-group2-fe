@@ -1,40 +1,13 @@
-/* Fading animation
-.elementToFadeInAndOut {
-  background: none;
-  -webkit-animation: fadeinout 4s linear forwards;
-  animation: fadeinout 4s linear forwards;
-}
-
-@-webkit-keyframes fadeinout {
-  0%,
-  100% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-@keyframes fadeinout {
-  0%,
-  100% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-} */
-
 .slide1 {
-  background-image: url('../images/home-bg-1.jpg');
+  background-image: url('../images/banner/banner1.jpg');
 }
 
 .slide2 {
-  background-image: url('../images/home-bg-2.jpg');
+  background-image: url('../images/banner/banner2.jpg');
 }
 
 .slide3 {
-  background-image: url('../images/home-bg-4.jpg');
+  background-image: url('../images/banner/banner3.jpg');
 }
 
 .swiper-pagination-bullet-active {
