@@ -88,27 +88,21 @@ const Navbar = () => {
             <FaBars />
           </span>
           <span className="capitalize ml-2 font-semibold text-white">All Categories</span>
-          <div className="absolute w-max left-0 top-full bg-white rounded-b-lg shadow-md divide-y opacity-0 group-hover:opacity-100 transition duration-300 invisible group-hover:visible">
+          <div className="absolute z-30 w-max left-0 top-full bg-white rounded-b-lg overflow-hidden shadow-md divide-y opacity-0 group-hover:opacity-100 transition duration-300 invisible group-hover:visible">
             {renderCategories()}
           </div>
         </div>
-        {/* all category end */}
 
-        {/* navbar links */}
         <div className="flex items-center flex-grow pl-12">
           <div className="flex items-center space-x-6">
             <NavbarLink path={'/'}>Home</NavbarLink>
             <NavbarLink path={'/products'}>Shop</NavbarLink>
+            <NavbarLink path={'/products'}>Blog</NavbarLink>
             <NavbarLink path={'/'}>About Us</NavbarLink>
             <NavbarLink path={'/'}>Contact Us</NavbarLink>
-
-            {/* <Links href="#">Home</Links>
-            <Links href="#">Shop</Links>
-            <Links href="#">About Us</Links>
-            <Links href="#">Contact Us</Links> */}
           </div>
         </div>
-        {/* login / register */}
+
         {userGlobal.name ? (
           <div className="flex items-center">
             <span className="text-md font-semibold text-white">Hello, {userGlobal.name}!</span>

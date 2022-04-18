@@ -1,16 +1,17 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import ProductCardAll from '../components/ProductCardAll';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import Axios from 'axios';
 import { API_URL } from '../assets/constants';
 
+import ProductCardAll from '../components/ProductCardAll';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { AiOutlineUnorderedList, AiOutlineLeft, AiOutlineRight, AiOutlineClose, AiOutlineInfoCircle } from 'react-icons/ai';
-import { BsFillGridFill } from 'react-icons/bs';
+import { BsFillGridFill, BsChevronRight } from 'react-icons/bs';
 import { toast } from 'react-toastify';
 
 const AllProducts = () => {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [view, setView] = useState('list');
   const [productsList, setProductsList] = useState([]);
@@ -110,6 +111,7 @@ const AllProducts = () => {
         setProductsList(response.data.products);
         setTotalProducts(response.data.length);
         setMaxPage(Math.ceil(response.data.length / productPerPage) || 1);
+
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } catch (err) {
         toast.error('Unable to fetch products', { position: 'bottom-left', theme: 'colored' });
@@ -297,22 +299,37 @@ const AllProducts = () => {
             <div className="w-4/5 py-2 px-2 flex flex-col gap-2 pl-2 border-b border-slate-200 mb-2">{renderAppearences()}</div>
           </div>
           <div className="w-4/5 p-2 flex flex-col">
-            {keyword && productsList.length ? (
-              <div
+            <div className="w-full flex items-center gap-2 text-sm py-2">
+              <span
                 onClick={() => {
-                  setKeyword('');
-                  setCurrentCategory('');
-                  setCurrentAppearance([]);
-                  setCurrentPage(1);
+                  navigate('/');
                 }}
-                className="w-max h-[55px] my-2 pr-6 flex items-center gap-2 shadow-md rounded-lg overflow-hidden"
+                className="hover:text-sky-500 hover:underline transition-all cursor-pointer"
               >
+                Home
+              </span>
+              <BsChevronRight className="text-xs" />
+              <span className="underline underline-offset-1">Shop</span>
+            </div>
+            {keyword && productsList.length ? (
+              <div className="w-max h-[55px] my-2 pr-6 flex items-center gap-2 shadow-md rounded-lg overflow-hidden">
                 <div className="h-full w-2 bg-sky-500" />
                 <AiOutlineInfoCircle className="text-slate-600" />
                 <span className="font-semibold text-slate-600">
                   Currently showing results for <i>'{keyword}'</i>.
                 </span>
-                <span className="font-semibold text-sky-600 hover:text-emerald-400 transition cursor-pointer">See All Products?</span>
+                <span
+                  onClick={() => {
+                    setKeyword('');
+                    setCurrentCategory('');
+                    setCurrentAppearance([]);
+                    setCurrentPage(1);
+                    navigate('/products');
+                  }}
+                  className="font-semibold text-sky-600 hover:text-emerald-400 transition cursor-pointer"
+                >
+                  See All Products?
+                </span>
               </div>
             ) : null}
             <div className="w-full p-4 flex items-center border-b-2 border-slate-100">
@@ -387,6 +404,7 @@ const AllProducts = () => {
                         setCurrentCategory('');
                         setCurrentAppearance([]);
                         setCurrentPage(1);
+                        navigate('/products');
                       }}
                       className="text-lg font-bold text-gray-500 hover:text-sky-500 transition cursor-pointer"
                     >
