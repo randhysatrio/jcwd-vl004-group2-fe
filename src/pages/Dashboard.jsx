@@ -5,14 +5,63 @@ import {
   FaHome,
   FaBars,
   FaShoppingBag,
+  FaArrowLeft,
+  FaArrowRight,
 } from "react-icons/fa";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
+import axios from "axios";
+import ProductTable from "../components/ProductTable";
+import Pagination from "../components/Pagination";
+import Swal from "sweetalert2";
 
 const Dashboard = () => {
+  const Swal = require("sweetalert2");
+  const navigate = useNavigate();
+
+  const [products, setProducts] = useState([]);
+
+  const fetchProducts = async () => {
+    const res = await axios.get(`http://localhost:5000/product/all`);
+    setProducts(res.data);
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const handleEditClick = async (event, value) => {
+    const id = value.id;
+    navigate(`editproduct/?${id}`);
+  };
+
+  const handleDeleteClick = (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        try {
+          axios.delete(`http://localhost:5000/product/delete/${id}`);
+        } catch (error) {
+          console.log(error);
+        }
+        Swal.fire("Deleted!", "Your file has been deleted.", "success");
+        fetchProducts();
+      }
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="h-16 bg-white shadow-sm pl-80 pr-8 fixed w-full top-0 left-0 flex items-center">
         <div className="relative">
-          <FaSearch className="absolute left-2 top-3 w-6 text-gray-400" />
+          <FaSearch className="absolute left-2 mt-3 text-gray-400" />
           <input
             type="text"
             className="block w-72 shadow border-none rounded-3x1 focus:outline-none py-2 bg-gray-100 text-base text-gray-600 pl-11 pr-2"
@@ -59,7 +108,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="fixed left-0 top-0 w-72 h-full bg-gray-800 shadow-md z-10">
+      <div className="fixed left-0 top-0 w-40 h-full bg-gray-800 shadow-md z-10">
         <div className="text-white font-bold text-base p-5 bg-gray-900">
           Heisen Berg Co.
         </div>
@@ -98,10 +147,50 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="pt-24 pr-8 pl-80">
-        <h1 className="text-3xl text-gray-700 font-bold">
-          Welcome to Dashboard
-        </h1>
+      <div className="pt-16 pr-8 pl-48">
+        <div className="flex items-center justify-between py-7 px-10">
+          <div>
+            <h1 className="text-3xl text-gray-700 font-bold">Products</h1>
+          </div>
+          <button className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl">
+            <a href="http://localhost:3000/dashboard/addproduct">
+              Add a Product
+            </a>
+          </button>
+        </div>
+
+        <div className="bg-white shadow-sm mt-5 p-5">
+          {/* <form action=""></form> */}
+          <table className="w-full">
+            <thead>
+              <tr className="text-sm font-medium text-gray-700 border-b border-gray-200">
+                <th className="py-4 px-4 text-center">ID</th>
+                <th className="py-4 px-4 text-center">Image</th>
+                <th className="py-4 px-4 text-center">Name</th>
+                <th className="py-4 px-4 text-center">Price Buy</th>
+                <th className="py-4 px-4 text-center">Price Sell</th>
+                <th className="py-4 px-4 text-center">Stock</th>
+                <th className="py-4 px-4 text-center">Unit</th>
+                <th className="py-4 px-4 text-center">Volume</th>
+                <th className="py-4 px-4 text-center">Stock in unit</th>
+                {/* <th className="py-4 px-4 text-center">Description</th> */}
+                <th className="py-4 px-4 text-center">Appearance</th>
+                <th className="py-4 px-4 text-center">Category</th>
+                <th className="py-4 px-4 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {products.map((value) => (
+                <ProductTable
+                  key={value.id}
+                  product={value}
+                  handleEditClick={handleEditClick}
+                  handleDeleteClick={handleDeleteClick}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
