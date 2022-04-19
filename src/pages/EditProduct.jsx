@@ -8,8 +8,9 @@ import {
   FaArrowLeft,
   FaArrowRight,
 } from "react-icons/fa";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const EditProduct = () => {
   // useState([]) is different from useState({})
@@ -26,50 +27,39 @@ const EditProduct = () => {
     fetchProductsId();
   });
 
-  const [editFormData, setEditFormData] = useState({
-    name: "",
-    price_buy: "",
-    price_sell: "",
-    stock: "",
-    unit: "",
-    volume: "",
-    description: "",
-    image: "",
-    appearance: "",
-    categoryId: "",
-  });
+  const navigate = useNavigate();
 
-  const handleEditFormChange = (event) => {
-    event.preventDefault();
-
-    const fieldName = event.target.name;
-    const fieldValue = event.target.value;
-
-    const newFormData = { ...editFormData };
-    newFormData[fieldName] = fieldValue;
-
-    setEditFormData(newFormData);
-  };
+  const name = useRef();
+  const price_buy = useRef();
+  const price_sell = useRef();
+  const stock = useRef();
+  const unit = useRef();
+  const volume = useRef();
+  const description = useRef();
+  const image = useRef();
+  const appearance = useRef();
+  const categoryId = useRef();
 
   const handleEditFormSubmit = async (event) => {
     event.preventDefault();
 
     const newProduct = {
-      name: editFormData.name,
-      price_buy: editFormData.price_buy,
-      price_sell: editFormData.price_sell,
-      stock: editFormData.stock,
-      unit: editFormData.unit,
-      volume: editFormData.volume,
-      description: editFormData.description,
-      image: editFormData.image,
-      appearance: editFormData.appearance,
-      categoryId: editFormData.categoryId,
+      name: name.current.value,
+      price_buy: price_buy.current.value,
+      price_sell: price_sell.current.value,
+      stock: stock.current.value,
+      unit: unit.current.value,
+      volume: volume.current.value,
+      description: description.current.value,
+      image: image.current.value,
+      appearance: appearance.current.value,
+      categoryId: categoryId.current.value,
     };
 
     console.log(newProduct);
     try {
       await axios.patch(`http://localhost:5000/product/edit/${id}`, newProduct);
+      navigate("/dashboard");
     } catch (error) {
       console.log(error);
     }
@@ -179,8 +169,8 @@ const EditProduct = () => {
                   name="name"
                   className="h-32 w-5/6"
                   required
-                  onChange={handleEditFormChange}
-                  value={products.name}
+                  defaultValue={products.name}
+                  ref={name}
                 />
               </div>
               <div className="col-start-1">
@@ -192,8 +182,8 @@ const EditProduct = () => {
                   name="description"
                   className="h-32 w-5/6"
                   required
-                  onChange={handleEditFormChange}
-                  value={products.description}
+                  defaultValue={products.description}
+                  ref={description}
                 />
               </div>
               <div className="col-start-1">
@@ -205,8 +195,8 @@ const EditProduct = () => {
                   name="image"
                   className="h-32 w-5/6"
                   required
-                  onChange={handleEditFormChange}
-                  value={products.image}
+                  defaultValue={products.image}
+                  ref={image}
                 />
               </div>
               <div className="col-start-1">
@@ -218,8 +208,8 @@ const EditProduct = () => {
                   name="price_buy"
                   className=""
                   required
-                  onChange={handleEditFormChange}
-                  value={products.price_buy}
+                  defaultValue={products.price_buy}
+                  ref={price_buy}
                 />
               </div>
               <div className="col-start-1">
@@ -231,8 +221,8 @@ const EditProduct = () => {
                   name="price_sell"
                   className=""
                   required
-                  onChange={handleEditFormChange}
-                  value={products.price_sell}
+                  defaultValue={products.price_sell}
+                  ref={price_sell}
                 />
               </div>
               <div className="col-start-1">
@@ -244,8 +234,8 @@ const EditProduct = () => {
                   name="unit"
                   className=""
                   required
-                  onChange={handleEditFormChange}
-                  value={products.unit}
+                  defaultValue={products.unit}
+                  ref={unit}
                 />
               </div>
               <div className="col-start-1">
@@ -257,8 +247,8 @@ const EditProduct = () => {
                   name="volume"
                   className=""
                   required
-                  onChange={handleEditFormChange}
-                  value={products.volume}
+                  defaultValue={products.volume}
+                  ref={volume}
                 />
               </div>
               <div className="col-start-1">
@@ -270,8 +260,8 @@ const EditProduct = () => {
                   name="stock"
                   className=""
                   required
-                  onChange={handleEditFormChange}
-                  value={products.stock}
+                  defaultValue={products.stock}
+                  ref={stock}
                 />
               </div>
               <div className="col-start-1">
@@ -283,8 +273,8 @@ const EditProduct = () => {
                   name="appearance"
                   className=""
                   required
-                  onChange={handleEditFormChange}
-                  value={products.appearance}
+                  defaultValue={products.appearance}
+                  ref={appearance}
                 />
               </div>
               <div className="col-start-1">
@@ -296,8 +286,8 @@ const EditProduct = () => {
                   name="categoryId"
                   className=""
                   required
-                  onChange={handleEditFormChange}
-                  value={products.categoryId}
+                  defaultValue={products.categoryId}
+                  ref={categoryId}
                 />
               </div>
             </div>
