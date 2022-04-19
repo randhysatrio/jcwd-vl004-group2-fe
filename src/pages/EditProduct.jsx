@@ -13,6 +13,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const EditProduct = () => {
+  const Swal = require("sweetalert2");
   // useState([]) is different from useState({})
   const [products, setProducts] = useState([]);
 
@@ -60,6 +61,11 @@ const EditProduct = () => {
     try {
       await axios.patch(`http://localhost:5000/product/edit/${id}`, newProduct);
       navigate("/dashboard");
+      Swal.fire({
+        icon: "success",
+        // title: "Oops...",
+        text: "Product has been edited!",
+      });
     } catch (error) {
       console.log(error);
     }
@@ -294,7 +300,7 @@ const EditProduct = () => {
             <div className="flex">
               <button
                 className="mt-8 py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl items-center mr-3"
-                type="submit"
+                onClick={handleEditFormSubmit}
               >
                 Edit Product
               </button>
