@@ -10,10 +10,6 @@ import {
 } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import ProductAdmin from "../components/ProductTable";
-import Pagination from "../components/Pagination";
-import DropdownCategories from "../components/DropdownCategories";
-import Select from "react-select";
 
 import { useNavigate } from "react-router-dom";
 
@@ -313,9 +309,9 @@ const AddProduct = () => {
                 <label className="">Category ID:</label>
               </div>
               {/* <DropdownCategories /> */}
-              {categories.map((value) => (
-                <Select options={value.name} />
-              ))}
+              {/* {categories.map((value) => (
+                <Select options={value.name} /> */}
+              {/* ))} */}
             </div>
             <div className="flex">
               <button
