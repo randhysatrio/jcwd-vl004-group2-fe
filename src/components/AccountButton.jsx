@@ -62,7 +62,7 @@ const AccountButton = ({ children }) => {
           leaveTo="transform scale-95 opacity-0"
         >
           <Menu.Items as="div" className="rounded-lg absolute z-10 top-12 right-5 overflow-hidden focus:outline-none shadow-lg">
-            <MenuLink icon={<AiOutlineUser />} to="/profile">
+            <MenuLink icon={<AiOutlineUser />} to="/user">
               Profile
             </MenuLink>
             <MenuLink icon={<FiLogOut />} red>

@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 
-import { AiOutlineCheckCircle, AiOutlineMail, AiFillStar } from 'react-icons/ai';
+import { AiOutlineCheckCircle, AiOutlineCloseCircle, AiOutlineMail, AiFillStar, AiFillFire } from 'react-icons/ai';
 
 const ProductCardAll = ({ view, product }) => {
   const navigate = useNavigate();
@@ -39,9 +39,29 @@ const ProductCardAll = ({ view, product }) => {
               </div>
               <span className="font-semibold text-sky-900">12 reviews</span>
             </div>
-            <div className="text-sm flex items-center gap-2">
-              <AiOutlineCheckCircle className="text-sky-400" />
-              <span className="font-semibold text-slate-800">Currently in-stock</span>
+            <div className="text-sm flex items-center font-semibold text-slate-800 gap-2">
+              {product.stock_in_unit ? (
+                product.stock_in_unit <= 5 * product.volume ? (
+                  <>
+                    <AiFillFire className="text-orange-500" />
+                    <span>
+                      {!Math.floor(product.stock_in_unit / product.volume)
+                        ? `Last item!`
+                        : `${Math.floor(product.stock_in_unit / product.volume)} remaining!`}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <AiOutlineCheckCircle className="text-sky-400" />
+                    <span>Currently in stock!</span>
+                  </>
+                )
+              ) : (
+                <>
+                  <AiOutlineCloseCircle className="text-red-400" />
+                  <span>Out of stock</span>
+                </>
+              )}
             </div>
             <button className="w-[90%] h-9 rounded-md mt-auto mx-auto bg-gradient-to-r from-sky-400 to-sky-600 text-white font-bold hover:brightness-110 cursor-pointer transition active:scale-95 text-sm gap-2 flex justify-center items-center shadow">
               <AiOutlineMail />
@@ -85,14 +105,30 @@ const ProductCardAll = ({ view, product }) => {
               <span className="text-2xl w-max bg-gradient-to-r from-emerald-500 to-emerald-700 bg-clip-text text-transparent font-bold">
                 Rp. {product.price_sell ? product.price_sell.toLocaleString('id') : null}/{product.unit}
               </span>
-              <div className="text-lg flex items-center gap-2">
-                <AiOutlineCheckCircle className="text-sky-400" />
-                <span className="font-semibold text-slate-800">Currently in-stock</span>
+              <div className="text-lg flex items-center font-semibold text-slate-800 gap-2">
+                {product.stock_in_unit ? (
+                  product.stock_in_unit <= 5 * product.volume ? (
+                    <>
+                      <AiFillFire className="text-orange-500" />
+                      <span>
+                        {!Math.floor(product.stock_in_unit / product.volume)
+                          ? `Last item!`
+                          : `${Math.floor(product.stock_in_unit / product.volume)} remaining!`}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <AiOutlineCheckCircle className="text-sky-400" />
+                      <span>Currently in stock!</span>
+                    </>
+                  )
+                ) : (
+                  <>
+                    <AiOutlineCloseCircle className="text-red-400" />
+                    <span>Out of stock</span>
+                  </>
+                )}
               </div>
-              {/* <div className="text flex items-center gap-2 group cursor-pointer">
-                <AiOutlineMail className="text-slate-600 group-hover:brightness-125" />
-                <span className="font-semibold text-sm text-slate-800 group-hover:brightness-125">Send Inquiry</span>
-              </div> */}
             </div>
             <div className="w-full flex justify-end">
               <button

@@ -22,6 +22,9 @@ import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import Payment from './pages/Payment';
+import User from './pages/User';
+import Profile from './pages/Profile';
+import History from './pages/History';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -68,14 +71,11 @@ function App() {
       } else {
         localStorage.setItem('userToken', response.data.token);
 
-        const cartData = await Axios.get(
-          `${API_URL}/cart/get/${response.data.user.id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${response.data.token}`,
-            },
-          }
-        );
+        const cartData = await Axios.get(`${API_URL}/cart/get/${response.data.user.id}`, {
+          headers: {
+            Authorization: `Bearer ${response.data.token}`,
+          },
+        });
 
         dispatch({ type: 'CART_LIST', payload: cartData.data });
 
@@ -98,6 +98,13 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/changepassword/:token" element={<ChangePassword />} />
         <Route path="/verify/:token" element={<Verify />} />
+        <Route path="/products" element={<AllProducts />} />
+        <Route path="/products/:id" element={<ProductDetail />} />
+        <Route path="/user" element={<User />}>
+          <Route index element={<Profile />} />
+          <Route path="history" element={<History />} />
+        </Route>
+        <Route path="/admin/login" element={<LoginAdmin />} />
         <Route path="/dashboard/user" element={<DashboardUser />} />
         <Route path="/products" element={<AllProducts />} />
         <Route path="/products/:id" element={<ProductDetail />} />
@@ -107,16 +114,10 @@ function App() {
         <Route path="/admin" element={<HomeAdmin />} />
         <Route path="/admin/login" element={<LoginAdmin />} />
         <Route path="/admin/reset" element={<ResetAdmin />} />
-        <Route
-          path="/admin/change-password/:token"
-          element={<ChangePassAdmin />}
-        />
+        <Route path="/admin/change-password/:token" element={<ChangePassAdmin />} />
         <Route path="/dashboard/product" element={<DashboardProduct />} />
         <Route path="/dashboard/product/addproduct" element={<AddProduct />} />
-        <Route
-          path="/dashboard/product/editproduct"
-          element={<EditProduct />}
-        />
+        <Route path="/dashboard/product/editproduct" element={<EditProduct />} />
       </Routes>
       <ToastContainer />
     </BrowserRouter>
