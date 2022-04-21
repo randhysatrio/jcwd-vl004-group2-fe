@@ -16,6 +16,7 @@ const EditProduct = () => {
   const Swal = require("sweetalert2");
   // useState([]) is different from useState({})
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
 
   const id = window.location.search.substring(1);
 
@@ -24,8 +25,14 @@ const EditProduct = () => {
     setProducts(res.data);
   };
 
+  const fetchCategories = async () => {
+    const res = await axios.get(`http://localhost:5000/category/all`);
+    setCategories(res.data);
+  };
+
   useEffect(() => {
     fetchProductsId();
+    fetchCategories();
   });
 
   const navigate = useNavigate();
@@ -284,18 +291,17 @@ const EditProduct = () => {
                 />
               </div>
               <div className="col-start-1">
-                <label className="">Category ID:</label>
+                <label className="">Category:</label>
               </div>
-              <div>
-                <input
-                  type="number"
-                  name="categoryId"
-                  className=""
-                  required
-                  defaultValue={products.categoryId}
-                  ref={categoryId}
-                />
-              </div>
+              {/* <DropdownCategories /> */}
+              <select name="categoryId" id="">
+                <option value="">Choose a category</option>
+                {categories.map((item, index) => (
+                  <option ref={categoryId} value={item.id} key={item?.id}>
+                    {item.name}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="flex">
               <button
@@ -306,6 +312,7 @@ const EditProduct = () => {
               </button>
               <button className="mt-8 py-2.5 px-6 text-white bg-red-500 hover:bg-red-400 transition rounded-xl items-center">
                 <a href="http://localhost:3000/dashboard">Cancel</a>
+                {/*<Link> React-Router-dom APIURL + dashboard */}
               </button>
             </div>
           </form>

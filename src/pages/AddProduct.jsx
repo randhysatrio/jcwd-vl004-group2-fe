@@ -8,7 +8,7 @@ import {
   FaArrowLeft,
   FaArrowRight,
 } from "react-icons/fa";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 
 import { useNavigate } from "react-router-dom";
@@ -17,6 +17,7 @@ const AddProduct = () => {
   // useState([]) is different from useState({})
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [images, setImage] = useState({});
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(10);
@@ -31,19 +32,12 @@ const AddProduct = () => {
 
   useEffect(() => {
     fetchCategories();
-    dropList();
   }, []);
 
   console.log(categories);
 
-  const dropList = () => {
-    categories.forEach((category) => {
-      let o = document.createElement("option");
-      o.text = category.name;
-      o.value = category.id;
-      // categories.appendChild(o);
-    });
-  };
+  const categoryId = useRef();
+  const image = useRef();
 
   const [addFormData, setAddFormData] = useState({
     name: "",
@@ -53,15 +47,15 @@ const AddProduct = () => {
     unit: "",
     volume: "",
     description: "",
-    image: "",
+    // image: "",
     appearance: "",
-    categoryId: "",
+    // categoryId: "",
   });
 
   const handleAddFormChange = (event) => {
     event.preventDefault();
 
-    const fieldName = event.target.getAttribute("name");
+    const fieldName = event.target.name;
     const fieldValue = event.target.value;
 
     const newFormData = { ...addFormData };
@@ -80,9 +74,8 @@ const AddProduct = () => {
       unit: addFormData.unit,
       volume: addFormData.volume,
       description: addFormData.description,
-      image: addFormData.image,
       appearance: addFormData.appearance,
-      categoryId: addFormData.categoryId,
+      categoryId: categoryId.current.value,
     };
 
     const newProducts = [...products, newProduct];
@@ -98,6 +91,22 @@ const AddProduct = () => {
       });
     } catch (error) {
       console.log(error);
+      Swal.fire({
+        icon: "error",
+        // title: "Oops...",
+        text: error,
+      });
+    }
+  };
+
+  const onBtAddFile = (e) => {
+    if (e.target.files[0]) {
+      setImage({
+        addFileName: e.target.files[0].name,
+        addFile: e.target.files[0],
+      });
+      let preview = document.getElementById("imgpreview");
+      preview.src = URL.createObjectURL(e.target.files[0]);
     }
   };
 
@@ -194,7 +203,7 @@ const AddProduct = () => {
       <div className="pt-24 pr-8 pl-48">
         <h1 className="text-3xl text-gray-700 font-bold mb-3">Add a Product</h1>
         <div>
-          <form onSubmit={handleAddFormSubmit}>
+          <form>
             <div className="grid grid-cols-6 gap-4 justify-items-star">
               <div>
                 <label className="mr-3">Name:</label>
@@ -224,14 +233,17 @@ const AddProduct = () => {
                 <label className="">Image (URL):</label>
               </div>
               <div className="col-start-2 col-span-3">
-                <textarea
-                  type="text"
+                <input
+                  type="file"
                   name="image"
-                  className="h-32 w-5/6"
                   required
-                  onChange={handleAddFormChange}
-                  d
+                  ref={image}
+                  // onChange={handleAddFormChange}
+                  onChange={onBtAddFile}
                 />
+              </div>
+              <div className="col-start-2">
+                <img id="imgpreview" />
               </div>
               <div className="col-start-1">
                 <label className="mr-3">Price Buy:</label>
@@ -306,17 +318,22 @@ const AddProduct = () => {
                 />
               </div>
               <div className="col-start-1">
-                <label className="">Category ID:</label>
+                <label className="">Category:</label>
               </div>
               {/* <DropdownCategories /> */}
-              {/* {categories.map((value) => (
-                <Select options={value.name} /> */}
-              {/* ))} */}
+              <select name="categoryId" id="">
+                <option value="">Choose a category</option>
+                {categories.map((item, index) => (
+                  <option ref={categoryId} value={item.id} key={index}>
+                    {item.name}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="flex">
               <button
                 className="mt-8 py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl items-center mr-3"
-                type="submit"
+                onClick={handleAddFormSubmit}
               >
                 Add Product
               </button>

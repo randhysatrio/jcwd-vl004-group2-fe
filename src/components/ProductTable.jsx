@@ -1,24 +1,25 @@
 const ProductTable = ({ product, handleEditClick, handleDeleteClick }) => {
+  console.log(product);
   return (
     <tr>
       <td className="font-medium text-center py-8">{product.id}</td>
       <td className="font-medium text-center py-8">
         <img
-          src={product.image}
-          alt=""
+          src={"http://localhost:5000/" + product.image}
           className="w-40 aspect-[3/2] rounded-lg object-cover object-top border border-gray-200"
         />
       </td>
       <td className="font-medium text-center py-8">{product.name}</td>
       <td className="font-medium text-center py-8">{product.price_buy}</td>
-      <td className="font-medium text-center py-8">{product.price_sell}</td>
+      <td className="font-medium text-center py-8">
+        Rp {product?.price_sell.toLocaleString("id")}
+      </td>
       <td className="font-medium text-center py-8">{product.stock}</td>
       <td className="font-medium text-center py-8">{product.unit}</td>
       <td className="font-medium text-center py-8">{product.volume}</td>
       <td className="font-medium text-center py-8">{product.stock_in_unit}</td>
-      {/* <td className="font-medium text-center py-8">{product.description}</td> */}
       <td className="font-medium text-center py-8">{product.appearance}</td>
-      <td className="font-medium text-center py-8">{product.categoryId}</td>
+      <td className="font-medium text-center py-8">{product.category?.name}</td>
       <td className="flex justify-center items-center text-center py-16">
         <button
           type="button"

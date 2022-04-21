@@ -8,6 +8,7 @@ import {
   FaArrowLeft,
   FaArrowRight,
 } from "react-icons/fa";
+import { AiOutlineClose } from "react-icons/ai";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import axios from "axios";
@@ -20,15 +21,37 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   const [products, setProducts] = useState([]);
+  const [query, setQuery] = useState("");
+
+
+  const sortOptions = ["sortlowprice", "sorthighprice"];
+
+  const handleSort = async (e) => {
+    let query = e.target.value;
+    const res = await axios.get(
+      `httphttp://localhost:5000/product/sortprice/?q=${query}`
+    );
+    setProducts(res.data);
+  };
 
   const fetchProducts = async () => {
-    const res = await axios.get(`http://localhost:5000/product/all`);
+    const res = await axios.get(
+      `http://localhost:5000/product/search/?q=${query}`
+    );
     setProducts(res.data);
   };
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    const fetchProducts = async () => {
+      const res = await axios.get(
+        `http://localhost:5000/product/search/?q=${query}`
+      );
+      setProducts(res.data);
+    };
+    if (query.length === 0 || query.length > 2) fetchProducts();
+  }, [query]);
+
+  console.log(products);
 
   const handleEditClick = async (event, value) => {
     const id = value.id;
@@ -57,15 +80,22 @@ const Dashboard = () => {
     });
   };
 
+  const handleReset = () => {
+    fetchProducts();
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="h-16 bg-white shadow-sm pl-80 pr-8 fixed w-full top-0 left-0 flex items-center">
-        <div className="relative">
-          <FaSearch className="absolute left-2 mt-3 text-gray-400" />
+        <div className="flex justify-center items-center relative">
+          <FaSearch className="absolute left-2 text-gray-400 bg-gray-100" />
           <input
-            type="text"
-            className="block w-72 shadow border-none rounded-3x1 focus:outline-none py-2 bg-gray-100 text-base text-gray-600 pl-11 pr-2"
+            id="myInput"
+            placeholder="Search..."
+            onChange={(e) => setQuery(e.target.value)}
+            className="search block w-72 shadow border-none rounded-3x1 focus:outline-none py-2 bg-gray-100 text-base text-gray-600 pl-11 pr-2"
           />
+          <AiOutlineClose className="hover cursor-pointer" />
         </div>
 
         <div className="ml-auto flex items-center">
@@ -107,7 +137,6 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-
       <div className="fixed left-0 top-0 w-40 h-full bg-gray-800 shadow-md z-10">
         <div className="text-white font-bold text-base p-5 bg-gray-900">
           Heisen Berg Co.
@@ -152,6 +181,22 @@ const Dashboard = () => {
           <div>
             <h1 className="text-3xl text-gray-700 font-bold">Products</h1>
           </div>
+          <div>
+            <select
+              value={sortValue}
+              onChange={handleSort}
+              className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl"
+              name=""
+              id=""
+            >
+              <option value="">Price</option>
+              {sortOptions.map((item, index) => (
+                <option value={item} key={index}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </div>
           <button className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl">
             <a href="http://localhost:3000/dashboard/addproduct">
               Add a Product
@@ -173,7 +218,6 @@ const Dashboard = () => {
                 <th className="py-4 px-4 text-center">Unit</th>
                 <th className="py-4 px-4 text-center">Volume</th>
                 <th className="py-4 px-4 text-center">Stock in unit</th>
-                {/* <th className="py-4 px-4 text-center">Description</th> */}
                 <th className="py-4 px-4 text-center">Appearance</th>
                 <th className="py-4 px-4 text-center">Category</th>
                 <th className="py-4 px-4 text-center">Actions</th>
