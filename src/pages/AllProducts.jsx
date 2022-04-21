@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import Axios from 'axios';
@@ -15,29 +14,6 @@ const AllProducts = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [view, setView] = useState('list');
-=======
-import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
-import ProductCardAll from "../components/ProductCardAll";
-import Axios from "axios";
-import { API_URL } from "../assets/constants";
-
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-import {
-  AiOutlineUnorderedList,
-  AiOutlineLeft,
-  AiOutlineRight,
-  AiOutlineClose,
-  AiOutlineInfoCircle,
-} from "react-icons/ai";
-import { BsFillGridFill } from "react-icons/bs";
-import { toast } from "react-toastify";
-
-const AllProducts = () => {
-  const [view, setView] = useState("list");
-  const [searchParams, setSearchParams] = useSearchParams();
->>>>>>> 81def4a (get all, edit , add product)
   const [productsList, setProductsList] = useState([]);
   const [totalProducts, setTotalProducts] = useState(0);
   const [categoryList, setCategoryList] = useState([]);
@@ -141,12 +117,8 @@ const AllProducts = () => {
         setProductsList(response.data.products);
         setTotalProducts(response.data.length);
         setMaxPage(Math.ceil(response.data.length / productPerPage) || 1);
-<<<<<<< HEAD
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
-=======
-        window.scrollTo({ top: 0, behavior: "smooth" });
->>>>>>> 81def4a (get all, edit , add product)
       } catch (err) {
         toast.error("Unable to fetch products", {
           position: "bottom-left",
@@ -368,14 +340,7 @@ const AllProducts = () => {
             <div className="w-full flex items-center gap-2 text-sm py-2">
               <span
                 onClick={() => {
-<<<<<<< HEAD
                   navigate('/');
-=======
-                  setKeyword("");
-                  setCurrentCategory("");
-                  setCurrentAppearance([]);
-                  setCurrentPage(1);
->>>>>>> 81def4a (get all, edit , add product)
                 }}
                 className="hover:text-sky-500 hover:underline transition-all cursor-pointer"
               >
@@ -391,7 +356,6 @@ const AllProducts = () => {
                 <span className="font-semibold text-slate-600">
                   Currently showing results for <i>'{keyword}'</i>.
                 </span>
-<<<<<<< HEAD
                 <span
                   onClick={() => {
                     setKeyword('');
@@ -402,9 +366,6 @@ const AllProducts = () => {
                   }}
                   className="font-semibold text-sky-600 hover:text-emerald-400 transition cursor-pointer"
                 >
-=======
-                <span className="font-semibold text-sky-600 hover:text-emerald-400 transition cursor-pointer">
->>>>>>> 81def4a (get all, edit , add product)
                   See All Products?
                 </span>
               </div>

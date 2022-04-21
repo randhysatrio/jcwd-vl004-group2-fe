@@ -11,7 +11,6 @@ import {
 import { AiOutlineClose } from "react-icons/ai";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import ProductTable from "../components/ProductTable";
 import Pagination from "../components/Pagination";
@@ -23,7 +22,6 @@ const Dashboard = () => {
 
   const [products, setProducts] = useState([]);
   const [query, setQuery] = useState("");
-
 
   const sortOptions = ["sortlowprice", "sorthighprice"];
 
@@ -83,33 +81,6 @@ const Dashboard = () => {
 
   const handleReset = () => {
     fetchProducts();
-  };
-
-  const handleEditClick = async (event, value) => {
-    const id = value.id;
-    navigate(`editproduct/?${id}`);
-  };
-
-  const handleDeleteClick = (id) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        try {
-          axios.delete(`http://localhost:5000/product/delete/${id}`);
-        } catch (error) {
-          console.log(error);
-        }
-        Swal.fire("Deleted!", "Your file has been deleted.", "success");
-        fetchProducts();
-      }
-    });
   };
 
   return (
@@ -211,7 +182,6 @@ const Dashboard = () => {
           </div>
           <div>
             <select
-              value={sortValue}
               onChange={handleSort}
               className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl"
               name=""

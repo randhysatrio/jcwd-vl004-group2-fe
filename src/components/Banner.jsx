@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 
-import '../assets/styles/Banner.css';
+import '../assets/styles/banner.css';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination } from 'swiper';
 import 'swiper/css';
