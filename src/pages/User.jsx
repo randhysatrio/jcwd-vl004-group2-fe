@@ -39,8 +39,8 @@ const User = () => {
   return (
     <>
       <Header />
-      <div className="h-screen w-full flex justify-end relative">
-        <div className="w-1/5 h-full bg-white py-2 flex flex-col border-r">
+      <div className="min-h-screen w-full flex justify-end relative">
+        <div className="w-1/5 min-h-full bg-white py-2 flex flex-col border-r">
           <SidebarLink to={'/user'} icon={<AiOutlineUser />} end>
             Profile
           </SidebarLink>

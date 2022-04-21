@@ -29,6 +29,8 @@ const AllProducts = () => {
   const [maxPage, setMaxPage] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const [sort, setSort] = useState('');
+  const categoryQuery = searchParams.get('category');
+  const keywordQuery = searchParams.get('keyword');
 
   useEffect(() => {
     const getAppearences = async () => {
@@ -56,15 +58,12 @@ const AllProducts = () => {
     getAppearences();
     getCategories();
 
-    const category = searchParams.get('category');
-    const keyword = searchParams.get('keyword');
-
-    if (category) {
-      setCurrentCategory(parseInt(category));
+    if (categoryQuery) {
+      setCurrentCategory(parseInt(categoryQuery));
     }
 
-    if (keyword) {
-      setKeyword(keyword);
+    if (keywordQuery) {
+      setKeyword(keywordQuery);
     }
   }, []);
 
@@ -125,7 +124,7 @@ const AllProducts = () => {
       }
     };
     getProductQuery();
-  }, [currentCategory, productPerPage, keyword, currentPage, currentAppearance, sort, priceRange]);
+  }, [keyword, currentCategory, productPerPage, currentPage, currentAppearance, sort, priceRange]);
 
   const renderProducts = () => {
     return productsList.map((product) => <ProductCardAll key={product.id} product={product} view={view} />);
