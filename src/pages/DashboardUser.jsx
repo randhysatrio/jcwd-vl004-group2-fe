@@ -12,7 +12,7 @@ import { AiOutlineClose } from "react-icons/ai";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import axios from "axios";
-import ProductTable from "../components/ProductTable";
+import UserTable from "../components/UserTable";
 import Pagination from "../components/Pagination";
 import Swal from "sweetalert2";
 
@@ -20,7 +20,7 @@ const Dashboard = () => {
   const Swal = require("sweetalert2");
   const navigate = useNavigate();
 
-  const [products, setProducts] = useState([]);
+  const [users, setUsers] = useState([]);
   const [query, setQuery] = useState("");
 
   const sortOptions = ["sortlowprice", "sorthighprice"];
@@ -30,34 +30,31 @@ const Dashboard = () => {
     const res = await axios.get(
       `httphttp://localhost:5000/product/sortprice/?q=${query}`
     );
-    setProducts(res.data);
+    setUsers(res.data);
   };
 
-  const fetchProducts = async () => {
-    const res = await axios.get(
-      `http://localhost:5000/product/search/?q=${query}`
-    );
-    setProducts(res.data);
+  const fetchUsers = async () => {
+    const res = await axios.get(`http://localhost:5000/user/all`);
+    setUsers(res.data);
   };
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      const res = await axios.get(
-        `http://localhost:5000/product/search/?q=${query}`
-      );
-      setProducts(res.data);
+    const fetchUsers = async () => {
+      const res = await axios.get(`http://localhost:5000/user/all`);
+      setUsers(res.data);
     };
-    if (query.length === 0 || query.length > 2) fetchProducts();
-  }, [query]);
+    // if (query.length === 0 || query.length > 2) fetchUsers();
+    fetchUsers();
+  }, []);
 
-  console.log(products);
+  console.log(users);
 
-  const handleEditClick = async (event, value) => {
-    const id = value.id;
-    navigate(`editproduct/?${id}`);
-  };
+  //   const handleEditClick = async (event, value) => {
+  //     const id = value.id;
+  //     navigate(`editproduct/?${id}`);
+  //   };
 
-  const handleDeleteClick = (id) => {
+  const handleStatusClick = (id) => {
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -65,23 +62,23 @@ const Dashboard = () => {
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
+      confirmButtonText: "Yes, Change it!",
     }).then((result) => {
       if (result.isConfirmed) {
         try {
-          axios.delete(`http://localhost:5000/product/delete/${id}`);
+          axios.patch(`http://localhost:5000/user/status/${id}`);
         } catch (error) {
           console.log(error);
         }
-        Swal.fire("Deleted!", "Your file has been deleted.", "success");
-        fetchProducts();
+        Swal.fire("Changed!", "Status has been changed!", "success");
+        fetchUsers();
       }
     });
   };
 
-  const handleReset = () => {
-    fetchProducts();
-  };
+  //   const handleReset = () => {
+  //     fetchProducts();
+  //   };
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -158,7 +155,7 @@ const Dashboard = () => {
           </a>
 
           <a
-            href="#"
+            href="http://localhost:3000/dashboard/product"
             className="flex items-center my-1 px-4 py-3 text-white border-1-4 border-transparent hover:bg-primary transition"
           >
             <FaHome className="w-5 mr-3" />
@@ -176,62 +173,35 @@ const Dashboard = () => {
       </div>
 
       <div className="pt-16 pr-8 pl-48">
-        <div className="flex items-center justify-between py-7 px-10">
+        <div className="py-7 px-10">
           <div>
-            <h1 className="text-3xl text-gray-700 font-bold">Products</h1>
+            <h1 className="text-3xl text-gray-700 font-bold">User</h1>
           </div>
-          <div>
-            <select
-              onChange={handleSort}
-              className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl"
-              name=""
-              id=""
-            >
-              <option value="">Price</option>
-              {sortOptions.map((item, index) => (
-                <option value={item} key={index}>
-                  {item}
-                </option>
-              ))}
-            </select>
+          <div className="bg-white shadow-sm mt-5 p-5">
+            {/* <form action=""></form> */}
+            <table className="w-full">
+              <thead>
+                <tr className="text-sm font-medium text-gray-700 border-b border-gray-200">
+                  <th className="py-4 px-4 text-center">ID</th>
+                  <th className="py-4 px-4 text-center">Profile Picture</th>
+                  <th className="py-4 px-4 text-center">Name</th>
+                  <th className="py-4 px-4 text-center">Email</th>
+                  <th className="py-4 px-4 text-center">Phone</th>
+                  <th className="py-4 px-4 text-center">Status</th>
+                  <th className="py-4 px-4 text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((value) => (
+                  <UserTable
+                    key={value.id}
+                    user={value}
+                    handleStatusClick={handleStatusClick}
+                  />
+                ))}
+              </tbody>
+            </table>
           </div>
-          <button className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl">
-            <a href="http://localhost:3000/dashboard/addproduct">
-              Add a Product
-            </a>
-          </button>
-        </div>
-
-        <div className="bg-white shadow-sm mt-5 p-5">
-          {/* <form action=""></form> */}
-          <table className="w-full">
-            <thead>
-              <tr className="text-sm font-medium text-gray-700 border-b border-gray-200">
-                <th className="py-4 px-4 text-center">ID</th>
-                <th className="py-4 px-4 text-center">Image</th>
-                <th className="py-4 px-4 text-center">Name</th>
-                <th className="py-4 px-4 text-center">Price Buy</th>
-                <th className="py-4 px-4 text-center">Price Sell</th>
-                <th className="py-4 px-4 text-center">Stock</th>
-                <th className="py-4 px-4 text-center">Unit</th>
-                <th className="py-4 px-4 text-center">Volume</th>
-                <th className="py-4 px-4 text-center">Stock in unit</th>
-                <th className="py-4 px-4 text-center">Appearance</th>
-                <th className="py-4 px-4 text-center">Category</th>
-                <th className="py-4 px-4 text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {products.map((value) => (
-                <ProductTable
-                  key={value.id}
-                  product={value}
-                  handleEditClick={handleEditClick}
-                  handleDeleteClick={handleDeleteClick}
-                />
-              ))}
-            </tbody>
-          </table>
         </div>
       </div>
     </div>

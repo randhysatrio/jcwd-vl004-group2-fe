@@ -11,7 +11,8 @@ import AllProducts from "./pages/AllProducts";
 import ChangePassword from "./pages/ChangePassword";
 import LoginAdmin from "./pages/LoginAdmin";
 import Verify from "./pages/Verify";
-import Dashboard from "./pages/Dashboard";
+import DashboardProduct from "./pages/DashboardProduct";
+import DashboardUser from "./pages/DashboardUser";
 import ChangePassAdmin from "./pages/ChangePassAdmin";
 import HomeAdmin from "./pages/HomeAdmin";
 import ResetAdmin from "./pages/ResetAdmin";
@@ -87,7 +88,7 @@ function App() {
         <Route path="/changepassword/:token" element={<ChangePassword />} />
         <Route path="/verify/:token" element={<Verify />} />
         <Route path="/admin/login" element={<LoginAdmin />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard/user" element={<DashboardUser />} />
         <Route path="/products" element={<AllProducts />} />
         <Route path="/admin" element={<HomeAdmin />} />
         <Route path="/admin/login" element={<LoginAdmin />} />
@@ -96,6 +97,7 @@ function App() {
           path="/admin/change-password/:token"
           element={<ChangePassAdmin />}
         />
+        <Route path="/dashboard/product" element={<DashboardProduct />} />
         <Route path="/dashboard/addproduct" element={<AddProduct />} />
         <Route path="/dashboard/editproduct" element={<EditProduct />} />
       </Routes>
