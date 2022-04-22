@@ -13,17 +13,17 @@ const User = () => {
           <div className="w-full h-12 flex items-center py-1 px-2">
             <div
               className={`w-full h-full pl-3 flex items-center rounded-lg text-lg ${
-                isActive ? 'hover:bg-white' : 'hover:bg-sky-400'
+                isActive ? 'hover:bg-sky-400 bg-white bg-opacity-70 backdrop-blur-sm' : 'hover:bg-sky-400'
               } font-bold transition group`}
             >
               <span
-                className={`h-2 w-2 rounded-full bg-green-400 ${
+                className={`h-2 w-2 rounded-full bg-green-300 ${
                   isActive ? 'opacity-100 translate-x-0 mx-1' : 'opacity-0 -translate-x-2'
                 } transition-all absolute`}
               ></span>
               <div
                 className={`flex items-center gap-2 ${
-                  isActive ? 'translate-x-5 text-blue-400' : 'translate-x-0 group-hover:text-white text-slate-500'
+                  isActive ? 'translate-x-5 text-blue-400 group-hover:text-white' : 'translate-x-0 group-hover:text-white text-sky-600'
                 } transition`}
               >
                 {icon}
@@ -40,7 +40,7 @@ const User = () => {
     <>
       <Header />
       <div className="min-h-screen w-full flex justify-end relative">
-        <div className="w-1/5 min-h-full bg-white py-2 flex flex-col border-r">
+        <div className="w-1/5 min-h-full bg-gradient-to-t from-white to-sky-100 py-2 flex flex-col shadow-r">
           <SidebarLink to={'/user'} icon={<AiOutlineUser />} end>
             Profile
           </SidebarLink>
