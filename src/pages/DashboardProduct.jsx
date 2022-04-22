@@ -9,47 +9,57 @@ import {
   FaArrowRight,
 } from "react-icons/fa";
 import { AiOutlineClose } from "react-icons/ai";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 import axios from "axios";
 import ProductTable from "../components/ProductTable";
 import Pagination from "../components/Pagination";
 import Swal from "sweetalert2";
+import CategoryList from "../components/CategoryList";
+import { API_URL } from "../assets/constants";
+
+const sortOptions = ["Lowest Price", "Highest Price"];
 
 const Dashboard = () => {
   const Swal = require("sweetalert2");
   const navigate = useNavigate();
 
+  const categoryId = useRef();
+
   const [products, setProducts] = useState([]);
-  const [query, setQuery] = useState("");
-
-  const sortOptions = ["sortlowprice", "sorthighprice"];
-
-  const handleSort = async (e) => {
-    let query = e.target.value;
-    const res = await axios.get(
-      `httphttp://localhost:5000/product/sortprice/?q=${query}`
-    );
-    setProducts(res.data);
-  };
+  const [categories, setCategories] = useState([]);
+  const [currentCategory, setCurrentCategory] = useState(null);
+  const [sort, setSort] = useState("");
+  const [query, setQuery] = useState({
+    name: "",
+    category: "",
+    limit: "",
+    offset: "",
+    appearance: "",
+    sort: "",
+    gte: "",
+    lte: "",
+    between: "",
+  });
 
   const fetchProducts = async () => {
-    const res = await axios.get(
-      `http://localhost:5000/product/search/?q=${query}`
-    );
+    const res = await axios.get(`${API_URL}/product/all`);
     setProducts(res.data);
   };
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      const res = await axios.get(
-        `http://localhost:5000/product/search/?q=${query}`
-      );
-      setProducts(res.data);
+    const fetchData = async () => {
+      const productList = await axios.post(`${API_URL}/product/query`);
+      const categoryList = await axios.get(`${API_URL}/category/all`);
+      setCategories(categoryList.data);
+      // nested
+      setProducts(productList.data.products);
     };
-    if (query.length === 0 || query.length > 2) fetchProducts();
-  }, [query]);
+    fetchData();
+    // dependency uses state outside useEffect
+  }, [currentCategory]);
 
+  console.log(currentCategory);
   console.log(products);
 
   const handleEditClick = async (event, value) => {
@@ -69,7 +79,7 @@ const Dashboard = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         try {
-          axios.delete(`http://localhost:5000/product/delete/${id}`);
+          axios.delete(`${API_URL}/product/delete/${id}`);
         } catch (error) {
           console.log(error);
         }
@@ -182,7 +192,7 @@ const Dashboard = () => {
           </div>
           <div>
             <select
-              onChange={handleSort}
+              // onChange={handleSort}
               className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl"
               name=""
               id=""
@@ -195,13 +205,47 @@ const Dashboard = () => {
               ))}
             </select>
           </div>
+          <div>
+            <select
+              // onChange={handleSort}
+              className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl"
+              name=""
+              id=""
+            ></select>
+          </div>
           <button className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl">
             <a href="http://localhost:3000/dashboard/addproduct">
               Add a Product
             </a>
           </button>
         </div>
-
+        <div>
+          <select
+            name=""
+            id=""
+            onChange={(e) => setCurrentCategory(+e.target.value)}
+          >
+            <option value="">Sort Category</option>
+            {categories.map((value) => (
+              <CategoryList ref={categoryId} key={value.id} category={value} />
+            ))}
+          </select>
+        </div>
+        <div>
+          <select
+            // onChange={handleSort}
+            className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl"
+            name=""
+            id=""
+          >
+            <option value="">Price</option>
+            {sortOptions.map((item, index) => (
+              <option value={item} key={index}>
+                {item}
+              </option>
+            ))}
+          </select>
+        </div>
         <div className="bg-white shadow-sm mt-5 p-5">
           {/* <form action=""></form> */}
           <table className="w-full">

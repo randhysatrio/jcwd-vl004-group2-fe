@@ -1,11 +1,12 @@
+import { API_URL } from "../assets/constants";
+
 const ProductTable = ({ product, handleEditClick, handleDeleteClick }) => {
-  console.log(product);
   return (
     <tr>
       <td className="font-medium text-center py-8">{product.id}</td>
       <td className="font-medium text-center py-8">
         <img
-          src={"http://localhost:5000/" + product.image}
+          src={`${API_URL}/${product.image}`}
           className="w-40 aspect-[3/2] rounded-lg object-cover object-top border border-gray-200"
         />
       </td>

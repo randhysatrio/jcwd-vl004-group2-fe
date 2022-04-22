@@ -17,7 +17,8 @@ const AddProduct = () => {
   // useState([]) is different from useState({})
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [images, setImage] = useState({});
+  // upload image use string or null
+  const [images, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(10);
@@ -65,7 +66,7 @@ const AddProduct = () => {
   };
 
   const handleAddFormSubmit = async (event) => {
-    event.preventDefault();
+    const formData = new FormData();
     const newProduct = {
       name: addFormData.name,
       price_buy: addFormData.price_buy,
@@ -77,13 +78,13 @@ const AddProduct = () => {
       appearance: addFormData.appearance,
       categoryId: categoryId.current.value,
     };
-
-    const newProducts = [...products, newProduct];
-    setProducts(newProducts);
+    formData.append("productData", JSON.stringify(newProduct));
+    formData.append("image", images);
     console.log(newProduct);
     try {
-      await axios.post("http://localhost:5000/product/add", newProduct);
-      navigate("/dashboard");
+      await axios.post("http://localhost:5000/product/add", formData);
+      console.log("test");
+      navigate("/dashboard/product");
       Swal.fire({
         icon: "success",
         // title: "Oops...",
@@ -100,14 +101,9 @@ const AddProduct = () => {
   };
 
   const onBtAddFile = (e) => {
-    if (e.target.files[0]) {
-      setImage({
-        addFileName: e.target.files[0].name,
-        addFile: e.target.files[0],
-      });
-      let preview = document.getElementById("imgpreview");
-      preview.src = URL.createObjectURL(e.target.files[0]);
-    }
+    setImage(e.target.files[0]);
+    // let preview = document.getElementById("imgpreview");
+    // preview.src = URL.createObjectURL(e.target.files[0]);
   };
 
   return (
@@ -203,145 +199,145 @@ const AddProduct = () => {
       <div className="pt-24 pr-8 pl-48">
         <h1 className="text-3xl text-gray-700 font-bold mb-3">Add a Product</h1>
         <div>
-          <form>
-            <div className="grid grid-cols-6 gap-4 justify-items-star">
-              <div>
-                <label className="mr-3">Name:</label>
-              </div>
-              <div className="col-start-2 col-span-3">
-                <textarea
-                  type="text"
-                  name="name"
-                  className="h-32 w-5/6"
-                  required
-                  onChange={handleAddFormChange}
-                />
-              </div>
-              <div className="col-start-1">
-                <label className="">Description:</label>
-              </div>
-              <div className="col-start-2 col-span-3">
-                <textarea
-                  type="text"
-                  name="description"
-                  className="h-32 w-5/6"
-                  required
-                  onChange={handleAddFormChange}
-                />
-              </div>
-              <div className="col-start-1">
-                <label className="">Image (URL):</label>
-              </div>
-              <div className="col-start-2 col-span-3">
-                <input
-                  type="file"
-                  name="image"
-                  required
-                  ref={image}
-                  // onChange={handleAddFormChange}
-                  onChange={onBtAddFile}
-                />
-              </div>
-              <div className="col-start-2">
-                <img id="imgpreview" />
-              </div>
-              <div className="col-start-1">
-                <label className="mr-3">Price Buy:</label>
-              </div>
-              <div className="col-start-2 col-span-3">
-                <input
-                  type="number"
-                  name="price_buy"
-                  className=""
-                  required
-                  onChange={handleAddFormChange}
-                />
-              </div>
-              <div className="col-start-1">
-                <label className="">Price Sell:</label>
-              </div>
-              <div className="col-start-2 col-span-3">
-                <input
-                  type="number"
-                  name="price_sell"
-                  className=""
-                  required
-                  onChange={handleAddFormChange}
-                />
-              </div>
-              <div className="col-start-1">
-                <label className="">Unit:</label>
-              </div>
-              <div>
-                <input
-                  type="text"
-                  name="unit"
-                  className=""
-                  required
-                  onChange={handleAddFormChange}
-                />
-              </div>
-              <div className="col-start-1">
-                <label className="">Volume:</label>
-              </div>
-              <div>
-                <input
-                  type="number"
-                  name="volume"
-                  className=""
-                  required
-                  onChange={handleAddFormChange}
-                />
-              </div>
-              <div className="col-start-1">
-                <label className="">Stock:</label>
-              </div>
-              <div>
-                <input
-                  type="number"
-                  name="stock"
-                  className=""
-                  required
-                  onChange={handleAddFormChange}
-                />
-              </div>
-              <div className="col-start-1">
-                <label className="">Appearance:</label>
-              </div>
-              <div>
-                <input
-                  type="text"
-                  name="appearance"
-                  className=""
-                  required
-                  onChange={handleAddFormChange}
-                />
-              </div>
-              <div className="col-start-1">
-                <label className="">Category:</label>
-              </div>
-              {/* <DropdownCategories /> */}
-              <select name="categoryId" id="">
-                <option value="">Choose a category</option>
-                {categories.map((item, index) => (
-                  <option ref={categoryId} value={item.id} key={index}>
-                    {item.name}
-                  </option>
-                ))}
-              </select>
+          <div className="grid grid-cols-6 gap-4 justify-items-star">
+            <div>
+              {/* form always submit */}
+              <label className="mr-3">Name:</label>
             </div>
-            <div className="flex">
-              <button
-                className="mt-8 py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl items-center mr-3"
-                onClick={handleAddFormSubmit}
-              >
-                Add Product
-              </button>
-              <button className="mt-8 py-2.5 px-6 text-white bg-red-500 hover:bg-red-400 transition rounded-xl items-center">
-                <a href="http://localhost:3000/dashboard">Cancel</a>
-              </button>
+            <div className="col-start-2 col-span-3">
+              <textarea
+                type="text"
+                name="name"
+                className="h-32 w-5/6"
+                required
+                onChange={handleAddFormChange}
+              />
             </div>
-          </form>
+            <div className="col-start-1">
+              <label className="">Description:</label>
+            </div>
+            <div className="col-start-2 col-span-3">
+              <textarea
+                type="text"
+                name="description"
+                className="h-32 w-5/6"
+                required
+                onChange={handleAddFormChange}
+              />
+            </div>
+            <div className="col-start-1">
+              <label className="">Image (URL):</label>
+            </div>
+            <div className="col-start-2 col-span-3">
+              <input
+                type="file"
+                name="image"
+                required
+                onChange={onBtAddFile}
+                accept="image/*"
+              />
+            </div>
+            <div className="col-start-2">
+              {images ? (
+                <img src={URL.createObjectURL(images)} id="imgpreview" />
+              ) : null}
+            </div>
+            <div className="col-start-1">
+              <label className="mr-3">Price Buy:</label>
+            </div>
+            <div className="col-start-2 col-span-3">
+              <input
+                type="number"
+                name="price_buy"
+                className=""
+                required
+                onChange={handleAddFormChange}
+              />
+            </div>
+            <div className="col-start-1">
+              <label className="">Price Sell:</label>
+            </div>
+            <div className="col-start-2 col-span-3">
+              <input
+                type="number"
+                name="price_sell"
+                className=""
+                required
+                onChange={handleAddFormChange}
+              />
+            </div>
+            <div className="col-start-1">
+              <label className="">Unit:</label>
+            </div>
+            <div>
+              <input
+                type="text"
+                name="unit"
+                className=""
+                required
+                onChange={handleAddFormChange}
+              />
+            </div>
+            <div className="col-start-1">
+              <label className="">Volume:</label>
+            </div>
+            <div>
+              <input
+                type="number"
+                name="volume"
+                className=""
+                required
+                onChange={handleAddFormChange}
+              />
+            </div>
+            <div className="col-start-1">
+              <label className="">Stock:</label>
+            </div>
+            <div>
+              <input
+                type="number"
+                name="stock"
+                className=""
+                required
+                onChange={handleAddFormChange}
+              />
+            </div>
+            <div className="col-start-1">
+              <label className="">Appearance:</label>
+            </div>
+            <div>
+              <input
+                type="text"
+                name="appearance"
+                className=""
+                required
+                onChange={handleAddFormChange}
+              />
+            </div>
+            <div className="col-start-1">
+              <label className="">Category:</label>
+            </div>
+            {/* <DropdownCategories /> */}
+            <select name="categoryId" id="">
+              <option value="">Choose a category</option>
+              {categories.map((item, index) => (
+                <option ref={categoryId} value={item.id} key={index}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="flex">
+            <button
+              className="mt-8 py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl items-center mr-3"
+              onClick={handleAddFormSubmit}
+            >
+              Add Product
+            </button>
+            <button className="mt-8 py-2.5 px-6 text-white bg-red-500 hover:bg-red-400 transition rounded-xl items-center">
+              <a href="http://localhost:3000/dashboard">Cancel</a>
+            </button>
+          </div>
         </div>
       </div>
     </div>
