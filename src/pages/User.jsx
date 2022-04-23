@@ -10,10 +10,10 @@ const User = () => {
     return (
       <NavLink to={to} end={end}>
         {({ isActive }) => (
-          <div className="w-full h-12 flex items-center py-1 px-2">
+          <div className="w-full h-12 flex items-center my-1 px-2">
             <div
               className={`w-full h-full pl-3 flex items-center rounded-lg text-lg ${
-                isActive ? 'hover:bg-sky-400 bg-white bg-opacity-70 backdrop-blur-sm' : 'hover:bg-sky-400'
+                isActive ? 'hover:bg-sky-300 bg-white bg-opacity-70 backdrop-blur-sm' : 'hover:bg-sky-300'
               } font-bold transition group`}
             >
               <span
@@ -23,7 +23,7 @@ const User = () => {
               ></span>
               <div
                 className={`flex items-center gap-2 ${
-                  isActive ? 'translate-x-5 text-blue-400 group-hover:text-white' : 'translate-x-0 group-hover:text-white text-sky-600'
+                  isActive ? 'translate-x-5 text-sky-400 group-hover:text-white' : 'translate-x-0 group-hover:text-white text-sky-500'
                 } transition`}
               >
                 {icon}

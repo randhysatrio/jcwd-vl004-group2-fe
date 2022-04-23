@@ -14,8 +14,8 @@ const BuyAgainRow = ({ setItem, item, val }) => {
           setItem(val);
         }
       }}
-      className={`w-full h-20 my-2 rounded-lg hover:ring-2 hover:ring-sky-500 transition duration-100 cursor-pointer flex active:scale-95 ${
-        item === val ? 'ring-2 ring-sky-500' : 'ring-0'
+      className={`w-full h-20 my-2 rounded-lg hover:ring-2 hover:ring-sky-300 transition cursor-pointer flex active:scale-95 ${
+        item === val ? 'ring-2 ring-emerald-300' : 'ring-0'
       }`}
     >
       <div className="h-full w-[22%] flex justify-center items-center">
@@ -76,7 +76,7 @@ const BuyAgainModal = () => {
             leaveFrom="opacity-100 translate-y-0"
             leaveTo="opacity-80 -translate-y-5"
           >
-            <div className="w-[550px] h-max bg-gray-50 rounded-xl flex flex-col z-[30] shadow">
+            <div className="w-[550px] h-max bg-gradient-to-br from-sky-50 to-emerald-50 rounded-xl flex flex-col z-[30] shadow">
               <div className="w-full py-6 flex justify-center text-xl font-bold relative">
                 <span className="bg-gradient-to-r from-sky-600 to-sky-400 bg-clip-text text-transparent">
                   Which item would like you to buy again?

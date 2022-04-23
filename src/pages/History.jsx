@@ -1,13 +1,25 @@
-import { useState, Fragment } from 'react';
+import { useEffect, useState } from 'react';
 
-import BuyAgainModal from '../components/BuyAgainModal';
-import { BsCheckAll } from 'react-icons/bs';
 import HistoryCard from '../components/HistoryCard';
-
-import { Dialog, Transition } from '@headlessui/react';
+import { BiCalendar } from 'react-icons/bi';
+import { DateRangePicker } from 'react-date-range';
+import 'react-date-range/dist/styles.css';
+import 'react-date-range/dist/theme/default.css';
 
 const History = () => {
   const [currentView, setCurrentView] = useState('all');
+  const [ranges, setRanges] = useState([
+    {
+      startDate: new Date(),
+      endDate: new Date(),
+      key: 'selection',
+    },
+  ]);
+  const [selectedDates, setSelectedDates] = useState({});
+
+  useEffect(() => {
+    console.log(selectedDates.gte?.toISOString());
+  }, [selectedDates]);
 
   return (
     <div className="w-full h-full flex flex-col items-center pt-5">
@@ -52,26 +64,59 @@ const History = () => {
         <div className="w-full flex flex-col px-2">
           <div className="w-full flex items-center pr-2">
             {currentView === 'all' && (
-              <span className="font-thin text-3xl bg-gradient-to-r from-sky-500 to-sky-200 bg-clip-text text-transparent py-1 pl-1">
+              <span className="font-thin text-3xl bg-gradient-to-r from-sky-500 to-sky-300 bg-clip-text text-transparent py-1 pl-1">
                 All Transactions
               </span>
             )}
             {currentView === 'approved' && (
-              <span className="font-thin text-3xl bg-gradient-to-r from-sky-500 to-sky-200 bg-clip-text text-transparent py-1 pl-1">
+              <span className="font-thin text-3xl bg-gradient-to-r from-sky-500 to-sky-300 bg-clip-text text-transparent py-1 pl-1">
                 Approved Transactions
               </span>
             )}
             {currentView === 'pending' && (
-              <span className="font-thin text-3xl bg-gradient-to-r from-sky-500 to-sky-200 bg-clip-text text-transparent py-1 pl-1">
+              <span className="font-thin text-3xl bg-gradient-to-r from-sky-500 to-sky-300 bg-clip-text text-transparent py-1 pl-1">
                 Pending Transactions
               </span>
             )}
-            <select className="w-max h-9 ml-auto px-1 bg-gray-100 rounded-lg text-sm font-semibold focus:outline-sky-500 cursor-pointer">
-              <option>Sort By:</option>
-              <optgroup label="Date">
-                <option>Latest</option>
-              </optgroup>
-            </select>
+            <div className="relative ml-auto group">
+              <div className="p-2 rounded-lg bg-gray-100  flex items-center cursor-pointer group">
+                <span
+                  className={`font-semibold flex items-center gap-2 text-sm ${
+                    selectedDates.gte && selectedDates.lte ? 'text-sky-500' : 'text-slate-700 group-hover:hover:text-sky-600'
+                  } transition`}
+                >
+                  <BiCalendar className="text-slate-600" />
+                  {selectedDates.gte && selectedDates.lte
+                    ? `${selectedDates.gte.toLocaleDateString('id')} - ${selectedDates.lte.toLocaleDateString('id')}`
+                    : 'Select Date'}
+                </span>
+              </div>
+              <div className="w-max p-3 flex flex-col rounded-lg bg-gray-300 bg-opacity-60 backdrop-blur-sm absolute z-[40] right-11 top-8 opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all shadow-lg">
+                <DateRangePicker
+                  className="rounded-lg overflow-hidden"
+                  onChange={(date) => setRanges([date.selection])}
+                  showSelectionPreview={true}
+                  ranges={ranges}
+                />
+                <div className="w-full mt-2 flex justify-center gap-3">
+                  <button
+                    className="w-24 py-2 rounded-2xl text-white font-bold bg-rose-400 hover:brightness-110 active:scale-95 transition"
+                    onClick={() => {
+                      setRanges([{ ...ranges[0], startDate: new Date(), endDate: new Date() }]);
+                      setSelectedDates({});
+                    }}
+                  >
+                    Reset
+                  </button>
+                  <button
+                    className="w-24 py-2 rounded-2xl text-white font-bold bg-emerald-400 hover:brightness-110 active:scale-95 transition"
+                    onClick={() => setSelectedDates({ gte: ranges[0].startDate, lte: ranges[0].endDate })}
+                  >
+                    Apply
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
           <div className="h-[1px] w-full bg-gray-200 rounded-full" />
         </div>
