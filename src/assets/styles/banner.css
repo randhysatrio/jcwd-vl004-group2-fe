@@ -1,0 +1,15 @@
+.slide1 {
+  background-image: url('../images/banner/banner1.jpg');
+}
+
+.slide2 {
+  background-image: url('../images/banner/banner2.jpg');
+}
+
+.slide3 {
+  background-image: url('../images/banner/banner3.jpg');
+}
+
+.swiper-pagination-bullet-active {
+  background-color: rgb(60, 241, 90) !important;
+}
