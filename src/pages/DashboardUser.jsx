@@ -15,6 +15,7 @@ import axios from "axios";
 import UserTable from "../components/UserTable";
 import Pagination from "../components/Pagination";
 import Swal from "sweetalert2";
+import { API_URL } from "../assets/constants";
 
 const Dashboard = () => {
   const Swal = require("sweetalert2");
@@ -34,13 +35,13 @@ const Dashboard = () => {
   };
 
   const fetchUsers = async () => {
-    const res = await axios.get(`http://localhost:5000/user/all`);
+    const res = await axios.get(`${API_URL}/user/all`);
     setUsers(res.data);
   };
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const res = await axios.get(`http://localhost:5000/user/all`);
+      const res = await axios.get(`${API_URL}/user/all`);
       setUsers(res.data);
     };
     // if (query.length === 0 || query.length > 2) fetchUsers();
@@ -66,7 +67,7 @@ const Dashboard = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         try {
-          axios.patch(`http://localhost:5000/user/status/${id}`);
+          axios.patch(`${API_URL}/user/status/${id}`);
         } catch (error) {
           console.log(error);
         }
@@ -176,6 +177,37 @@ const Dashboard = () => {
         <div className="py-7 px-10">
           <div>
             <h1 className="text-3xl text-gray-700 font-bold">User</h1>
+          </div>
+          <div className="flex justify-between items-center space-x-4">
+            {/* <div>
+              <select
+                name=""
+                id=""
+                onChange={(e) => setCurrentCategory(+e.target.value)}
+                className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl "
+              >
+                <option value="">Sort Category</option>
+                {categories.map((value) => (
+                  <CategoryList
+                    ref={categoryId}
+                    key={value.id}
+                    category={value}
+                  />
+                ))}
+              </select>
+            </div> */}
+            {/* <div>
+              <select
+                name=""
+                id=""
+                onChange={(e) => setCurrentSortPrice(e.target.value)}
+                className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl"
+              >
+                <option value="">Sort by Status</option>
+                <option value="price_sell,ASC">Lowest Price</option>
+                <option value="price_sell,DESC">Highest Price</option>
+              </select>
+            </div> */}
           </div>
           <div className="bg-white shadow-sm mt-5 p-5">
             {/* <form action=""></form> */}

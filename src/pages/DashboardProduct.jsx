@@ -3,7 +3,6 @@ import {
   FaBell,
   FaUserAlt,
   FaHome,
-  FaBars,
   FaShoppingBag,
   FaArrowLeft,
   FaArrowRight,
@@ -18,29 +17,18 @@ import Swal from "sweetalert2";
 import CategoryList from "../components/CategoryList";
 import { API_URL } from "../assets/constants";
 
-const sortOptions = ["Lowest Price", "Highest Price"];
-
 const Dashboard = () => {
   const Swal = require("sweetalert2");
   const navigate = useNavigate();
 
-  const categoryId = useRef();
-
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [currentCategory, setCurrentCategory] = useState(null);
-  const [sort, setSort] = useState("");
-  const [query, setQuery] = useState({
-    name: "",
-    category: "",
-    limit: "",
-    offset: "",
-    appearance: "",
-    sort: "",
-    gte: "",
-    lte: "",
-    between: "",
-  });
+  const [currentCategory, setCurrentCategory] = useState("");
+  const [currentSortPrice, setCurrentSortPrice] = useState("");
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [maxPage, setMaxPage] = useState(0);
+  const [itemsPerPage, setItemsPerPage] = useState(0);
 
   const fetchProducts = async () => {
     const res = await axios.get(`${API_URL}/product/all`);
@@ -49,22 +37,48 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const productList = await axios.post(`${API_URL}/product/query`);
+      const productList = await axios.post(`${API_URL}/product/query`, {
+        category: currentCategory,
+        sort: currentSortPrice,
+        name: search,
+      });
+      console.log(productList.data.length);
       const categoryList = await axios.get(`${API_URL}/category/all`);
       setCategories(categoryList.data);
-      // nested
+      // nested objects
       setProducts(productList.data.products);
+      setItemsPerPage(productList.data.products.length);
+      setMaxPage(Math.ceil(productList.data.length / 5));
+      setPage(1);
     };
     fetchData();
     // dependency uses state outside useEffect
-  }, [currentCategory]);
+  }, [currentCategory, currentSortPrice, search]);
 
-  console.log(currentCategory);
-  console.log(products);
+
+
+  const renderProducts = () => {
+    const beginningIndex = (page - 1) * 5;
+    const currentData = products.slice(beginningIndex, beginningIndex + 5);
+    return currentData.map((value) => {
+      return (
+        <ProductTable
+          key={value.id}
+          product={value}
+          handleEditClick={handleEditClick}
+          handleDeleteClick={handleDeleteClick}
+        />
+      );
+    });
+  };
 
   const handleEditClick = async (event, value) => {
     const id = value.id;
     navigate(`editproduct/?${id}`);
+  };
+
+  const handleAddProduct = async (event, value) => {
+    navigate(`addproduct`);
   };
 
   const handleDeleteClick = (id) => {
@@ -89,8 +103,18 @@ const Dashboard = () => {
     });
   };
 
+  const nextPageHandler = () => {
+    if (page < maxPage) setPage(page + 1);
+  };
+
+  const prevPageHandler = () => {
+    if (page > 1) {
+      setPage(page - 1);
+    }
+  };
+
   const handleReset = () => {
-    fetchProducts();
+    setSearch("");
   };
 
   return (
@@ -99,12 +123,17 @@ const Dashboard = () => {
         <div className="flex justify-center items-center relative">
           <FaSearch className="absolute left-2 text-gray-400 bg-gray-100" />
           <input
+            type="text"
+            value={search}
             id="myInput"
             placeholder="Search..."
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => setSearch(e.target.value)}
             className="search block w-72 shadow border-none rounded-3x1 focus:outline-none py-2 bg-gray-100 text-base text-gray-600 pl-11 pr-2"
           />
-          <AiOutlineClose className="hover cursor-pointer" />
+          <AiOutlineClose
+            className="hover cursor-pointer"
+            onClick={() => setSearch(() => "")}
+          />
         </div>
 
         <div className="ml-auto flex items-center">
@@ -190,62 +219,41 @@ const Dashboard = () => {
           <div>
             <h1 className="text-3xl text-gray-700 font-bold">Products</h1>
           </div>
-          <div>
-            <select
-              // onChange={handleSort}
+          <div className="flex justify-between items-center space-x-4">
+            <div>
+              <select
+                name=""
+                id=""
+                onChange={(e) => setCurrentCategory(+e.target.value)}
+                className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl "
+              >
+                <option value="">Sort Category</option>
+                {categories.map((value) => (
+                  <CategoryList key={value.id} category={value} />
+                ))}
+              </select>
+            </div>
+            <div>
+              <select
+                name=""
+                id=""
+                onChange={(e) => setCurrentSortPrice(e.target.value)}
+                className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl"
+              >
+                <option value="">Sort by price</option>
+                <option value="price_sell,ASC">Lowest Price</option>
+                <option value="price_sell,DESC">Highest Price</option>
+              </select>
+            </div>
+            <button
               className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl"
-              name=""
-              id=""
+              onClick={handleAddProduct}
             >
-              <option value="">Price</option>
-              {sortOptions.map((item, index) => (
-                <option value={item} key={index}>
-                  {item}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <select
-              // onChange={handleSort}
-              className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl"
-              name=""
-              id=""
-            ></select>
-          </div>
-          <button className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl">
-            <a href="http://localhost:3000/dashboard/addproduct">
               Add a Product
-            </a>
-          </button>
+            </button>
+          </div>
         </div>
-        <div>
-          <select
-            name=""
-            id=""
-            onChange={(e) => setCurrentCategory(+e.target.value)}
-          >
-            <option value="">Sort Category</option>
-            {categories.map((value) => (
-              <CategoryList ref={categoryId} key={value.id} category={value} />
-            ))}
-          </select>
-        </div>
-        <div>
-          <select
-            // onChange={handleSort}
-            className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl"
-            name=""
-            id=""
-          >
-            <option value="">Price</option>
-            {sortOptions.map((item, index) => (
-              <option value={item} key={index}>
-                {item}
-              </option>
-            ))}
-          </select>
-        </div>
+
         <div className="bg-white shadow-sm mt-5 p-5">
           {/* <form action=""></form> */}
           <table className="w-full">
@@ -265,17 +273,20 @@ const Dashboard = () => {
                 <th className="py-4 px-4 text-center">Actions</th>
               </tr>
             </thead>
-            <tbody>
-              {products.map((value) => (
-                <ProductTable
-                  key={value.id}
-                  product={value}
-                  handleEditClick={handleEditClick}
-                  handleDeleteClick={handleDeleteClick}
-                />
-              ))}
-            </tbody>
+            <tbody>{renderProducts()}</tbody>
           </table>
+          <div className="mt-3 flex justify-center items-center">
+            <button onClick={prevPageHandler}>
+              {" "}
+              <FaArrowLeft />
+            </button>
+            <div>
+              Page {page} of {maxPage}
+            </div>
+            <button onClick={nextPageHandler}>
+              <FaArrowRight />
+            </button>
+          </div>
         </div>
       </div>
     </div>

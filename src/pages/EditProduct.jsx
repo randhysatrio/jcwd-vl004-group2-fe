@@ -11,29 +11,46 @@ import {
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../assets/constants";
 
 const EditProduct = () => {
   const Swal = require("sweetalert2");
   // useState([]) is different from useState({})
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [images, setImage] = useState(null);
 
   const id = window.location.search.substring(1);
 
   const fetchProductsId = async () => {
-    const res = await axios.get(`http://localhost:5000/product/find/${id}`);
+    const res = await axios.get(`${API_URL}/product/find/${id}`);
+    setImage(res.data.image);
     setProducts(res.data);
   };
 
+  console.log(products);
+  console.log(images);
+
   const fetchCategories = async () => {
-    const res = await axios.get(`http://localhost:5000/category/all`);
+    const res = await axios.get(`${API_URL}/category/all`);
     setCategories(res.data);
   };
 
+  const fetchImagePreview = async () => {
+    // const res = await axios.get(`${API_URL}/product/find/${id}`);
+    // setImage(res.data.image);
+    console.log(images);
+    let preview = document.getElementById("imgpreview");
+    preview.src = `${API_URL}/${images}`;
+  };
+
+  // useEffect with empty dependencies
   useEffect(() => {
+    fetchImagePreview();
     fetchProductsId();
     fetchCategories();
-  });
+ 
+  }, []);
 
   const navigate = useNavigate();
 
@@ -44,13 +61,11 @@ const EditProduct = () => {
   const unit = useRef();
   const volume = useRef();
   const description = useRef();
-  const image = useRef();
   const appearance = useRef();
   const categoryId = useRef();
 
   const handleEditFormSubmit = async (event) => {
-    event.preventDefault();
-
+    const formData = new FormData();
     const newProduct = {
       name: name.current.value,
       price_buy: price_buy.current.value,
@@ -59,14 +74,14 @@ const EditProduct = () => {
       unit: unit.current.value,
       volume: volume.current.value,
       description: description.current.value,
-      image: image.current.value,
       appearance: appearance.current.value,
       categoryId: categoryId.current.value,
     };
-
+    formData.append("productData", JSON.stringify(newProduct));
+    formData.append("image", images);
     console.log(newProduct);
     try {
-      await axios.patch(`http://localhost:5000/product/edit/${id}`, newProduct);
+      await axios.patch(`${API_URL}/product/edit/${id}`, formData);
       navigate("/dashboard");
       Swal.fire({
         icon: "success",
@@ -76,6 +91,12 @@ const EditProduct = () => {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const onBtAddFile = (e) => {
+    setImage(e.target.files[0]);
+    let preview = document.getElementById("imgpreview");
+    preview.src = URL.createObjectURL(e.target.files[0]);
   };
 
   return (
@@ -171,7 +192,7 @@ const EditProduct = () => {
       <div className="pt-24 pr-8 pl-48">
         <h1 className="text-3xl text-gray-700 font-bold mb-3">Edit Product</h1>
         <div>
-          <form>
+          {/* <form> */}
             <div className="grid grid-cols-6 gap-4 justify-items-star">
               <div>
                 <label className="mr-3">Name:</label>
@@ -200,17 +221,20 @@ const EditProduct = () => {
                 />
               </div>
               <div className="col-start-1">
-                <label className="">Image (URL):</label>
+                <label className="">Image:</label>
               </div>
               <div className="col-start-2 col-span-3">
-                <textarea
-                  type="text"
+                <input
+                  type="file"
                   name="image"
-                  className="h-32 w-5/6"
                   required
+                  onChange={onBtAddFile}
+                  accept="image/*"
                   defaultValue={products.image}
-                  ref={image}
                 />
+              </div>
+              <div className="col-start-2">
+                <img id="imgpreview" />
               </div>
               <div className="col-start-1">
                 <label className="mr-3">Price Buy:</label>
@@ -311,11 +335,11 @@ const EditProduct = () => {
                 Edit Product
               </button>
               <button className="mt-8 py-2.5 px-6 text-white bg-red-500 hover:bg-red-400 transition rounded-xl items-center">
-                <a href="http://localhost:3000/dashboard">Cancel</a>
+                <a href="http://localhost:3000/dashboard/product">Cancel</a>
                 {/*<Link> React-Router-dom APIURL + dashboard */}
               </button>
             </div>
-          </form>
+          {/* </form> */}
         </div>
       </div>
     </div>

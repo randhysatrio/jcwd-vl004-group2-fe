@@ -98,8 +98,11 @@ function App() {
           element={<ChangePassAdmin />}
         />
         <Route path="/dashboard/product" element={<DashboardProduct />} />
-        <Route path="/dashboard/addproduct" element={<AddProduct />} />
-        <Route path="/dashboard/editproduct" element={<EditProduct />} />
+        <Route path="/dashboard/product/addproduct" element={<AddProduct />} />
+        <Route
+          path="/dashboard/product/editproduct"
+          element={<EditProduct />}
+        />
       </Routes>
       <ToastContainer />
     </BrowserRouter>

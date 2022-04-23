@@ -8,10 +8,11 @@ import {
   FaArrowLeft,
   FaArrowRight,
 } from "react-icons/fa";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../assets/constants";
 
 const AddProduct = () => {
   // useState([]) is different from useState({})
@@ -82,8 +83,7 @@ const AddProduct = () => {
     formData.append("image", images);
     console.log(newProduct);
     try {
-      await axios.post("http://localhost:5000/product/add", formData);
-      console.log("test");
+      await axios.post(`${API_URL}/product/add`, formData);
       navigate("/dashboard/product");
       Swal.fire({
         icon: "success",
@@ -102,8 +102,8 @@ const AddProduct = () => {
 
   const onBtAddFile = (e) => {
     setImage(e.target.files[0]);
-    // let preview = document.getElementById("imgpreview");
-    // preview.src = URL.createObjectURL(e.target.files[0]);
+    let preview = document.getElementById("imgpreview");
+    preview.src = URL.createObjectURL(e.target.files[0]);
   };
 
   return (
@@ -226,7 +226,7 @@ const AddProduct = () => {
               />
             </div>
             <div className="col-start-1">
-              <label className="">Image (URL):</label>
+              <label className="">Image:</label>
             </div>
             <div className="col-start-2 col-span-3">
               <input
@@ -238,9 +238,7 @@ const AddProduct = () => {
               />
             </div>
             <div className="col-start-2">
-              {images ? (
-                <img src={URL.createObjectURL(images)} id="imgpreview" />
-              ) : null}
+              <img id="imgpreview" />
             </div>
             <div className="col-start-1">
               <label className="mr-3">Price Buy:</label>
@@ -335,7 +333,7 @@ const AddProduct = () => {
               Add Product
             </button>
             <button className="mt-8 py-2.5 px-6 text-white bg-red-500 hover:bg-red-400 transition rounded-xl items-center">
-              <a href="http://localhost:3000/dashboard">Cancel</a>
+              <a href="http://localhost:3000/dashboard/product">Cancel</a>
             </button>
           </div>
         </div>
