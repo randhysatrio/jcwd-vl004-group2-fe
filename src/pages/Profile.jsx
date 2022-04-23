@@ -150,7 +150,7 @@ const Profile = () => {
 
   return (
     <div className="w-full h-max flex flex-col items-center py-11 relative">
-      <div className="w-full h-32 bg-gradient-to-b from-sky-300 to-white absolute top-0 z-0"></div>
+      <div className="w-full h-32 bg-gradient-to-b from-sky-200 to-white absolute top-0 z-0"></div>
       <div className="relative z-1 h-full flex">
         <div className="w-[35vw] h-max px-4 mr-4 bg-white rounded-box border flex flex-col">
           <div className="w-full py-1">

@@ -28,6 +28,7 @@ import History from './pages/History';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Address from './pages/Address';
 
 function App() {
   const dispatch = useDispatch();
@@ -103,6 +104,7 @@ function App() {
         <Route path="/user" element={<User />}>
           <Route index element={<Profile />} />
           <Route path="history" element={<History />} />
+          <Route path="address" element={<Address />} />
         </Route>
         <Route path="/admin/login" element={<LoginAdmin />} />
         <Route path="/dashboard/user" element={<DashboardUser />} />

@@ -1,7 +1,7 @@
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { AiOutlineUser, AiOutlineHistory } from 'react-icons/ai';
-import { BiChevronRight } from 'react-icons/bi';
+import { IoLocationOutline } from 'react-icons/io5';
 
 import { NavLink, Outlet } from 'react-router-dom';
 
@@ -13,7 +13,7 @@ const User = () => {
           <div className="w-full h-12 flex items-center my-1 px-2">
             <div
               className={`w-full h-full pl-3 flex items-center rounded-lg text-lg ${
-                isActive ? 'hover:bg-sky-300 bg-white bg-opacity-70 backdrop-blur-sm' : 'hover:bg-sky-300'
+                isActive ? 'hover:bg-sky-300 bg-white bg-opacity-80 backdrop-blur-sm' : 'hover:bg-sky-300'
               } font-bold transition group`}
             >
               <span
@@ -44,11 +44,14 @@ const User = () => {
           <SidebarLink to={'/user'} icon={<AiOutlineUser />} end>
             Profile
           </SidebarLink>
+          <SidebarLink to={'address'} icon={<IoLocationOutline />}>
+            Address
+          </SidebarLink>
           <SidebarLink to={'history'} icon={<AiOutlineHistory />}>
             History
           </SidebarLink>
         </div>
-        <div className="w-4/5 h-full">
+        <div className="w-4/5 min-h-full">
           <Outlet />
         </div>
       </div>

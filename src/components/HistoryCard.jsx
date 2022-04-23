@@ -111,10 +111,10 @@ const HistoryCard = () => {
                         <span>12120</span>
                       </div>
                     </div>
-                    <div className="h-full w-full p-2 flex flex-col text-sm">
+                    <div className="h-full w-full p-2 flex flex-col text-xs">
                       <span className="font-bold">Notes:</span>
                       {/* max char = 106 */}
-                      <span className="text-xs">
+                      <span>
                         rumahnya yg warna putih, di lapis emas, pagernya banyak batu zamrudnya udh kyk di surga coy alig mewah bet...
                       </span>
                     </div>
