@@ -8,6 +8,7 @@ import Pagination from '../components/Pagination';
 import Swal from 'sweetalert2';
 import CategoryList from '../components/CategoryList';
 import { API_URL } from '../assets/constants';
+import AdminPagination from "../components/AdminPagination";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -55,6 +56,18 @@ const Dashboard = () => {
     });
   };
 
+  const renderPages = () => {
+    const pagination = [];
+    for (let i = 1; i <= maxPage; i++) {
+      pagination.push(i);
+    }
+    return pagination.map((value) => {
+      return (
+        <AdminPagination key={value} pagination={value} setPage={setPage} />
+      );
+    });
+  };
+
   const handleEditClick = async (event, value) => {
     const id = value.id;
     navigate(`editproduct/?${id}`);
@@ -66,13 +79,13 @@ const Dashboard = () => {
 
   const handleDeleteClick = (id) => {
     Swal.fire({
-      title: 'Are you sure?',
+      title: "Are you sure?",
       text: "You won't be able to revert this!",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!',
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
         try {
@@ -80,14 +93,16 @@ const Dashboard = () => {
         } catch (error) {
           console.log(error);
         }
-        Swal.fire('Deleted!', 'Your file has been deleted.', 'success');
+        Swal.fire("Deleted!", "Your file has been deleted.", "success");
         fetchProducts();
       }
     });
   };
 
   const nextPageHandler = () => {
-    if (page < maxPage) setPage(page + 1);
+    if (page < maxPage) {
+      setPage(page + 1);
+    }
   };
 
   const prevPageHandler = () => {
