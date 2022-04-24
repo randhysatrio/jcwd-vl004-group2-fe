@@ -68,6 +68,18 @@ const Dashboard = () => {
     });
   };
 
+  const renderPages = () => {
+    const pagination = [];
+    for (let i = 1; i <= maxPage; i++) {
+      pagination.push(i);
+    }
+    return pagination.map((value) => {
+      return (
+        <AdminPagination key={value} pagination={value} setPage={setPage} />
+      );
+    });
+  };
+
   const handleEditClick = async (event, value) => {
     const id = value.id;
     navigate(`editproduct/?${id}`);
