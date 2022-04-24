@@ -147,7 +147,6 @@ function CartCard({ item, onClick }) {
       );
       dispatch({ type: 'CART_LIST', payload: cartData.data });
       setIsLoading(false);
-      document.getElementById(`checked-${item.id}`).checked = !isChecked;
     } catch (error) {
       setIsLoading(false);
       toast.error(error.response.data.message);
@@ -168,8 +167,7 @@ function CartCard({ item, onClick }) {
         <input
           id={`checked-${item.id}`}
           type="checkbox"
-          onClick={() => handCheck(item)}
-          defaultChecked={item.isChecked}
+          onChange={() => handCheck(item)}
           checked={item.isChecked}
           className="checkbox"
         />

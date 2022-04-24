@@ -18,6 +18,7 @@ import HomeAdmin from './pages/HomeAdmin';
 import ResetAdmin from './pages/ResetAdmin';
 import AddProduct from './pages/AddProduct';
 import EditProduct from './pages/EditProduct';
+import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import Payment from './pages/Payment';
@@ -99,6 +100,7 @@ function App() {
         <Route path="/verify/:token" element={<Verify />} />
         <Route path="/dashboard/user" element={<DashboardUser />} />
         <Route path="/products" element={<AllProducts />} />
+        <Route path="/products/:id" element={<ProductDetail />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/payment" element={<Payment />} />

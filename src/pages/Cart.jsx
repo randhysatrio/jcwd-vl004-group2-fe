@@ -72,7 +72,6 @@ const Cart = () => {
       );
 
       dispatch({ type: 'CART_LIST', payload: cartData.data });
-      document.getElementById(`checkeall`).checked = !cartGlobal.isCheckedAll;
       setIsloading(false);
     } catch (error) {
       setIsloading(false);
@@ -98,10 +97,9 @@ const Cart = () => {
             <input
               id="checkeall"
               type="checkbox"
-              defaultChecked={cartGlobal.isCheckedAll}
               checked={cartGlobal.isCheckedAll}
               className="checkbox"
-              onClick={handCheckAll}
+              onChange={handCheckAll}
               disabled={isLoading}
             />
             <span className="label-text text-lg">Select All</span>
