@@ -122,10 +122,10 @@ const LoginAdmin = () => {
             </div>
             <div className="flex justify-between items-center">
               <div>
-                <div class="form-control">
-                  <label class="label cursor-pointer">
-                    <span class="label-text mr-2">Remember me</span>
-                    <input type="checkbox" class="checkbox checkbox-primary" />
+                <div className="form-control">
+                  <label className="label cursor-pointer">
+                    <span className="label-text mr-2">Remember me</span>
+                    <input type="checkbox" className="checkbox checkbox-primary" />
                   </label>
                 </div>
               </div>

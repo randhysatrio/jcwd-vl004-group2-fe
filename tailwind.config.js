@@ -9,6 +9,9 @@ module.exports = {
         primary: '#0EA5E9',
         secondary: '#64748B',
       },
+      height: {
+        500: '500px',
+      },
     },
   },
   variants: {
@@ -29,7 +32,6 @@ module.exports = {
       },
     ],
     styled: true,
-    themes: true,
     base: true,
     utils: true,
     logs: true,
