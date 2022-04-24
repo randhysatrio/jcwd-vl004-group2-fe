@@ -55,7 +55,7 @@ const Dashboard = () => {
       return <ProductTable key={value.id} product={value} handleEditClick={handleEditClick} handleDeleteClick={handleDeleteClick} />;
     });
   };
-  
+
   const renderPages = () => {
     const pagination = [];
     for (let i = 1; i <= maxPage; i++) {
@@ -172,7 +172,6 @@ const Dashboard = () => {
         </table>
         <div className="mt-3 flex justify-center items-center">
           <button onClick={prevPageHandler}>
-            {' '}
             <FaArrowLeft />
           </button>
           <div>
