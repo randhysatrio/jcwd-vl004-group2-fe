@@ -10,6 +10,7 @@ const EditProduct = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [images, setImage] = useState(null);
+  const [category, setCategory] = useState();
 
   const id = window.location.search.substring(1);
 
@@ -17,10 +18,11 @@ const EditProduct = () => {
     const res = await axios.get(`${API_URL}/product/find/${id}`);
     setImage(res.data.image);
     setProducts(res.data);
+    setCategory(res.data.categoryId);
   };
 
-  console.log(products);
-  console.log(images);
+  console.log(products.categoryId);
+  console.log(category);
 
   const fetchCategories = async () => {
     const res = await axios.get(`${API_URL}/category/all`);
@@ -28,8 +30,6 @@ const EditProduct = () => {
   };
 
   const fetchImagePreview = async () => {
-    // const res = await axios.get(`${API_URL}/product/find/${id}`);
-    // setImage(res.data.image);
     console.log(images);
     let preview = document.getElementById('imgpreview');
     preview.src = `${API_URL}/${images}`;
@@ -65,11 +65,12 @@ const EditProduct = () => {
       volume: volume.current.value,
       description: description.current.value,
       appearance: appearance.current.value,
-      categoryId: categoryId.current.value,
+      categoryId: parseInt(categoryId.current.value),
     };
     formData.append('productData', JSON.stringify(newProduct));
     formData.append('image', images);
     console.log(newProduct);
+
     try {
       await axios.patch(`${API_URL}/product/edit/${id}`, formData);
       navigate('/dashboard');
@@ -163,8 +164,11 @@ const EditProduct = () => {
             <label className="">Category:</label>
           </div>
           {/* <DropdownCategories /> */}
-          <select name="categoryId" id="">
-            <option value="">Choose a category</option>
+          <select   name="categoryId"
+              ref={categoryId}
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}>
+            {/* <option value="">Choose a category</option> */}
             {categories.map((item, index) => (
               <option ref={categoryId} value={item.id} key={item?.id}>
                 {item.name}

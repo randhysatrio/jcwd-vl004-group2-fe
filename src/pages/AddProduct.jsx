@@ -68,7 +68,7 @@ const AddProduct = () => {
       volume: addFormData.volume,
       description: addFormData.description,
       appearance: addFormData.appearance,
-      categoryId: categoryId.current.value,
+      categoryId: parseInt(categoryId.current.value),
     };
     formData.append('productData', JSON.stringify(newProduct));
     formData.append('image', images);
