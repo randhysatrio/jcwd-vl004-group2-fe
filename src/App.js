@@ -25,10 +25,10 @@ import Payment from './pages/Payment';
 import User from './pages/User';
 import Profile from './pages/Profile';
 import History from './pages/History';
+import Address from './pages/Address';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Address from './pages/Address';
 
 function App() {
   const dispatch = useDispatch();

@@ -1,13 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 
 import { FaSearch } from 'react-icons/fa';
-import { AiFillStar } from 'react-icons/ai';
+import { AiFillStar, AiFillFire, AiOutlineCheckCircle, AiOutlineCloseCircle } from 'react-icons/ai';
 
 const ProductGridCard = ({ product, newarrival, bestseller }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="h-[310px] w-56 flex flex-col justify-center items-center rounded-lg overflow-hidden border relative shadow-md group">
+    <div className="h-[340px] w-56 flex flex-col justify-center items-center rounded-lg overflow-hidden border relative shadow-md group">
       <div className="absolute z-2 inset-0 bg-gray-600 bg-opacity-0 group-hover:bg-opacity-30 group-hover:backdrop-blur-sm transition-all"></div>
       <div
         onClick={() => navigate(`/products/${product.id}`)}
@@ -26,10 +26,10 @@ const ProductGridCard = ({ product, newarrival, bestseller }) => {
         </div>
         <div className="w-full pl-3 bg-red-200s">
           <span className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-sky-500 bg-clip-text text-transparent">
-            Rp. {product.price_sell ? product.price_sell.toLocaleString('id') : 0}
+            Rp. {product.price_sell?.toLocaleString('id')}
           </span>
         </div>
-        <div className="w-full py-1 px-3 flex items-center gap-1 text-sm">
+        <div className="w-full py-[2px] px-3 flex items-center gap-1 text-sm">
           <div className="flex text-amber-300">
             <AiFillStar />
             <AiFillStar />
@@ -38,6 +38,30 @@ const ProductGridCard = ({ product, newarrival, bestseller }) => {
             <AiFillStar />
           </div>
           <span className="font-semibold text-slate-700">(12)</span>
+        </div>
+        <div className="px-3 mb-[2px] flex gap-1 items-center text-sm font-semibold">
+          {product.stock_in_unit ? (
+            product.stock_in_unit <= 5 * product.volume ? (
+              <>
+                <AiFillFire className="text-orange-500" />
+                <span>
+                  {!Math.floor(product.stock_in_unit / product.volume)
+                    ? `Last item!`
+                    : `${Math.floor(product.stock_in_unit / product.volume)} remaining!`}
+                </span>
+              </>
+            ) : (
+              <>
+                <AiOutlineCheckCircle className="text-sky-400" />
+                <span>Currently in stock!</span>
+              </>
+            )
+          ) : (
+            <>
+              <AiOutlineCloseCircle className="text-red-400" />
+              <span>Out of stock</span>
+            </>
+          )}
         </div>
         <div className="w-full py-1 flex gap-1 items-center px-3">
           {newarrival && (

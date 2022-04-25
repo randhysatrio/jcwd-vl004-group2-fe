@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Axios from 'axios';
 import { API_URL } from '../assets/constants';
 
-import { AiOutlineEye, AiOutlineEyeInvisible, AiFillCloseCircle, AiOutlineLoading3Quarters } from 'react-icons/ai';
+import { Menu, Transition } from '@headlessui/react';
+import { AiOutlineEye, AiOutlineEyeInvisible, AiFillCloseCircle, AiOutlineEdit, AiOutlineLoading3Quarters } from 'react-icons/ai';
 import { MdVerified, MdAddAPhoto } from 'react-icons/md';
 import { BiDiamond } from 'react-icons/bi';
 import { BsThreeDots } from 'react-icons/bs';
@@ -11,6 +12,48 @@ import { toast } from 'react-toastify';
 
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+
+const ProfileMenu = ({ editMode, setEditMode }) => {
+  return (
+    <Menu as="div" className="relative">
+      <Menu.Button
+        disabled={editMode}
+        onClick={() => setEditMode(true)}
+        className="h-7 w-7 flex justify-center items-center rounded-full bg-white hover:bg-gray-200 active:scale-95 transition disabled:bg-gray-200 disabled:cursor-default focus:outline-none"
+      >
+        <BsThreeDots className="text-sky-500" />
+      </Menu.Button>
+
+      <Transition
+        as={Fragment}
+        enter="transition ease-out duration-100"
+        enterFrom="transform opacity-0 scale-95"
+        enterTo="transform opacity-100 scale-100"
+        leave="transition ease-in duration-75"
+        leaveFrom="transform opacity-100 scale-100"
+        leaveTo="transform opacity-0 scale-95"
+      >
+        <Menu.Items className="absolute right-3 z-30 bg-white shadow-md rounded-md focus:outline-none">
+          <Menu.Item>
+            {({ active }) => (
+              <div className="w-36 h-10 p-1">
+                <button
+                  onClick={() => setEditMode(true)}
+                  className={`w-full h-full pl-2 ${
+                    active ? 'bg-sky-100 text-sky-500 text-opacity-80' : 'text-sky-300'
+                  } focus:outline-none rounded-md flex items-center gap-2 transition text-sm font-semibold`}
+                >
+                  <AiOutlineEdit />
+                  Edit Profile
+                </button>
+              </div>
+            )}
+          </Menu.Item>
+        </Menu.Items>
+      </Transition>
+    </Menu>
+  );
+};
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -155,18 +198,10 @@ const Profile = () => {
         <div className="w-[35vw] h-max px-4 mr-4 bg-white rounded-box border flex flex-col">
           <div className="w-full py-1">
             <div className="w-full flex py-2">
-              <span className="text-xl font-bold bg-gradient-to-r from-sky-700 to-sky-500 bg-clip-text text-transparent mr-auto">
+              <span className="text-xl font-bold bg-gradient-to-r from-sky-500 to-sky-400 bg-clip-text text-transparent mr-auto">
                 My Profile
               </span>
-              <button
-                disabled={editMode}
-                onClick={() => setEditMode(true)}
-                className={`h-7 w-7 flex justify-center items-center rounded-full ${
-                  editMode ? 'bg-gray-200 cursor-default' : 'bg-white hover:bg-gray-200 active:scale-95'
-                }  transition`}
-              >
-                <BsThreeDots className="text-sky-500" />
-              </button>
+              <ProfileMenu editMode={editMode} setEditMode={setEditMode} />
             </div>
             <div className="w-full h-[1px] bg-slate-300" />
           </div>
@@ -277,7 +312,7 @@ const Profile = () => {
                 }}
                 className={`w-28 ${
                   editMode ? 'visible h-10 mb-1 mt-5 opacity-100' : 'h-0 invisible opacity-0'
-                } rounded-lg font-semibold hover:brightness-125 active:scale-95 text-white bg-rose-500 transition-all duration-200`}
+                } rounded-lg font-semibold hover:brightness-110 active:scale-95 text-white bg-gradient-to-r from-red-500 to-rose-300 transition-all duration-200`}
               >
                 Cancel
               </button>
@@ -293,18 +328,7 @@ const Profile = () => {
                 }
                 className={`w-28 ${
                   editMode ? 'visible h-10 mb-1 mt-5 opacity-100' : 'h-0 invisible opacity-0'
-                } rounded-lg font-semibold text-white ${
-                  formik.errors.name ||
-                  formik.errors.username ||
-                  formik.errors.phone_number ||
-                  (formik.values.name === userData.name &&
-                    (formik.values.username === userData.username || formik.values.username === '') &&
-                    (formik.values.phone_number === userData.phone_number || formik.values.phone_number === '') &&
-                    !profileImage) ||
-                  profileLoading
-                    ? 'bg-emerald-200 cursor-default'
-                    : 'bg-emerald-500 hover:brightness-125 active:scale-95'
-                }  transition-all flex items-center justify-center gap-1 duration-200`}
+                } rounded-lg font-semibold text-white bg-gradient-to-r from-emerald-500 to-emerald-300 disabled:bg-opacity-70 disabled:from-emerald-200 disabled:to-emerald-200 disabled:active:scale-100 disabled:hover:brightness-100 hover:brightness-125 active:scale-95 transition-all flex items-center justify-center gap-1 duration-200`}
               >
                 {profileLoading ? (
                   <>
