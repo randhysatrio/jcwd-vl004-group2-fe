@@ -1,20 +1,66 @@
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import Axios from 'axios';
+import { API_URL } from '../assets/constants';
 import { useNavigate } from 'react-router-dom';
 
-import { AiOutlineCheckCircle, AiOutlineMail, AiFillStar } from 'react-icons/ai';
+import {
+  AiOutlineCheckCircle,
+  AiOutlineCloseCircle,
+  AiOutlineShoppingCart,
+  AiFillStar,
+  AiFillFire,
+  AiOutlineLoading3Quarters,
+} from 'react-icons/ai';
+import { toast } from 'react-toastify';
 
 const ProductCardAll = ({ view, product }) => {
   const navigate = useNavigate();
+  const [cartLoading, setCartLoading] = useState(false);
+  const userGlobal = useSelector((state) => state.user);
+  const userToken = localStorage.getItem('userToken');
+
+  const addToCart = async () => {
+    try {
+      if (!userToken) {
+        navigate('/login');
+      } else {
+        setCartLoading(true);
+
+        const response = await Axios.post(`${API_URL}/cart/add`, {
+          userId: userGlobal.id,
+          productId: product.id,
+          quantity: product.volume,
+        });
+
+        if (response.data.conflict) {
+          setCartLoading(false);
+
+          toast.warning(response.data.message, { theme: 'colored', position: 'bottom-left' });
+        } else {
+          setCartLoading(false);
+
+          toast.success(`Added ${product.volume?.toLocaleString('id')}${product.unit} to your cart!`, {
+            position: 'bottom-left',
+            theme: 'colored',
+          });
+        }
+      }
+    } catch (error) {
+      toast.error('Unable to add this item to your cart!', { theme: 'colored', position: 'bottom-left' });
+    }
+  };
 
   return (
     <>
       {view === 'grid' ? (
-        <div className="w-[232px] h-96 m-2 border hover:bg-zinc-100 rounded-md flex flex-col cursor-pointer">
-          <div className="w-full h-36 flex justify-center items-center">
+        <div className="w-[232px] h-[360px] m-2 border hover:bg-zinc-100 rounded-md flex flex-col cursor-pointer">
+          <div className="w-full h-2/5 flex justify-center items-center">
             <div className="w-32 h-32 flex justify-center items-center rounded-lg border border-slate-300 overflow-hidden bg-white">
               <img src={product.image} className="w-full hover:scale-105 object-contain transition" />
             </div>
           </div>
-          <div className="w-full h-60 flex flex-col pb-2 px-2">
+          <div className="w-full h-3/5 flex flex-col pb-2 px-2">
             <span className="text-sm font-light text-slate-400">{product.category.name}</span>
             <div className="w-full h-12 flex items-center break-words overflow-hidden">
               <span
@@ -26,7 +72,7 @@ const ProductCardAll = ({ view, product }) => {
             </div>
             <div className="w-full flex items-center">
               <span className="text-lg font-bold w-max bg-gradient-to-r from-emerald-500 to-emerald-700 bg-clip-text text-transparent">
-                Rp. {product.price_sell ? product.price_sell.toLocaleString('id') : null}/{product.unit}
+                Rp. {product.price_sell?.toLocaleString('id')}/{product.unit}
               </span>
             </div>
             <div className="flex w-full items-center gap-2 text-sm">
@@ -39,13 +85,46 @@ const ProductCardAll = ({ view, product }) => {
               </div>
               <span className="font-semibold text-sky-900">12 reviews</span>
             </div>
-            <div className="text-sm flex items-center gap-2">
-              <AiOutlineCheckCircle className="text-sky-400" />
-              <span className="font-semibold text-slate-800">Currently in-stock</span>
+            <div className="text-sm flex items-center font-semibold text-slate-800 gap-2">
+              {product.stock_in_unit ? (
+                product.stock_in_unit <= 5 * product.volume ? (
+                  <>
+                    <AiFillFire className="text-orange-500" />
+                    <span>
+                      {!Math.floor(product.stock_in_unit / product.volume)
+                        ? `Last item!`
+                        : `${Math.floor(product.stock_in_unit / product.volume)} remaining!`}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <AiOutlineCheckCircle className="text-sky-400" />
+                    <span>Currently in stock!</span>
+                  </>
+                )
+              ) : (
+                <>
+                  <AiOutlineCloseCircle className="text-red-400" />
+                  <span>Out of stock</span>
+                </>
+              )}
             </div>
-            <button className="w-[90%] h-9 rounded-md mt-auto mx-auto bg-gradient-to-r from-sky-400 to-sky-600 text-white font-bold hover:brightness-110 cursor-pointer transition active:scale-95 text-sm gap-2 flex justify-center items-center shadow">
-              <AiOutlineMail />
-              <span className="font-semibold">Send Inquiry</span>
+            <button
+              onClick={addToCart}
+              disabled={cartLoading}
+              className="w-[90%] h-9 rounded-md mt-auto mx-auto bg-gradient-to-r from-sky-400 to-sky-600 text-white font-bold hover:brightness-110 cursor-pointer transition active:scale-95 text-sm gap-2 flex justify-center items-center shadow disabled:from-sky-300 disabled:to-sky-500 disabled:active:scale-100"
+            >
+              {cartLoading ? (
+                <>
+                  <AiOutlineLoading3Quarters className="animate-spin" />
+                  Adding item..
+                </>
+              ) : (
+                <>
+                  <AiOutlineShoppingCart />
+                  <span className="font-semibold">Add to Cart</span>
+                </>
+              )}
             </button>
           </div>
         </div>
@@ -83,24 +162,50 @@ const ProductCardAll = ({ view, product }) => {
           <div className="w-[25%] h-full pt-4 pr-4">
             <div className="w-full flex flex-col items-end gap-2 mb-3">
               <span className="text-2xl w-max bg-gradient-to-r from-emerald-500 to-emerald-700 bg-clip-text text-transparent font-bold">
-                Rp. {product.price_sell ? product.price_sell.toLocaleString('id') : null}/{product.unit}
+                Rp. {product.price_sell?.toLocaleString('id')}/{product.unit}
               </span>
-              <div className="text-lg flex items-center gap-2">
-                <AiOutlineCheckCircle className="text-sky-400" />
-                <span className="font-semibold text-slate-800">Currently in-stock</span>
+              <div className="text-lg flex items-center font-semibold text-slate-800 gap-2">
+                {product.stock_in_unit ? (
+                  product.stock_in_unit <= 5 * product.volume ? (
+                    <>
+                      <AiFillFire className="text-orange-500" />
+                      <span>
+                        {!Math.floor(product.stock_in_unit / product.volume)
+                          ? `Last item!`
+                          : `${Math.floor(product.stock_in_unit / product.volume)} remaining!`}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <AiOutlineCheckCircle className="text-sky-400" />
+                      <span>Currently in stock!</span>
+                    </>
+                  )
+                ) : (
+                  <>
+                    <AiOutlineCloseCircle className="text-red-400" />
+                    <span>Out of stock</span>
+                  </>
+                )}
               </div>
-              {/* <div className="text flex items-center gap-2 group cursor-pointer">
-                <AiOutlineMail className="text-slate-600 group-hover:brightness-125" />
-                <span className="font-semibold text-sm text-slate-800 group-hover:brightness-125">Send Inquiry</span>
-              </div> */}
             </div>
             <div className="w-full flex justify-end">
               <button
-                onClick={() => alert('Inquiry send')}
-                className="w-[75%] h-10 rounded-lg bg-gradient-to-r from-sky-400 to-sky-600 text-white font-bold hover:brightness-110 cursor-pointer transition active:scale-95 text-md gap-2 flex justify-center items-center shadow"
+                onClick={addToCart}
+                disabled={cartLoading}
+                className="w-[75%] h-10 rounded-lg bg-gradient-to-r from-sky-400 to-sky-600 text-white font-bold hover:brightness-110 cursor-pointer transition active:scale-95 text-md gap-2 flex justify-center items-center shadow disabled:from-sky-300 disabled:to-sky-500 disabled:active:scale-100"
               >
-                <AiOutlineMail />
-                <span className="font-semibold">Send Inquiry</span>
+                {cartLoading ? (
+                  <>
+                    <AiOutlineLoading3Quarters className="animate-spin" />
+                    Adding item..
+                  </>
+                ) : (
+                  <>
+                    <AiOutlineShoppingCart />
+                    <span className="font-semibold">Add to Cart</span>
+                  </>
+                )}
               </button>
             </div>
           </div>

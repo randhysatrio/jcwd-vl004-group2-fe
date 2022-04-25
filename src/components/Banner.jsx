@@ -45,8 +45,9 @@ const Banner = () => {
           </div>
         </SwiperSlide>
         <SwiperSlide>
-          <div className="w-full h-full bg-center bg-cover bg-no-repeat slide2">
-            <div className="w-1/2 h-full flex flex-col justify-center items-center">
+          <div className="w-full h-full bg-center bg-cover bg-no-repeat relative slide2">
+            <div className="absolute inset-0 bg-black bg-opacity-30" />
+            <div className="w-1/2 h-full absolute z-2 flex flex-col justify-center items-center">
               <div className="w-full font-bold flex justify-center gap-2 text-5xl brightness-125 mb-4">
                 <span className="text-gray-50">Medicine.</span>
                 <span className="text-sky-700">Reinvented.</span>
