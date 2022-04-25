@@ -39,7 +39,7 @@ const LoginAdmin = () => {
           password: values.password,
         });
 
-        localStorage.setItem('tokenAdmin', response.data.token);
+        localStorage.setItem('adminToken', response.data.token);
         localStorage.setItem('dataAdmin', response.data.data);
         toast.success(response.data.message);
         dispatch({ type: 'AUTH_ADMIN', payload: response.data.data });
@@ -125,7 +125,10 @@ const LoginAdmin = () => {
                 <div className="form-control">
                   <label className="label cursor-pointer">
                     <span className="label-text mr-2">Remember me</span>
-                    <input type="checkbox" className="checkbox checkbox-primary" />
+                    <input
+                      type="checkbox"
+                      className="checkbox checkbox-primary"
+                    />
                   </label>
                 </div>
               </div>

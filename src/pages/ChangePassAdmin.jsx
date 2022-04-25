@@ -49,7 +49,7 @@ const ChangePassAdmin = () => {
           },
           {
             headers: {
-              Authorization: token,
+              Authorization: `Bearer ${token}`,
             },
           }
         );
