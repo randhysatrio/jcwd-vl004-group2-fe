@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -13,15 +13,27 @@ import { API_URL } from '../assets/constants';
 const Cart = () => {
   const userGlobal = useSelector((state) => state.user);
   const cartGlobal = useSelector((state) => state.cart);
-  const dispatch = useDispatch();
-  const userToken = localStorage.getItem('userToken');
   const [isLoading, setIsloading] = useState(false);
-
   const navigate = useNavigate();
+
+  const [cartItems, setCartItems] = useState([]);
+
+  useEffect(() => {
+    const fetchCartItems = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/cart/user/${userGlobal.id}`);
+
+        setCartItems(response.data.carts);
+      } catch (error) {
+        toast.error('Unable to fetch Cart Items!');
+      }
+    };
+    fetchCartItems();
+  }, [userGlobal]);
 
   const rendSubtotal = () => {
     let subtotal = 0;
-    cartGlobal.checkoutItems?.forEach((item) => {
+    cartItems?.forEach((item) => {
       subtotal += item.subtotal;
     });
 
@@ -46,36 +58,19 @@ const Cart = () => {
     }
   };
 
-  const handCheckAll = async () => {
+  const checkAllHandler = async (e) => {
     try {
-      setIsloading(true);
-      await axios.patch(
-        `${API_URL}/cart/checkedall`,
-        {
-          userId: userGlobal.id,
-          isCheckedAll: cartGlobal.isCheckedAll,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-          },
-        }
-      );
+      let response;
 
-      const cartData = await axios.get(
-        `${API_URL}/cart/get/${userGlobal.id}?page=${cartGlobal.active_page}`,
-        {
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-          },
-        }
-      );
+      if (e.target.checked) {
+        response = await axios.patch(`${API_URL}/cart/checked-all/${userGlobal.id}`, { isChecked: true });
+      } else {
+        response = await axios.patch(`${API_URL}/cart/checked-all/${userGlobal.id}`, { isChecked: false });
+      }
 
-      dispatch({ type: 'CART_LIST', payload: cartData.data });
-      setIsloading(false);
-    } catch (error) {
-      setIsloading(false);
-      toast.error(error.response.data.message);
+      setCartItems(response.data);
+    } catch (err) {
+      toast.error('Unable to checked all Cart Items');
     }
   };
 
@@ -85,6 +80,10 @@ const Cart = () => {
       currency: 'IDR',
       minimumFractionDigits: 0,
     });
+  };
+
+  const renderCart = () => {
+    return cartItems.map((item) => <CartCard key={item.id} item={item} setCartItems={setCartItems} userId={userGlobal.id} />);
   };
 
   return (
@@ -97,9 +96,9 @@ const Cart = () => {
             <input
               id="checkeall"
               type="checkbox"
-              checked={cartGlobal.isCheckedAll}
+              checked={cartItems?.length && !cartItems?.filter((item) => item.isChecked === false).length}
               className="checkbox"
-              onChange={handCheckAll}
+              onChange={checkAllHandler}
               disabled={isLoading}
             />
             <span className="label-text text-lg">Select All</span>
@@ -108,10 +107,8 @@ const Cart = () => {
         <div className="flex m-auto justify-center gap-8 w-full">
           <div className="w-9/12 flex flex-col gap-8">
             {/* List items */}
-            {cartGlobal.cartList.length ? (
-              cartGlobal.cartList.map((item) => {
-                return <CartCard key={item.id} item={item} />;
-              })
+            {cartItems?.length ? (
+              renderCart()
             ) : (
               <div className="bg-gray-100 rounded-md h-40 flex items-center justify-center">
                 <h2 className="text-3xl">Your cart is empty</h2>
@@ -124,11 +121,7 @@ const Cart = () => {
             <div className="flex flex-col gap-2">
               <div className="flex justify-between">
                 <span>
-                  Subtotal (
-                  {cartGlobal.checkoutItems
-                    ? cartGlobal.checkoutItems.length
-                    : 0}{' '}
-                  {cartGlobal.checkoutItems?.length > 1 ? 'items' : 'item'})
+                  Subtotal ({cartItems?.length ? cartItems.length : 0} {cartItems?.length > 1 ? 'items' : 'item'})
                 </span>
                 <span>{toIDR(rendSubtotal())}</span>
               </div>
@@ -139,15 +132,10 @@ const Cart = () => {
               <div className="border-gray-300 border-t"></div>
               <div className="flex justify-between">
                 <span className="font-bold text-lg">TOTAL</span>
-                <span className="font-bold text-lg">
-                  {toIDR(rendSubtotal())}
-                </span>
+                <span className="font-bold text-lg">{toIDR(rendSubtotal())}</span>
               </div>
             </div>
-            <button
-              className="btn btn-block btn-primary"
-              onClick={handCheckout}
-            >
+            <button className="btn btn-block btn-primary" onClick={handCheckout}>
               PROCESS TO CHECKOUT
             </button>
           </div>

@@ -62,6 +62,11 @@ const Login = () => {
           payload: response.data.user,
         });
 
+        dispatch({
+          type: 'CART_LIST',
+          payload: response.data.user.carts.length,
+        });
+
         navigate(-1, { replace: true });
       }
     },

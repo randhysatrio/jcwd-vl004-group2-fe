@@ -55,9 +55,11 @@ const Header = () => {
                 <FaShoppingBag />
               </div>
               <div className="text-xs leading-3">Cart</div>
-              <span className="absolute -right-2 -top-1 w-5 h-5 rounded-full flex items-center justify-center bg-red-500 text-white text-xs">
-                {cartGlobal.total_data}
-              </span>
+              {cartGlobal.total_data ? (
+                <span className="absolute -right-2 -top-1 w-5 h-5 rounded-full flex items-center justify-center bg-red-500 text-white text-xs">
+                  {cartGlobal.total_data}
+                </span>
+              ) : null}
             </Link>
           </div>
           {userGlobal.name ? (

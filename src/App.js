@@ -74,18 +74,12 @@ function App() {
       } else {
         localStorage.setItem('userToken', response.data.token);
 
-        const cartData = await Axios.get(`${API_URL}/cart/get/${response.data.user.id}`, {
-          headers: {
-            Authorization: `Bearer ${response.data.token}`,
-          },
-        });
-
-        dispatch({ type: 'CART_LIST', payload: cartData.data });
-
         dispatch({
           type: 'USER_LOGIN',
           payload: response.data.user,
         });
+
+        dispatch({ type: 'CART_LIST', payload: response.data.user.carts.length });
       }
     };
 
