@@ -69,7 +69,7 @@ const Navbar = () => {
 
   const renderCategories = () => {
     return categories.map((category) => (
-      <Link to={`/products?category=${category.id}`}>
+      <Link key={category.id} to={`/products?category=${category.id}`}>
         <div className="w-full py-3 px-4 flex items-center hover:bg-slate-100 border-b border-opacity-50 transition">
           <span className="text-md text-slate-600 font-semibold hover:text-sky-500 hover:brightness-110 cursor-pointer">
             {category.name}

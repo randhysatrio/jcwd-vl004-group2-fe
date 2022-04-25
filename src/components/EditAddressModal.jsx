@@ -68,13 +68,13 @@ const EditAddressModal = ({ openEdit, setOpenEdit, address, setAddresses }) => {
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
-            enterFrom="scale-90 opacity-90"
-            enterTo="scale-100 opaciy-100"
+            enterFrom="opacity-90 -translate-y-2"
+            enterTo="opaciy-100 translate-y-0"
             leave="ease-in duration-200"
-            leaveFrom="scale-100 opaciy-100"
-            leaveTo="scale-90 opacity-90"
+            leaveFrom="opacity-100 translate-y-0"
+            leaveTo="opacity-90 -translate-y-2"
           >
-            <div className="w-1/3 bg-white rounded-xl z-20 ring ring-offset-2 ring-sky-400 ring-inset flex flex-col addressModalBody">
+            <div className="w-1/3 h-max bg-white rounded-xl z-20 ring ring-offset-2 ring-sky-400 ring-inset flex flex-col addressModalBody">
               <div className="py-8 flex justify-center relative">
                 <span className="text-2xl font-bold bg-gradient-to-r from-sky-500 to-sky-400 bg-clip-text text-transparent">
                   Edit Address

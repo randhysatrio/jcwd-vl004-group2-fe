@@ -192,7 +192,7 @@ const ProductCardAll = ({ view, product }) => {
             <div className="w-full flex justify-end">
               <button
                 onClick={addToCart}
-                disaled={cartLoading}
+                disabled={cartLoading}
                 className="w-[75%] h-10 rounded-lg bg-gradient-to-r from-sky-400 to-sky-600 text-white font-bold hover:brightness-110 cursor-pointer transition active:scale-95 text-md gap-2 flex justify-center items-center shadow disabled:from-sky-300 disabled:to-sky-500 disabled:active:scale-100"
               >
                 {cartLoading ? (

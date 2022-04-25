@@ -53,6 +53,7 @@ function App() {
 
     const persistentLogin = async () => {
       const userToken = localStorage.getItem('userToken');
+
       let response;
 
       if (userToken) {
