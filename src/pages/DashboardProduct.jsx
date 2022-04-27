@@ -55,19 +55,7 @@ const Dashboard = () => {
       return <ProductTable key={value.id} product={value} handleEditClick={handleEditClick} handleDeleteClick={handleDeleteClick} />;
     });
   };
-
-  const renderPages = () => {
-    const pagination = [];
-    for (let i = 1; i <= maxPage; i++) {
-      pagination.push(i);
-    }
-    return pagination.map((value) => {
-      return (
-        <AdminPagination key={value} pagination={value} setPage={setPage} />
-      );
-    });
-  };
-
+  
   const renderPages = () => {
     const pagination = [];
     for (let i = 1; i <= maxPage; i++) {
