@@ -3,7 +3,7 @@ const AdminPagination = ({ pagination, setPage }) => {
     <div>
       <button
         value={pagination}
-        className="hover cursor-pointer m-3 bg-primary text-white rounded-md focus:bg-black"
+        className="hover cursor-pointer m-3 p-1 bg-primary text-white rounded-lg focus:bg-black"
         onClick={() => setPage(pagination)}
       >
         {pagination}

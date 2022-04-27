@@ -1,26 +1,32 @@
 import { API_URL } from "../assets/constants";
+import noAvatar from "../assets/images/noAvatar.png";
 
 const UserTable = ({ user, handleStatusClick }) => {
   let status = user.active;
 
   return (
-    <tr>
-      <td className="font-medium text-center py-8">{user.id}</td>
-      <td className="font-medium text-center py-8">
+    <tr className="border-b border-gray-200">
+      <td className="font-medium text-center">{user.id}</td>
+      <td className="font-medium text-center">
         <img
-          src={`${API_URL}/${user.profile_picture}`}
-          className="w-40 aspect-[3/2] rounded-lg object-cover object-top border border-gray-200"
+          src={
+            // user.profile_picture
+            //   ? `${API_URL}/${user.profile_picture}`
+            //   : { noAvatar }
+            noAvatar
+          }
+          className="w-12 m-auto h-12 aspect-[3/2] rounded-full object-cover border border-gray-200"
         />
       </td>
-      <td className="font-medium text-center py-8">{user.name}</td>
-      <td className="font-medium text-center py-8">{user.email}</td>
-      <td className="font-medium text-center py-8">{user.phone_number}</td>
+      <td className="font-medium text-center">{user.name}</td>
+      <td className="font-medium text-center">{user.email}</td>
+      <td className="font-medium text-center">{user.phone_number}</td>
       {status ? (
-        <td className="font-medium text-center py-8">Active</td>
+        <td className="font-medium text-center">Active</td>
       ) : (
-        <td className="font-medium text-center py-8">Inactive</td>
+        <td className="font-medium text-center">Inactive</td>
       )}
-      <td className="flex justify-center items-center text-center py-16">
+      <td className="flex justify-center items-center text-center py-24">
         <button
           type="button"
           className="py-2.5 px-6 text-white bg-red-500 hover:bg-red-400 rounded-xl items-center"

@@ -2,7 +2,7 @@ import { API_URL } from "../assets/constants";
 
 const ProductTable = ({ product, handleEditClick, handleDeleteClick }) => {
   return (
-    <tr>
+    <tr className="border-b border-gray-200">
       <td className="font-medium text-center py-8">{product.id}</td>
       <td className="font-medium text-center py-8">
         <img
