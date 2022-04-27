@@ -6,25 +6,47 @@ import Swal from 'sweetalert2';
 import { API_URL } from '../assets/constants';
 import { debounce } from 'throttle-debounce';
 
-function CartCard({ item, setCartItems, userId }) {
+function CartCard({ item, setCartItems, userId, setConflict, setConflictMsg }) {
   const [isLoading, setIsLoading] = useState(false);
   const [quantity, setQuantity] = useState(item.quantity);
+  const [error, setError] = useState('');
 
   const debounceQty = useCallback(
-    debounce(1500, async (quantity) => {
-      await axios.patch(`${API_URL}/cart/quantity/${item.id}`, {
-        quantity,
-      });
+    debounce(1250, async (quantity) => {
+      if (!quantity) {
+        setError('Please enter a valid amount');
+        if (item.is_checked) {
+          setConflict(true);
+        }
+      } else if (quantity > item.product.stock_in_unit) {
+        setError('Quantity cannot exceed stock');
+        if (item.is_checked) {
+          setConflict(true);
+        }
+      } else {
+        setError('');
+
+        const response = await axios.patch(`${API_URL}/cart/quantity/${item.id}`, {
+          quantity,
+          userId,
+        });
+
+        if (response.data.conflict) {
+          setConflict(true);
+          setConflictMsg(response.data.conflict_msg);
+        } else {
+          setConflict(false);
+          setConflictMsg('');
+        }
+
+        setCartItems(response.data.cartItems);
+      }
     }),
     []
   );
 
   useEffect(() => {
-    if (!quantity || quantity > item.product.stock_in_unit) {
-      return;
-    } else {
-      debounceQty(quantity);
-    }
+    debounceQty(quantity);
   }, [quantity]);
 
   const deleteItem = async () => {
@@ -45,7 +67,15 @@ function CartCard({ item, setCartItems, userId }) {
           userId,
         });
 
-        setCartItems(response.data);
+        if (response.data.conflict) {
+          setConflict(true);
+          setConflictMsg(response.data.conflict_msg);
+        } else {
+          setConflict(false);
+          setConflictMsg('');
+        }
+
+        setCartItems(response.data.cartItems);
         setIsLoading(false);
         Swal.fire('Cart deleted successfully!');
       } else {
@@ -67,7 +97,8 @@ function CartCard({ item, setCartItems, userId }) {
         response = await axios.patch(`${API_URL}/cart/checked-one/${item.id}`, { isChecked: false, userId });
       }
 
-      setCartItems(response.data);
+      setConflict(false);
+      setCartItems(response.data.cartItems);
     } catch (error) {
       toast.error('Unable to checked this Cart Item');
     }
@@ -76,14 +107,27 @@ function CartCard({ item, setCartItems, userId }) {
   return (
     <div className="grid grid-cols-12 grid-flow-col border-gray-300 border rounded-md py-2 px-3">
       <div className="col-span-7">
-        <input id={`checked-${item.id}`} type="checkbox" onChange={checkedHandler} checked={item.isChecked} className="checkbox" />
+        <div className="flex items-center py-2 gap-2">
+          <input
+            disabled={quantity > item.product.stock_in_unit || !quantity}
+            type="checkbox"
+            onChange={checkedHandler}
+            checked={item.isChecked}
+            className="checkbox"
+          />
+          {item.quantity > item.product?.stock_in_unit && (
+            <span className="text-md font-semibold text-red-300">
+              This cart item is unprocessable. Please check this cart item quantity
+            </span>
+          )}
+        </div>
         <div className="flex p-1">
           <img src={item.product.image} className="h-36" alt="cart product" />
           <div className="flex flex-col justify-center pl-4">
             <span className="font-bold text-lg pb-2">{item.product.name}</span>
             <div>
               <span>price : </span>
-              <span className="text-red-400 font-bold">{item.product?.price_sell.toLocaleString('id')}</span>
+              <span className="text-red-400 font-bold">{item.product.price_sell.toLocaleString('id')}</span>
             </div>
             <div>
               <span>appearance : </span>
@@ -92,41 +136,58 @@ function CartCard({ item, setCartItems, userId }) {
           </div>
         </div>
       </div>
-      <div className="col-span-3 flex flex-col justify-center items-center">
+      <div className="col-span-3 flex flex-col pt-11 items-center">
         <span className="italic pb-3 text-sm">unit : {item.product.unit}</span>
-        <div className="flex justify-center items-center">
-          <button
-            className={`border border-primary w-10 h-10 flex justify-center items-center text-primary bg-sky-50 hover:bg-sky-100 ${
-              item.quantity <= item.product.volume ? 'hover:cursor-not-allowed' : null
-            }`}
-            onClick={() => {
-              setQuantity(quantity - item.product.volume);
-            }}
-            disabled={quantity <= item.product.volume || isLoading}
-          >
-            <FiMinus />
-          </button>
-          <input
-            id={`qty-${item.id}`}
-            value={quantity}
-            type="number"
-            className="w-20 h-10 m-0 focus:outline-none border-y border-primary text-center"
-            onChange={(e) => setQuantity(parseInt(e.target.value))}
-            disabled={isLoading}
-          />
-          <button
-            className="border border-primary w-10 h-10 flex justify-center items-center text-primary bg-sky-50 hover:bg-sky-100"
-            onClick={() => setQuantity(quantity + item.product.volume)}
-            disabled={quantity === item.product.stock_in_unit || quantity + item.product.volume > item.product.stock_in_unit || isLoading}
-          >
-            <FiPlus />
-          </button>
+        <div className="flex flex-col">
+          <div className="flex justify-center items-center">
+            <button
+              className={`border border-primary w-10 h-10 flex justify-center items-center text-primary bg-sky-50 hover:bg-sky-100 ${
+                quantity <= item.product.volume ? 'hover:cursor-not-allowed' : null
+              }`}
+              onClick={() => {
+                setQuantity(quantity - item.product.volume);
+              }}
+              disabled={quantity <= item.product.volume || isLoading}
+            >
+              <FiMinus />
+            </button>
+            <input
+              id={`qty-${item.id}`}
+              value={quantity}
+              type="number"
+              className="w-20 h-10 m-0 focus:outline-none border-y border-primary text-center"
+              onChange={(e) => setQuantity(parseInt(e.target.value))}
+              disabled={isLoading}
+            />
+            <button
+              className="border border-primary w-10 h-10 flex justify-center items-center text-primary bg-sky-50 hover:bg-sky-100"
+              onClick={() => setQuantity(quantity + item.product.volume)}
+              disabled={quantity === item.product.stock_in_unit || quantity + item.product.volume > item.product.stock_in_unit || isLoading}
+            >
+              <FiPlus />
+            </button>
+          </div>
+        </div>
+        <div className="flex justify-center">{error && <span className="text-sm font-semibold text-rose-300 py-1">{error}</span>}</div>
+        <div className="flex justify-center gap-2 py-2">
+          <span className="font-bold">Available:</span>
+          <div className="flex items-center gap-1">
+            <span className="font-semibold">{item.product.stock.toLocaleString('id')}</span>
+            <span>{item.product.unit === 'g' ? 'pack' : 'bottle'}</span>
+          </div>
+          <span>/</span>
+          <div className="flex items-center gap-1">
+            <span className="font-semibold">{item.product?.stock_in_unit.toLocaleString('id')}</span>
+            <span>{item.product.unit}</span>
+          </div>
         </div>
       </div>
       <div className="col-span-2 flex justify-around items-center">
         <div className="flex flex-col justify-center flex-wrap items-center">
           <span>Total Price</span>
-          <span className="text-red-400 font-bold text-lg">{item.subtotal?.toLocaleString('id')}</span>
+          <span className="text-red-400 font-bold text-lg">
+            {quantity * item.product.price_sell ? (quantity * item.product.price_sell).toLocaleString('id') : 0}
+          </span>
         </div>
         <FiTrash2 size={24} className="hover:cursor-pointer" onClick={deleteItem} disabled={isLoading} />
       </div>

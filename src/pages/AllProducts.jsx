@@ -145,6 +145,10 @@ const AllProducts = () => {
           } else {
             setCurrentCategory(category.id);
           }
+
+          if (searchParams.get('category')) {
+            navigate('/products');
+          }
           setCurrentPage(1);
           if (!searchParams.get('keyword')) {
             navigate('/products');

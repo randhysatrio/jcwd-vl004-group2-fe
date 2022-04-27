@@ -1,14 +1,6 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import {
-  FiEdit,
-  FiMapPin,
-  FiPhone,
-  FiPlusSquare,
-  FiSave,
-  FiUser,
-  FiXSquare,
-} from 'react-icons/fi';
+import { FiEdit, FiMapPin, FiPhone, FiPlusSquare, FiSave, FiUser, FiXSquare } from 'react-icons/fi';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -21,7 +13,7 @@ import Navbar from '../components/Navbar';
 
 function Checkout() {
   const [paymentMethod, setPaymentMethod] = useState();
-  const [address, setAddress] = useState();
+  const [address, setAddress] = useState({});
   const [addressList, setAddressList] = useState([]);
   const [deliveryOptions, setDeliveryOptions] = useState([]);
   const [delivery, setDelivery] = useState('');
@@ -39,6 +31,7 @@ function Checkout() {
   const userToken = localStorage.getItem('userToken');
   const userGlobal = useSelector((state) => state.user);
   const dispatch = useDispatch();
+
   const payments = [
     {
       type: 'transfer',
@@ -69,12 +62,7 @@ function Checkout() {
       });
 
       setAddressList(response.data);
-
-      let selectedAddress = response.data.filter((item) => {
-        return item.is_default === true;
-      });
-
-      setAddress(selectedAddress[0]);
+      setAddress(response.data.find((address) => address.is_default === true));
     } catch (error) {
       toast.error(error.response.data.message);
     }
@@ -82,8 +70,9 @@ function Checkout() {
 
   const getDelivery = async () => {
     try {
-      const response = await axios.get(`${API_URL}/checkout/delivery`);
-      setDeliveryOptions(response.data.data);
+      const response = await axios.get(`${API_URL}/deliveryoption/all`);
+
+      setDeliveryOptions(response.data);
     } catch (error) {
       toast.error(error.response.data.message);
     }
@@ -91,14 +80,11 @@ function Checkout() {
 
   const getPhone = async () => {
     try {
-      const response = await axios.get(
-        `${API_URL}/checkout/phone/${userGlobal.id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-          },
-        }
-      );
+      const response = await axios.get(`${API_URL}/checkout/phone/${userGlobal.id}`, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
       setPhone(response.data.data);
     } catch (error) {
       toast.error(error.response.data.message);
@@ -114,10 +100,11 @@ function Checkout() {
     }
 
     // Get data checkout from cart
-    const checkout = JSON.parse(localStorage.getItem('checkout-data'));
-    if (checkout) {
-      setOrderItems(checkout.data);
-      setSubtotal(parseInt(checkout.subtotal));
+    const checkoutData = JSON.parse(localStorage.getItem('checkoutData'));
+
+    if (checkoutData) {
+      setOrderItems(checkoutData.items);
+      setSubtotal(parseInt(checkoutData.total));
     } else {
       navigate('/', { replace: true });
     }
@@ -165,16 +152,13 @@ function Checkout() {
         localStorage.setItem('payment-data', JSON.stringify(paymentData));
 
         // update new cart
-        const cartData = await axios.get(
-          `${API_URL}/cart/get/${userGlobal.id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${userToken}`,
-            },
-          }
-        );
+        const cartData = await axios.get(`${API_URL}/cart/get/${userGlobal.id}`, {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        });
 
-        dispatch({ type: 'CART_LIST', payload: cartData.data });
+        dispatch({ type: 'CART_LIST', payload: cartData.data.length });
 
         setIsLoading(false);
         toast.success(response.data.message);
@@ -207,7 +191,7 @@ function Checkout() {
         }
       );
 
-      getPhone();
+      // getPhone();
       setIsLoading(false);
       setEditPhone(false);
       toast.success(response.data.message);
@@ -222,7 +206,7 @@ function Checkout() {
       setIsLoading(true);
       const response = await axios.patch(
         `${API_URL}/checkout/select-address`,
-        { id, lastId: address.id },
+        { id, userId: userGlobal?.id },
         {
           headers: {
             Authorization: `Bearer ${userToken}`,
@@ -230,7 +214,8 @@ function Checkout() {
         }
       );
 
-      getAddress();
+      setAddressList(response.data.addresses);
+      setAddress(response.data.addresses.find((address) => address.is_default === true));
       setIsLoading(false);
       toast.success(response.data.message);
     } catch (error) {
@@ -271,34 +256,19 @@ function Checkout() {
                   {editPhone ? (
                     <>
                       <input
-                        defaultValue={phone}
+                        value={phone}
                         type="text"
                         placeholder="Type here"
                         className="input input-bordered input-sm w-36 max-w-xs mr-4"
                         onChange={(e) => setPhone(e.target.value)}
                       ></input>
-                      <FiSave
-                        size={24}
-                        color="#0EA5E9"
-                        className="hover:cursor-pointer"
-                        onClick={() => handEditPhone(phone)}
-                      />
-                      <FiXSquare
-                        size={24}
-                        color="red"
-                        className="hover:cursor-pointer"
-                        onClick={() => setEditPhone(!editPhone)}
-                      />
+                      <FiSave size={24} color="#0EA5E9" className="hover:cursor-pointer" onClick={() => handEditPhone(phone)} />
+                      <FiXSquare size={24} color="red" className="hover:cursor-pointer" onClick={() => setEditPhone(!editPhone)} />
                     </>
                   ) : (
                     <>
                       <span className="w-36">{phone ? phone : '-'}</span>
-                      <FiEdit
-                        size={24}
-                        color="#0EA5E9"
-                        className="hover:cursor-pointer"
-                        onClick={() => setEditPhone(!editPhone)}
-                      />
+                      <FiEdit size={24} color="#0EA5E9" className="hover:cursor-pointer" onClick={() => setEditPhone(!editPhone)} />
                     </>
                   )}
                 </div>
@@ -306,23 +276,19 @@ function Checkout() {
                   <FiMapPin size={20} />
                   {address ? (
                     <span>
-                      {address.address}, {address.city}, {address.province},{' '}
-                      {address.country}, {address.postalcode}
+                      {address.address}, {address.city}, {address.province}, {address.country}, {address.postalcode}
                     </span>
                   ) : (
-                    <a
-                      href="#my-modal-4"
-                      className="text-primary border-primary border-b font-semibold"
-                    >
+                    <label htmlFor="my-modal-4" className="text-primary border-primary border-b font-semibold">
                       Add Address
-                    </a>
+                    </label>
                   )}
                 </div>
               </div>
               {address && (
-                <a href="#my-modal-2" className="btn btn-sm">
+                <label htmlFor="my-modal-2" className="btn btn-sm">
                   Change Address
-                </a>
+                </label>
               )}
             </div>
             <div className="divider" />
@@ -356,7 +322,7 @@ function Checkout() {
               <h3 className="text-xl font-semibold">Your Order</h3>
             </div>
             <div className="divider" />
-            {orderItems.map((item) => {
+            {orderItems?.map((item) => {
               return <CheckoutCard key={item.id} item={item} />;
             })}
           </div>
@@ -366,10 +332,9 @@ function Checkout() {
           <div className="flex flex-col gap-2">
             <div className="flex justify-between">
               <span>
-                Subtotal ({orderItems.length}{' '}
-                {orderItems.length > 1 ? 'items' : 'item'})
+                Subtotal ({orderItems.length} {orderItems.length > 1 ? 'items' : 'item'})
               </span>
-              <span>{toIDR(subtotal)}</span>
+              <span>{subtotal.toLocaleString('id')}</span>
             </div>
             <div className="flex justify-between">
               <span>Delivery</span>
@@ -378,139 +343,114 @@ function Checkout() {
             <div className="divider"></div>
             <div className="flex justify-between">
               <span className="font-bold text-lg">TOTAL</span>
-              <span className="font-bold text-lg">
-                {toIDR(subtotal + costDelivery)}
-              </span>
+              <span className="font-bold text-lg">{(subtotal + costDelivery).toLocaleString('id')}</span>
             </div>
           </div>
-          <a
-            href="#my-modal-3"
-            className="h-20 bg-gray-200 rounded-md flex justify-center items-center hover:cursor-pointer"
-          >
+          <label htmlFor="my-modal-3" className="h-20 bg-gray-200 rounded-md flex justify-center items-center hover:cursor-pointer">
             {paymentMethod ? (
               <span className="font-semibold text-lg">
                 {paymentMethod.bankName} - {paymentMethod.type}
               </span>
             ) : (
-              <span className="font-semibold text-lg">
-                Select payment method
-              </span>
+              <span className="font-semibold text-lg">Select payment method</span>
             )}
-          </a>
-          <textarea
-            className="textarea my-4 h-14 bg-gray-100"
-            placeholder="Write your note"
-            onChange={(e) => setNotes(e.target.value)}
-          />
-          <button
-            disabled={isLoading}
-            className="btn btn-block btn-primary"
-            onClick={handCheckout}
-          >
+          </label>
+          <textarea className="textarea my-4 h-14 bg-gray-100" placeholder="Write your note" onChange={(e) => setNotes(e.target.value)} />
+          <button disabled={isLoading} className="btn btn-block btn-primary" onClick={handCheckout}>
             PLACE ORDER
           </button>
         </div>
       </div>
 
       {/* add address modal */}
-      <CheckoutAddAddress onClick={getAddress} />
+      <CheckoutAddAddress onClick={getAddress} userId={userGlobal.id} />
 
       {/* addres modal */}
-      <div className="modal" id="my-modal-2">
-        <div className="modal-box">
-          <div className="modal-action">
-            <a
-              href="#"
-              className="btn btn-sm btn-circle absolute right-2 top-2"
+      <>
+        <input type="checkbox" id="my-modal-2" className="modal-toggle" />
+        <div className="modal">
+          <div className="modal-box">
+            <div className="modal-action">
+              <label htmlFor="my-modal-2" className="btn btn-sm btn-circle absolute right-2 top-2">
+                ✕
+              </label>
+            </div>
+            <h3 className="text-lg font-bold mb-3">Select Your Address</h3>
+            <label
+              htmlFor="my-modal-4"
+              className="btn w-full bg-gray-300 text-gray-700 font-semibold border-0 hover:bg-gray-400 flex gap-3"
             >
-              ✕
-            </a>
-          </div>
-          <h3 className="text-lg font-bold mb-3">Select Your Address</h3>
-          <a
-            href="#my-modal-4"
-            className="btn w-full bg-gray-300 text-gray-700 font-semibold border-0 hover:bg-gray-400 flex gap-3"
-          >
-            Add Address <FiPlusSquare size={24} />
-          </a>
-          <div className=" flex flex-col gap-1 ">
-            {addressList.map((item) => {
-              return (
-                <div
-                  key={item.id}
-                  className={`flex justify-between items-center border-b py-4 ${
-                    item.is_default ? 'text-primary font-semibold' : null
-                  }`}
-                >
-                  <div className="w-4/5">
-                    <span>
-                      {item.address}, {item.city}, {item.province},{' '}
-                      {item.country}, {item.postalcode}
-                    </span>
+              Add Address <FiPlusSquare size={24} />
+            </label>
+            <div className=" flex flex-col gap-1 ">
+              {addressList.map((item) => {
+                return (
+                  <div
+                    key={item.id}
+                    className={`flex justify-between items-center border-b py-4 ${item.is_default ? 'text-primary font-semibold' : null}`}
+                  >
+                    <div className="w-4/5">
+                      <span>
+                        {item.address}, {item.city}, {item.province}, {item.country}, {item.postalcode}
+                      </span>
+                    </div>
+                    <div className="modal-action">
+                      {!item.is_default && (
+                        <label htmlFor="my-modal-2" className="btn btn-sm btn-primary" onClick={() => handSetAddress(item.id)}>
+                          Select
+                        </label>
+                      )}
+                    </div>
                   </div>
-                  <div className="modal-action">
-                    {!item.is_default && (
-                      <a
-                        href="#"
-                        className="btn btn-sm btn-primary"
-                        onClick={() => handSetAddress(item.id)}
-                      >
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </>
+
+      {/* payment method modal */}
+      <>
+        <input type="checkbox" id="my-modal-3" className="modal-toggle" />
+        <div className="modal">
+          <div className="modal-box">
+            <div className="modal-action">
+              <label htmlFor="my-modal-3" className="btn btn-sm btn-circle absolute right-2 top-2">
+                ✕
+              </label>
+            </div>
+            <h3 className="text-lg font-bold mb-3">Select Payment Method</h3>
+            {payments.map((item) => {
+              return (
+                <div key={item.id} className="border-b flex flex-col gap-1 py-2">
+                  <div className="flex justify-start gap-10">
+                    <span className="font-semibold">Type : {item.type}</span>
+                    <span className="font-bold">{item.bankName}</span>
+                  </div>
+                  <div className="flex justify-between items-start">
+                    <div className="flex flex-col">
+                      <div>
+                        <span className="text-gray-500">Account Name : </span>
+                        <span>{item.name}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500">Account Number : </span>
+                        <span>{item.noAccount}</span>
+                      </div>
+                    </div>
+                    <div className="modal-action">
+                      <label htmlFor="my-modal-3" className="btn btn-sm btn-primary" onClick={() => setPaymentMethod(item)}>
                         Select
-                      </a>
-                    )}
+                      </label>
+                    </div>
                   </div>
                 </div>
               );
             })}
           </div>
         </div>
-      </div>
+      </>
 
-      {/* payment method modal */}
-      <div className="modal" id="my-modal-3">
-        <div className="modal-box">
-          <div className="modal-action">
-            <a
-              href="#"
-              className="btn btn-sm btn-circle absolute right-2 top-2"
-            >
-              ✕
-            </a>
-          </div>
-          <h3 className="text-lg font-bold mb-3">Select Payment Method</h3>
-          {payments.map((item) => {
-            return (
-              <div key={item.id} className="border-b flex flex-col gap-1 py-2">
-                <div className="flex justify-start gap-10">
-                  <span className="font-semibold">Type : {item.type}</span>
-                  <span className="font-bold">{item.bankName}</span>
-                </div>
-                <div className="flex justify-between items-start">
-                  <div className="flex flex-col">
-                    <div>
-                      <span className="text-gray-500">Account Name : </span>
-                      <span>{item.name}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-500">Account Number : </span>
-                      <span>{item.noAccount}</span>
-                    </div>
-                  </div>
-                  <div className="modal-action">
-                    <a
-                      href="#"
-                      className="btn btn-sm btn-primary"
-                      onClick={() => setPaymentMethod(item)}
-                    >
-                      Select
-                    </a>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
       <Footer />
     </>
   );
