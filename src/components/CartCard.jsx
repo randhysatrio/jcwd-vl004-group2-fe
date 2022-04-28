@@ -6,47 +6,57 @@ import Swal from 'sweetalert2';
 import { API_URL } from '../assets/constants';
 import { debounce } from 'throttle-debounce';
 
-function CartCard({ item, setCartItems, userId, setConflict, setConflictMsg }) {
+function CartCard({ item, setCartItems, setCheckoutItems, setConflict, setConflictUnchecked }) {
   const [isLoading, setIsLoading] = useState(false);
   const [quantity, setQuantity] = useState(item.quantity);
   const [error, setError] = useState('');
 
-  const debounceQty = useCallback(
+  const debouncedQty = useCallback(
     debounce(1250, async (quantity) => {
       if (!quantity) {
-        setError('Please enter a valid amount');
-        if (item.is_checked) {
-          setConflict(true);
-        }
+        return;
       } else if (quantity > item.product.stock_in_unit) {
-        setError('Quantity cannot exceed stock');
-        if (item.is_checked) {
-          setConflict(true);
-        }
+        return;
       } else {
-        setError('');
-
         const response = await axios.patch(`${API_URL}/cart/quantity/${item.id}`, {
           quantity,
-          userId,
+          userId: item.userId,
         });
 
-        if (response.data.conflict) {
-          setConflict(true);
-          setConflictMsg(response.data.conflict_msg);
-        } else {
-          setConflict(false);
-          setConflictMsg('');
-        }
-
         setCartItems(response.data.cartItems);
+        setCheckoutItems(response.data.checkoutItems);
       }
     }),
     []
   );
 
   useEffect(() => {
-    debounceQty(quantity);
+    debouncedQty(quantity);
+  }, [quantity]);
+
+  useEffect(() => {
+    if (!quantity) {
+      setError('Please enter a valid amount');
+      if (item.isChecked) {
+        setConflict(true);
+      } else {
+        setConflictUnchecked(true);
+      }
+    } else if (quantity > item.product.stock_in_unit) {
+      setError('Quantity cannot exceed stock');
+      if (item.isChecked) {
+        setConflict(true);
+      } else {
+        setConflictUnchecked(true);
+      }
+    } else {
+      setError('');
+      if (item.isChecked) {
+        setConflict(false);
+      } else {
+        setConflictUnchecked(false);
+      }
+    }
   }, [quantity]);
 
   const deleteItem = async () => {
@@ -64,18 +74,12 @@ function CartCard({ item, setCartItems, userId, setConflict, setConflictMsg }) {
 
       if (result.isConfirmed) {
         const response = await axios.post(`${API_URL}/cart/destroy/${item.id}`, {
-          userId,
+          userId: item.userId,
         });
 
-        if (response.data.conflict) {
-          setConflict(true);
-          setConflictMsg(response.data.conflict_msg);
-        } else {
-          setConflict(false);
-          setConflictMsg('');
-        }
-
         setCartItems(response.data.cartItems);
+        setCheckoutItems(response.data.checkoutItems);
+
         setIsLoading(false);
         Swal.fire('Cart deleted successfully!');
       } else {
@@ -92,13 +96,13 @@ function CartCard({ item, setCartItems, userId, setConflict, setConflictMsg }) {
       let response;
 
       if (e.target.checked) {
-        response = await axios.patch(`${API_URL}/cart/checked-one/${item.id}`, { isChecked: true, userId });
+        response = await axios.patch(`${API_URL}/cart/checked-one/${item.id}`, { isChecked: true, userId: item.userId });
       } else {
-        response = await axios.patch(`${API_URL}/cart/checked-one/${item.id}`, { isChecked: false, userId });
+        response = await axios.patch(`${API_URL}/cart/checked-one/${item.id}`, { isChecked: false, userId: item.userId });
       }
 
-      setConflict(false);
       setCartItems(response.data.cartItems);
+      setCheckoutItems(response.data.checkoutItems);
     } catch (error) {
       toast.error('Unable to checked this Cart Item');
     }
@@ -117,7 +121,7 @@ function CartCard({ item, setCartItems, userId, setConflict, setConflictMsg }) {
           />
           {item.quantity > item.product?.stock_in_unit && (
             <span className="text-md font-semibold text-red-300">
-              This cart item is unprocessable. Please check this cart item quantity
+              This cart item is unprocessable. Please adjust this cart item quantity
             </span>
           )}
         </div>
@@ -158,6 +162,7 @@ function CartCard({ item, setCartItems, userId, setConflict, setConflictMsg }) {
               className="w-20 h-10 m-0 focus:outline-none border-y border-primary text-center"
               onChange={(e) => setQuantity(parseInt(e.target.value))}
               disabled={isLoading}
+              min={0}
             />
             <button
               className="border border-primary w-10 h-10 flex justify-center items-center text-primary bg-sky-50 hover:bg-sky-100"

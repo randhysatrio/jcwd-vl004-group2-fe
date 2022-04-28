@@ -16,7 +16,8 @@ import { IoMdClose } from 'react-icons/io';
 const Cart = () => {
   const userGlobal = useSelector((state) => state.user);
   const [conflict, setConflict] = useState(false);
-  const [conflictMsg, setConflictMsg] = useState('');
+  const [conflictUnchecked, setConflictUnchecked] = useState(false);
+  const [conflictMsg, setConflictMsg] = useState(false);
   const [isLoading, setIsloading] = useState(false);
   const navigate = useNavigate();
 
@@ -28,12 +29,9 @@ const Cart = () => {
       try {
         const response = await axios.get(`${API_URL}/cart/user/${userGlobal.id}`);
 
-        if (response.data.conflict) {
-          setConflict(response.data.conflict);
-          setConflictMsg(response.data.conflict_msg);
-        }
-
+        setConflictMsg(response.data.conflict_msg);
         setCartItems(response.data.cartItems);
+        setCheckoutItems(response.data.checkoutItems);
       } catch (error) {
         toast.error('Unable to fetch Cart Items!');
       }
@@ -42,7 +40,13 @@ const Cart = () => {
   }, [userGlobal]);
 
   useEffect(() => {
-    setCheckoutItems(cartItems?.filter((item) => item.isChecked === true));
+    if (!conflictMsg) {
+      return;
+    } else if (cartItems.some((item) => item.quantity > item.product.stock_in_unit)) {
+      setConflictMsg(true);
+    } else {
+      setConflictMsg(false);
+    }
   }, [cartItems]);
 
   const rendSubtotal = () => {
@@ -70,16 +74,30 @@ const Cart = () => {
   //   }
   // };
 
-  const checkoutHandler = () => {
+  const checkoutHandler = async () => {
     if (checkoutItems.length) {
-      const checkoutData = {
-        items: checkoutItems,
-        total: rendSubtotal(),
-      };
+      try {
+        const response = await axios.post(`${API_URL}/cart/final-check`, {
+          userId: userGlobal.id,
+        });
 
-      localStorage.setItem('checkoutData', JSON.stringify(checkoutData));
+        if (response.data.not_allowed) {
+          setCartItems(response.data.cartItems);
+          setCheckoutItems(response.data.checkoutItems);
 
-      navigate('/checkout');
+          toast.warning(response.data.msg, { position: 'bottom-left', theme: 'colored' });
+        } else {
+          const checkoutData = {
+            items: checkoutItems,
+            total: rendSubtotal(),
+          };
+          localStorage.setItem('checkoutData', JSON.stringify(checkoutData));
+
+          navigate('/checkout');
+        }
+      } catch (err) {
+        toast.error('Unable to continue checkout process!', { position: 'bottom-left', theme: 'colored' });
+      }
     } else {
       toast.warning('Please select one or more items from your cart!');
     }
@@ -96,6 +114,7 @@ const Cart = () => {
       }
 
       setCartItems(response.data.cartItems);
+      setCheckoutItems(response.data.checkoutItems);
     } catch (err) {
       toast.error('Unable to checked all Cart Items');
     }
@@ -115,9 +134,9 @@ const Cart = () => {
         key={item.id}
         item={item}
         setCartItems={setCartItems}
-        userId={userGlobal.id}
+        setCheckoutItems={setCheckoutItems}
         setConflict={setConflict}
-        setConflictMsg={setConflictMsg}
+        setConflictUnchecked={setConflictUnchecked}
       />
     ));
   };
@@ -131,8 +150,10 @@ const Cart = () => {
           <div className="w-9/12">
             <div className="w-max py-3 px-5 flex items-center gap-2 bg-gray-300 bg-opacity-50 backdrop-blur-sm rounded-lg">
               <ImWarning className="text-amber-400" />
-              <span className="text-gray-700 font-semibold">{conflictMsg}</span>
-              <span onClick={() => setConflictMsg('')} className="text-sky-500 font-bold hover:brightness-125 cursor-pointer transition">
+              <span className="text-gray-700 font-semibold">
+                We cannot process one or more items in your cart due to the item's product insufficient stock
+              </span>
+              <span onClick={() => setConflictMsg(false)} className="text-sky-500 font-bold hover:brightness-125 cursor-pointer transition">
                 <IoMdClose />
               </span>
             </div>
@@ -141,12 +162,12 @@ const Cart = () => {
         <div className="w-28 flex justify-start form-control">
           <label className="label cursor-pointer">
             <input
-              id="checkeall"
+              id="checkedall"
               type="checkbox"
-              checked={cartItems?.length && !cartItems?.filter((item) => item.isChecked === false).length}
+              checked={cartItems?.length && cartItems?.length === checkoutItems?.length}
               className="checkbox"
               onChange={checkAllHandler}
-              disabled={isLoading || conflict || cartItems?.some((item) => item.quantity > item.product.stock_in_unit)}
+              disabled={isLoading || conflict || conflictUnchecked || cartItems?.some((item) => item.quantity > item.product.stock_in_unit)}
             />
             <span className="label-text text-lg">Select All</span>
           </label>
@@ -184,7 +205,7 @@ const Cart = () => {
                 </div>
               </div>
               <button
-                disabled={!checkoutItems?.length || conflict}
+                disabled={!checkoutItems?.length || conflict || checkoutItems?.some((item) => item.quantity > item.product.stock_in_unit)}
                 className="btn btn-block btn-primary disabled:btn-error disabled:cursor-not-allowed"
                 onClick={checkoutHandler}
               >
