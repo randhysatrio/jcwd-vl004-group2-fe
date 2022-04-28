@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { FaSearchPlus } from 'react-icons/fa';
+import { FaArrowLeft, FaArrowRight, FaSearchPlus } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { API_URL } from '../assets/constants';
 import NavbarDashboard from '../components/NavbarDashboard';
@@ -9,30 +9,48 @@ import SidebarDashboard from '../components/SidebarDashboard';
 const DashboardTransaction = () => {
   const [transactions, setTransactions] = useState();
   const [dataDetails, setDataDetails] = useState([]);
+  const [activePage, setActivePage] = useState(1);
+  const [startNumber, setStartNumber] = useState(1);
+  const [totalPage, setTotalPage] = useState(1);
+  const [search, setSearch] = useState('');
+  const [paymentProof, setPaymentProof] = useState('');
   const adminToken = localStorage.getItem('adminToken');
 
-  const getTransaction = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/admin/transaction/get`, {
-        headers: {
-          Authorization: `Bearer ${adminToken}`,
-        },
-      });
-
-      setTransactions(response.data.data);
-    } catch (error) {
-      toast.error(error.response.data.message);
-    }
-  };
-
   useEffect(() => {
-    getTransaction();
-  }, []);
+    const getTransaction = async () => {
+      try {
+        if ((activePage > totalPage && search) || activePage < 1) {
+          return;
+        }
+        const response = await axios.post(
+          `${API_URL}/admin/transaction/get`,
+          null,
+          {
+            params: {
+              page: activePage,
+              search,
+            },
+            headers: {
+              Authorization: `Bearer ${adminToken}`,
+            },
+          }
+        );
 
-  const rendTotal = (invoice) => {
+        setTransactions(response.data.data);
+        setTotalPage(response.data.totalPage);
+        setStartNumber(response.data.startNumber);
+      } catch (error) {
+        toast.error(error.response.data.message);
+      }
+    };
+
+    getTransaction();
+  }, [activePage, search]);
+
+  const rendTotal = () => {
     let total = 0;
 
-    invoice.map((item) => {
+    dataDetails.forEach((item) => {
       total += item.quantity * item.price;
     });
 
@@ -65,9 +83,21 @@ const DashboardTransaction = () => {
     });
   };
 
+  const dateLocal = (dateInvoice) => {
+    let dateFull = new Date(dateInvoice);
+    let date = dateFull.getDate();
+    let moth = dateFull.getMonth();
+    let year = dateFull.getFullYear();
+    return `${date}/${moth}/${year}`;
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
-      <NavbarDashboard />
+      <NavbarDashboard
+        onChange={(e) => setSearch(e.target.value)}
+        value={search}
+        onClick={() => setSearch('')}
+      />
       <SidebarDashboard />
       <div className="pt-16 pr-8 pl-48">
         <div className="flex items-center justify-between py-7 px-10">
@@ -90,7 +120,7 @@ const DashboardTransaction = () => {
                   </th>
                   <th className="bg-white border-b border-gray-200">Notes</th>
                   <th className="bg-white border-b border-gray-200">
-                    Total Price
+                    Invoice Date
                   </th>
                   <th className="bg-white border-b border-gray-200">Details</th>
                   <th className="bg-white border-b border-gray-200">Status</th>
@@ -102,7 +132,7 @@ const DashboardTransaction = () => {
                   return (
                     <>
                       <tr key={item.id}>
-                        <th>{i + 1}</th>
+                        <th>{startNumber + i + 1}</th>
                         <td>{item.user.name}</td>
                         <td>
                           {item.address.address}, {item.address.city},{' '}
@@ -110,16 +140,20 @@ const DashboardTransaction = () => {
                         </td>
                         <td>{item.deliveryoption.name}</td>
                         <td>{item.notes}</td>
-                        <td>{rendTotal(item.invoiceitems)}</td>
+                        <td>{dateLocal(item.createdAt)}</td>
                         <td>
-                          <a
+                          <label
+                            for="detail-modal"
                             href="#detail-modal"
-                            onClick={() => setDataDetails(item.invoiceitems)}
-                            className="flex gap-3 items-center border-b pb-1 px-1 border-primary text-primary"
+                            onClick={() => {
+                              setDataDetails(item.invoiceitems);
+                              setPaymentProof(item.paymentproof?.path);
+                            }}
+                            className="flex gap-3 items-center hover:cursor-pointer border-b pb-1 px-1 border-primary text-primary w-20"
                           >
                             <span>Detail</span>
                             <FaSearchPlus size={20} />
-                          </a>
+                          </label>
                         </td>
                         <td>
                           <div
@@ -134,18 +168,36 @@ const DashboardTransaction = () => {
                             {item.status}
                           </div>
                         </td>
-                        <td className="flex items-center text-center ">
+                        <td className="flex gap-3 items-center text-center ">
                           <button
+                            disabled={
+                              item.status === 'approved' ||
+                              item.status === 'rejected'
+                            }
                             type="button"
-                            className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl items-center mr-3"
+                            className={`py-2.5 px-6 text-white ${
+                              item.status === 'approved' ||
+                              item.status === 'rejected'
+                                ? 'bg-gray-400'
+                                : 'bg-primary hover:bg-blue-400'
+                            }  rounded-xl items-center`}
                           >
                             Approve
                           </button>
                           <button
+                            disabled={
+                              item.status === 'approved' ||
+                              item.status === 'rejected'
+                            }
                             type="button"
-                            className="py-2.5 px-6 text-white bg-red-500 hover:bg-red-400 rounded-xl items-center"
+                            className={`py-2.5 px-6 text-white ${
+                              item.status === 'approved' ||
+                              item.status === 'rejected'
+                                ? 'bg-gray-400'
+                                : 'bg-red-500 hover:bg-red-400'
+                            }  rounded-xl items-center`}
                           >
-                            Decline
+                            Reject
                           </button>
                         </td>
                       </tr>
@@ -154,21 +206,78 @@ const DashboardTransaction = () => {
                 })}
               </tbody>
             </table>
+            <div className="mt-3 flex justify-center items-center gap-4 border-t pt-3">
+              <button
+                className={activePage === 1 && `hover:cursor-not-allowed`}
+                disabled={activePage === 1}
+                onClick={() => activePage > 1 && setActivePage(activePage - 1)}
+              >
+                {' '}
+                <FaArrowLeft />
+              </button>
+              <div>
+                Page{' '}
+                <input
+                  type="number"
+                  className="px-2 text-center focus:outline-none w-6 bg-gray-100"
+                  value={activePage}
+                  onChange={(e) =>
+                    e.target.value <= totalPage && setActivePage(e.target.value)
+                  }
+                />{' '}
+                of {totalPage}
+              </div>
+              <button
+                className={
+                  activePage === totalPage && `hover:cursor-not-allowed`
+                }
+                disabled={activePage === totalPage}
+                onClick={() =>
+                  activePage < totalPage && setActivePage(activePage + 1)
+                }
+              >
+                <FaArrowRight />
+              </button>
+            </div>
           </div>
         </div>
       </div>
       {/* detail transaction */}
-      <div className="modal" id="detail-modal">
+      <input type="checkbox" id="detail-modal" class="modal-toggle" />
+      <div className="modal">
         <div className="modal-box min-w-9/12 overflow-auto">
           <div className="modal-action">
-            <a
-              href="#"
-              className="btn btn-sm btn-circle absolute right-2 top-2"
+            <label
+              for="detail-modal"
+              class="btn btn-sm btn-circle absolute right-2 top-2"
             >
               ✕
-            </a>
+            </label>
           </div>
-          <h3 className="text-lg font-bold mb-3">Detail Items Transaction</h3>
+          <div className="flex justify-between my-3 items-center">
+            <h3 className="text-lg font-bold mb-3">Detail Transaction</h3>
+            <div className="font-semibold text-lg text-red-400 flex justify-end bg-red-50 py-2 px-3 rounded-md">
+              {rendTotal()}
+            </div>
+          </div>
+          {paymentProof ? (
+            <div className="flex flex-col justify-center py-4">
+              <span className="font-semibold mb-4 w-28 border-b-2 border-primary">
+                Payment Proof
+              </span>
+              <img
+                src={`${API_URL}/public/${paymentProof}`}
+                alt="proof of payment"
+              />
+            </div>
+          ) : (
+            <div className="font-semibold mb-4 text-center bg-gray-100 p-6 roundedn-md">
+              Payment proof not available
+            </div>
+          )}
+          <span className="font-semibold mb-4 pt-9 w-28 border-b-2 border-primary">
+            Order Items
+          </span>
           {rendDetail()}
         </div>
       </div>
