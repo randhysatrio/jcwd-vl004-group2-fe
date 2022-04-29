@@ -19,21 +19,24 @@ const BuyAgainRow = ({ item, selected, setSelected }) => {
           setSelected(item);
         }
       }}
-      className={`w-full h-20 my-2 rounded-lg hover:ring-2 hover:ring-sky-300 transition cursor-pointer flex active:scale-95 disabled:scale-100 ${
+      className={`w-full h-20 my-2 rounded-lg hover:ring-2 hover:ring-sky-300 transition cursor-pointer flex active:scale-95 disabled:active:scale-100 disabled:hover:ring-0 relative overflow-hidden ${
         item === selected ? 'ring-2 ring-emerald-300' : 'ring-0'
       }`}
     >
+      {item.quantity > item.product.stock_in_unit ? <div className="absolute inset-0 bg-gray-400 bg-opacity-40 z-50" /> : null}
       <div className="h-full w-[22%] flex justify-center items-center">
         <div className="w-16 h-16 rounded-md border flex justify-center items-center bg-white">
           <img src={item.product.image} className="h-full object-contain" />
         </div>
       </div>
-      <div className="h-full w-[52%] flex flex-col pt-[15px] items-start">
+      <div className="h-full w-[52%] flex flex-col justify-center items-start">
         <span className="font-semibold text-slate-700">
           {item.product.name.length > 28 ? item.product.name.slice(0, 28) + '...' : item.product.name}
         </span>
         <span className="text-sm font-semibold text-gray-400">{item.product.category.name}</span>
-        {item.quantity > item.product.stock_in_unit && <span className="text-xs text-red-400">Quantity exceed current stock</span>}
+        {item.quantity > item.product.stock_in_unit && (
+          <span className="text-xs text-red-300 relative z-[51]">Quantity exceed current stock</span>
+        )}
       </div>
       <div className="h-full w-[26%] flex flex-col pt-[15px] items-center gap-1">
         <span className="text-xs font-extrabold text-sky-800 text-opacity-75">Quantity:</span>

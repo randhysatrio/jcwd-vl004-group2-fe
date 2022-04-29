@@ -61,12 +61,25 @@ const HistoryCard = ({ invoice, userId }) => {
     try {
       setLoading(true);
 
-      const response = await Axios.patch(`${API_URL}/history/received/${invoice.id}`);
+      const response = await Axios.patch(
+        `${API_URL}/history/received/${invoice.id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('userToken')}`,
+          },
+        }
+      );
 
-      setReceived(response.data.received);
       setLoading(false);
 
-      toast.success(response.data.message, { position: 'bottom-left', theme: 'colored' });
+      if (response.data.conflict) {
+        toast.warning(response.data.message, { position: 'bottom-left', theme: 'colored' });
+      } else {
+        setReceived(response.data.received);
+
+        toast.success(response.data.message, { position: 'bottom-left', theme: 'colored' });
+      }
     } catch (err) {
       setLoading(false);
 
@@ -189,7 +202,7 @@ const HistoryCard = ({ invoice, userId }) => {
             <BsCheckAll className="text-sky-500" />
             <span className="text-gray-400">I have received this</span>
           </div>
-        ) : (
+        ) : invoice.status === 'approved' ? (
           <button
             disabled={loading}
             onClick={receivedHandler}
@@ -207,7 +220,7 @@ const HistoryCard = ({ invoice, userId }) => {
               </>
             )}
           </button>
-        )}
+        ) : null}
         <BuyAgainModal items={invoice.invoiceitems} userId={userId} />
       </div>
     </div>

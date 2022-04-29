@@ -10,7 +10,7 @@ import { Dialog } from '@headlessui/react';
 import { toast } from 'react-toastify';
 import EditAddressModal from './EditAddressModal';
 
-const AddressEditButton = ({ id, setOpenDelete, setOpenEdit, setAddresses, is_default }) => {
+const AddressEditButton = ({ id, setOpenDelete, setOpenEdit, setAddresses, currentPage, setMaxPage, is_default }) => {
   return (
     <Menu as="div" className="relative">
       <Menu.Button className="h-6 w-6 rounded-full focus:outline-none hover:bg-gray-200 flex justify-center items-center text-sky-400 transition">
@@ -35,7 +35,10 @@ const AddressEditButton = ({ id, setOpenDelete, setOpenEdit, setAddresses, is_de
                     try {
                       const response = await Axios.patch(
                         `${API_URL}/address/update/${id}`,
-                        {},
+                        {
+                          limit: 10,
+                          currentPage: currentPage,
+                        },
                         {
                           headers: {
                             Authorization: `Bearer ${localStorage.getItem('userToken')}`,
@@ -43,8 +46,8 @@ const AddressEditButton = ({ id, setOpenDelete, setOpenEdit, setAddresses, is_de
                         }
                       );
 
-                      setAddresses(response.data);
-
+                      setAddresses(response.data.rows);
+                      setMaxPage(Math.ceil(response.data.count / 10) || 1);
                       toast.success('Changed this address as your default!', { position: 'bottom-left', theme: 'colored' });
                     } catch (err) {
                       toast.error('Unable to update default address!', { position: 'bottom-left', theme: 'colored' });
@@ -101,7 +104,7 @@ const AddressEditButton = ({ id, setOpenDelete, setOpenEdit, setAddresses, is_de
   );
 };
 
-const DeleteAddressModal = ({ id, setAddresses, openDelete, setOpenDelete }) => {
+const DeleteAddressModal = ({ id, setAddresses, openDelete, setOpenDelete, currentPage, setMaxPage }) => {
   return (
     <>
       <Transition appear show={openDelete}>
@@ -141,17 +144,26 @@ const DeleteAddressModal = ({ id, setAddresses, openDelete, setOpenDelete }) => 
                 <button
                   onClick={async () => {
                     try {
-                      const response = await Axios.delete(`${API_URL}/address/delete/${id}`, {
-                        headers: {
-                          Authorization: `Bearer ${localStorage.getItem('userToken')}`,
+                      const response = await Axios.post(
+                        `${API_URL}/address/delete/${id}`,
+                        {
+                          limit: 10,
+                          currentPage: currentPage,
                         },
-                      });
+                        {
+                          headers: {
+                            Authorization: `Bearer ${localStorage.getItem('userToken')}`,
+                          },
+                        }
+                      );
 
-                      setAddresses(response.data.addresses);
-                      toast.success(response.data.message);
+                      setAddresses(response.data.rows);
+                      setMaxPage(Math.ceil(response.data.count / 10) || 1);
+                      toast.success(response.data.message, { theme: 'colored', position: 'bottom-left' });
+
                       setOpenDelete(false);
                     } catch (error) {
-                      toast.error('Unable to delete address!');
+                      toast.error('Unable to delete address!', { theme: 'colored', position: 'bottom-left' });
                     }
                   }}
                   className="px-5 h-10 rounded-xl bg-gradient-to-r from-emerald-400 to-sky-400 text-white font-bold transition active:scale-95 hover:brightness-110"
@@ -167,7 +179,7 @@ const DeleteAddressModal = ({ id, setAddresses, openDelete, setOpenDelete }) => 
   );
 };
 
-const AddressCard = ({ address, setAddresses }) => {
+const AddressCard = ({ address, setAddresses, currentPage, setMaxPage }) => {
   const [openDelete, setOpenDelete] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
 
@@ -219,11 +231,27 @@ const AddressCard = ({ address, setAddresses }) => {
             setOpenEdit={setOpenEdit}
             setAddresses={setAddresses}
             is_default={address.is_default}
+            currentPage={currentPage}
+            setMaxPage={setMaxPage}
           />
         </div>
         <div className="absolute invisible">
-          <DeleteAddressModal id={address.id} openDelete={openDelete} setOpenDelete={setOpenDelete} setAddresses={setAddresses} />
-          <EditAddressModal openEdit={openEdit} setOpenEdit={setOpenEdit} address={address} setAddresses={setAddresses} />
+          <DeleteAddressModal
+            id={address.id}
+            openDelete={openDelete}
+            setOpenDelete={setOpenDelete}
+            setAddresses={setAddresses}
+            currentPage={currentPage}
+            setMaxPage={setMaxPage}
+          />
+          <EditAddressModal
+            openEdit={openEdit}
+            setOpenEdit={setOpenEdit}
+            address={address}
+            setAddresses={setAddresses}
+            currentPage={currentPage}
+            setMaxPage={setMaxPage}
+          />
         </div>
       </div>
     </div>

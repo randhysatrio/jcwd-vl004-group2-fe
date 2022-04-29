@@ -10,7 +10,7 @@ import { AiOutlineClose, AiOutlineInfoCircle } from 'react-icons/ai';
 import { Dialog, Transition } from '@headlessui/react';
 import { toast } from 'react-toastify';
 
-const EditAddressModal = ({ openEdit, setOpenEdit, address, setAddresses }) => {
+const EditAddressModal = ({ openEdit, setOpenEdit, address, setAddresses, currentPage, setMaxPage }) => {
   const formik = useFormik({
     initialValues: {
       address: address.address,
@@ -25,14 +25,14 @@ const EditAddressModal = ({ openEdit, setOpenEdit, address, setAddresses }) => {
       city: Yup.string().required('This field is required'),
       province: Yup.string().required('This field is required'),
       country: Yup.string().required('This field is required'),
-      postalcode: Yup.number().required('This field is required'),
+      postalcode: Yup.string().length(5, 'Invalid postal code').required('This field is required'),
       is_default: Yup.boolean(),
     }),
     onSubmit: async (values) => {
       try {
         const response = await Axios.patch(
           `${API_URL}/address/edit/${address.id}`,
-          { values, userId: address.userId },
+          { values: { ...values, postalcode: parseInt(values.postalcode) }, userId: address.userId, limit: 10, currentPage },
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('userToken')}`,
@@ -40,11 +40,13 @@ const EditAddressModal = ({ openEdit, setOpenEdit, address, setAddresses }) => {
           }
         );
 
-        setAddresses(response.data.addresses);
+        setAddresses(response.data.rows);
+        setMaxPage(Math.ceil(response.data.count / 10) || 1);
         toast.success(response.data.message, { position: 'bottom-left', theme: 'colored' });
+
         setOpenEdit(false);
-      } catch (error) {
-        toast.error('Unable to add address!', { position: 'bottom-left', theme: 'colored' });
+      } catch (err) {
+        toast.error('Unable to edit address!', { position: 'bottom-left', theme: 'colored' });
       }
     },
   });
@@ -139,7 +141,7 @@ const EditAddressModal = ({ openEdit, setOpenEdit, address, setAddresses }) => {
                         </div>
                       </div>
                       {formik.touched.city && formik.errors.city ? (
-                        <span className="pl-4 text-xs text-rose-400">This field is required</span>
+                        <span className="pl-4 text-xs text-rose-400">{formik.errors.city}</span>
                       ) : null}
                     </div>
                     <div className="w-[36%] h-[90px]">
@@ -165,7 +167,7 @@ const EditAddressModal = ({ openEdit, setOpenEdit, address, setAddresses }) => {
                         </div>
                       </div>
                       {formik.touched.postalcode && formik.errors.postalcode ? (
-                        <span className="pl-2 text-xs text-rose-400">This field is required</span>
+                        <span className="pl-2 text-xs text-rose-400">{formik.errors.postalcode}</span>
                       ) : null}
                     </div>
                   </div>

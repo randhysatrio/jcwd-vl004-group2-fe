@@ -11,7 +11,7 @@ import { MdOutlineAddLocationAlt } from 'react-icons/md';
 import { Dialog, Transition } from '@headlessui/react';
 import { toast } from 'react-toastify';
 
-const NewAddressModal = ({ setAddresses }) => {
+const NewAddressModal = ({ setAddresses, setMaxPage }) => {
   const [open, setOpen] = useState(false);
 
   const formik = useFormik({
@@ -28,18 +28,24 @@ const NewAddressModal = ({ setAddresses }) => {
       city: Yup.string().required('This field is required'),
       province: Yup.string().required('This field is required'),
       country: Yup.string().required('This field is required'),
-      postalcode: Yup.number().required('This field is required'),
+      postalcode: Yup.string().length(5, 'Invalid postal code').required('This field is required'),
       is_default: Yup.boolean(),
     }),
-    onSubmit: async (values) => {
+    onSubmit: async (values, { resetForm }) => {
       try {
-        const response = await Axios.post(`${API_URL}/address/add`, values, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('userToken')}`,
-          },
-        });
+        const response = await Axios.post(
+          `${API_URL}/address/add`,
+          { ...values, postalcode: parseInt(values.postalcode) },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('userToken')}`,
+            },
+          }
+        );
 
-        setAddresses(response.data.addresses);
+        setAddresses(response.data.rows);
+        setMaxPage(Math.ceil(response.data.count / 10) || 1);
+        resetForm();
         toast.success(response.data.message, { position: 'bottom-left', theme: 'colored' });
 
         setOpen(false);
@@ -82,7 +88,7 @@ const NewAddressModal = ({ setAddresses }) => {
             leaveFrom="scale-100 opaciy-100"
             leaveTo="scale-90 opacity-90"
           >
-            <div className="w-1/3 bg-white rounded-xl z-20 ring ring-offset-2 ring-sky-300 ring-inset flex flex-col addressModalBody">
+            <div className="w-1/3 bg-white rounded-xl z-20 ring-2 ring-offset-2 ring-sky-300 ring-inset flex flex-col addressModalBody">
               <div className="py-8 flex justify-center relative">
                 <span className="text-2xl font-bold bg-gradient-to-r from-sky-500 to-sky-400 bg-clip-text text-transparent">
                   Add New Address
@@ -173,7 +179,7 @@ const NewAddressModal = ({ setAddresses }) => {
                         </div>
                       </div>
                       {formik.touched.postalcode && formik.errors.postalcode ? (
-                        <span className="pl-2 text-xs text-rose-400">This field is required</span>
+                        <span className="pl-2 text-xs text-rose-400">{formik.errors.postalcode}</span>
                       ) : null}
                     </div>
                   </div>

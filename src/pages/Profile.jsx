@@ -518,7 +518,7 @@ const Profile = () => {
           <div className="h-[2px] w-[90%] bg-gray-100 rounded-xl mx-auto" />
           <div className="w-full h-10 flex justify-center">
             <div className="max-w-full h-full flex items-center">
-              <span className="text-2xl font-bold bg-gradient-to-r from-sky-600 to-emerald-500 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold bg-gradient-to-r from-sky-400 to-emerald-400 bg-clip-text text-transparent">
                 {userData.name}
               </span>
             </div>
