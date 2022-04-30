@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link, createSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
-import { FaHeart, FaSearch, FaUserAlt, FaShoppingBag } from 'react-icons/fa';
+import { FaSearch, FaUserAlt, FaShoppingBag } from 'react-icons/fa';
 import AccountButton from './AccountButton';
 
 const Header = () => {
@@ -16,18 +16,16 @@ const Header = () => {
     <header className="py-4 shadow-sm bg-white">
       <div className="container flex items-center justify-between">
         <Link to="/">
-          <h1 className="text-lg font-bold text-slate-600 hover:brightness-110 transition cursor-pointer">
-            Heizen Berg Co.
-          </h1>
+          <h1 className="text-lg font-bold text-slate-600 hover:brightness-110 transition cursor-pointer">Heizen Berg Co.</h1>
         </Link>
         {/* Searchbar */}
         <form
-          onSubmit={() =>
-            navigate({
-              pathname: '/products',
-              search: createSearchParams({ keyword }).toString(),
-            })
-          }
+          onSubmit={(e) => {
+            e.preventDefault();
+
+            navigate(`/products?keyword=${keyword}`);
+            setKeyword('');
+          }}
         >
           <div className="w-[500px] max-w-xl relative flex">
             <span className="absolute left-4 top-3 text-lg text-gray-400">
@@ -51,15 +49,6 @@ const Header = () => {
           </div>
         </form>
         <div className="flex items-center space-x-4 p-1">
-          {/* <a href="#" className="text-center text-gray-700 hover:text-primary transition relative">
-            <div className="text-2xl">
-              <FaHeart className="ml-2" />
-            </div>
-            <div className="text-xs leading-3">Wishlist</div>
-            <span className="absolute right-0 -top-1 w-5 h-5 rounded-full flex items-center justify-center bg-red-500 text-white text-xs">
-              8
-            </span>
-          </a> */}
           <div className="text-center text-gray-700 hover:text-primary transition relative">
             <Link to="/cart">
               <div className="text-2xl mb-1">

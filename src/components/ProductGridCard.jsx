@@ -19,15 +19,16 @@ const ProductGridCard = ({ product, newarrival, bestseller }) => {
         <img src={product.image} className="h-full object-contain" />
       </div>
       <div className="w-full h-1/2 bg-gray-50">
-        <div className="w-full max-h-14 py-2 px-3 flex items-center">
-          <span className="text-lg leading-snug font-semibold text-sky-900 cursor-pointer">
+        <div className="pt-1 px-3 flex items-center">
+          <span className="text-lg leading-snug font-semibold text-sky-900 cursor-pointer w-full max-h-14">
             {product.name.length > 36 ? product.name.slice(0, 36) + '...' : product.name}
           </span>
         </div>
-        <div className="w-full pl-3 bg-red-200s">
+        <div className="w-full flex items-end pl-3">
           <span className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-sky-500 bg-clip-text text-transparent">
             Rp. {product.price_sell?.toLocaleString('id')}
           </span>
+          <span className="text-md font-semibold text-sky-500">/{product.unit}</span>
         </div>
         <div className="w-full py-[2px] px-3 flex items-center gap-1 text-sm">
           <div className="flex text-amber-300">
