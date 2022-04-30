@@ -221,7 +221,7 @@ const HistoryCard = ({ invoice, userId }) => {
             )}
           </button>
         ) : null}
-        <BuyAgainModal items={invoice.invoiceitems} userId={userId} />
+        <BuyAgainModal items={invoice.invoiceitems} invoiceId={invoice.id} userId={userId} />
       </div>
     </div>
   );

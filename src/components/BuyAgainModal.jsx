@@ -1,4 +1,4 @@
-import { useState, Fragment } from 'react';
+import { useState, Fragment, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Axios from 'axios';
 import { API_URL } from '../assets/constants';
@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 const BuyAgainRow = ({ item, selected, setSelected }) => {
   return (
     <button
-      disabled={item.quantity > item.product.stock_in_unit}
+      disabled={item.quantity > item.product.stock_in_unit || item.product.deletedAt}
       onClick={() => {
         if (selected === item) {
           setSelected({});
@@ -19,11 +19,13 @@ const BuyAgainRow = ({ item, selected, setSelected }) => {
           setSelected(item);
         }
       }}
-      className={`w-full h-20 my-2 rounded-lg hover:ring-2 hover:ring-sky-300 transition cursor-pointer flex active:scale-95 disabled:active:scale-100 disabled:hover:ring-0 relative overflow-hidden ${
+      className={`w-full h-20 my-2 rounded-lg hover:ring-2 hover:ring-sky-300 transition cursor-pointer flex active:scale-95 disabled:active:scale-100 disabled:hover:ring-0 disabled:cursor-default relative overflow-hidden ${
         item === selected ? 'ring-2 ring-emerald-300' : 'ring-0'
       }`}
     >
-      {item.quantity > item.product.stock_in_unit ? <div className="absolute inset-0 bg-gray-400 bg-opacity-40 z-50" /> : null}
+      {item.quantity > item.product.stock_in_unit || item.product.deletedAt ? (
+        <div className="absolute inset-0 bg-gray-400 bg-opacity-40 z-50" />
+      ) : null}
       <div className="h-full w-[22%] flex justify-center items-center">
         <div className="w-16 h-16 rounded-md border flex justify-center items-center bg-white">
           <img src={item.product.image} className="h-full object-contain" />
@@ -34,9 +36,15 @@ const BuyAgainRow = ({ item, selected, setSelected }) => {
           {item.product.name.length > 28 ? item.product.name.slice(0, 28) + '...' : item.product.name}
         </span>
         <span className="text-sm font-semibold text-gray-400">{item.product.category.name}</span>
-        {item.quantity > item.product.stock_in_unit && (
-          <span className="text-xs text-red-300 relative z-[51]">Quantity exceed current stock</span>
-        )}
+        {item.quantity > item.product.stock_in_unit || item.product.deletedAt ? (
+          <span className="text-xs text-red-400 relative z-[51]">
+            {item.quantity > item.product.stock_in_unit && item.product.deletedAt
+              ? 'This item is not available anymore'
+              : item.quantity > item.product.stock_in_unit
+              ? 'Quantity exceeds stock'
+              : 'This item is not available anymore'}
+          </span>
+        ) : null}
       </div>
       <div className="h-full w-[26%] flex flex-col pt-[15px] items-center gap-1">
         <span className="text-xs font-extrabold text-sky-800 text-opacity-75">Quantity:</span>
@@ -51,14 +59,35 @@ const BuyAgainRow = ({ item, selected, setSelected }) => {
   );
 };
 
-const BuyAgainModal = ({ items, userId }) => {
+const BuyAgainModal = ({ invoiceId, userId }) => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState({});
   const [loading, setLoading] = useState(false);
+  const [itemsList, setItemsList] = useState([]);
+  const [itemLoading, setItemLoading] = useState(false);
+  const [refetch, setRefecth] = useState(1);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        setItemLoading(true);
+
+        const items = await Axios.get(`${API_URL}/history/repeat/${invoiceId}`);
+        setItemsList(items.data);
+
+        setItemLoading(false);
+      } catch (error) {
+        setItemLoading(false);
+
+        toast.error('Unable to fetch Invoice Items!', { position: 'bottom-left', theme: 'colored' });
+      }
+    };
+    fetchItems();
+  }, [refetch]);
 
   const renderItems = () => {
-    return items.map((item) => <BuyAgainRow key={item.id} item={item} selected={selected} setSelected={setSelected} />);
+    return itemsList.map((item) => <BuyAgainRow key={item.id} item={item} selected={selected} setSelected={setSelected} />);
   };
 
   const buyAgainHandler = async () => {
@@ -90,7 +119,10 @@ const BuyAgainModal = ({ items, userId }) => {
   return (
     <>
       <button
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          setRefecth(refetch + 1);
+          setOpen(true);
+        }}
         className="h-10 w-36 rounded-lg bg-gradient-to-r from-sky-500 to-emerald-500 text-white font-bold hover:brightness-110 transition active:scale-95 focus:outline-none flex items-center justify-center gap-2"
       >
         <BsArrowRepeat />
@@ -128,6 +160,7 @@ const BuyAgainModal = ({ items, userId }) => {
                 <button
                   onClick={() => {
                     setSelected({});
+                    setItemLoading(false);
                     setOpen(false);
                   }}
                   className="text-2xl text-sky-500 hover:brightness-110 active:scale-95 transition absolute top-2 right-2"
@@ -135,13 +168,21 @@ const BuyAgainModal = ({ items, userId }) => {
                   <AiOutlineCloseCircle />
                 </button>
               </div>
-              <div className="w-full flex-col px-10">{renderItems()}</div>
+              <div className="w-full relative min-h-16 flex-col px-10">
+                {itemLoading ? (
+                  <div className="absolute inset-0 mx-10 rounded-lg z-[55] bg-gray-200 bg-opacity-30 backdrop-blur-sm flex items-center justify-center gap-2 text-lg text-slate-500">
+                    <AiOutlineLoading3Quarters className="animate-spin" />
+                    <span className="font-bold">Loading..</span>
+                  </div>
+                ) : null}
+                {renderItems()}
+              </div>
               <div className="w-full py-5 flex justify-center">
                 <button
                   disabled={!selected.id || loading}
                   onClick={buyAgainHandler}
                   className={`h-12 w-40 rounded-xl first:font-bold text-white transition bg-gradient-to-r 
-                   from-sky-500 to-emerald-500 hover:brightness-110 active:scale-95 disabled:scale-100 disabled:brightness-100 disabled:from-sky-300 disabled:to-sky-300 flex items-center justify-center gap-2
+                   from-sky-500 to-emerald-500 hover:brightness-110 active:scale-95 disabled:scale-100 disabled:brightness-100 disabled:from-sky-300 disabled:to-emerald-300 flex items-center justify-center gap-2
                    `}
                 >
                   {loading ? (

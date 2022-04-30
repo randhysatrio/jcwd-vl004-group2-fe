@@ -6,7 +6,14 @@ import { API_URL } from '../assets/constants';
 import ProductCardAll from '../components/ProductCardAll';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { AiOutlineUnorderedList, AiOutlineLeft, AiOutlineRight, AiOutlineClose, AiOutlineInfoCircle } from 'react-icons/ai';
+import {
+  AiOutlineUnorderedList,
+  AiOutlineLeft,
+  AiOutlineRight,
+  AiOutlineClose,
+  AiOutlineInfoCircle,
+  AiOutlineLoading3Quarters,
+} from 'react-icons/ai';
 import { BsFillGridFill, BsChevronRight } from 'react-icons/bs';
 import { toast } from 'react-toastify';
 
@@ -29,6 +36,7 @@ const AllProducts = () => {
   const [maxPage, setMaxPage] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const [sort, setSort] = useState('');
+  const [itemLoading, setItemLoading] = useState(false);
   const categoryQuery = searchParams.get('category');
   const keywordQuery = searchParams.get('keyword');
 
@@ -109,14 +117,19 @@ const AllProducts = () => {
           query.lte = priceRange[1];
         }
 
+        setItemLoading(true);
+
         const response = await Axios.post(`${API_URL}/product/query`, query);
 
         setProductsList(response.data.products);
         setTotalProducts(response.data.length);
         setMaxPage(Math.ceil(response.data.length / productPerPage) || 1);
+        setItemLoading(false);
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } catch (err) {
+        setItemLoading(false);
+
         toast.error('Unable to fetch products', {
           position: 'bottom-left',
           theme: 'colored',
@@ -141,6 +154,9 @@ const AllProducts = () => {
             setCurrentCategory(category.id);
           }
           setCurrentPage(1);
+          if (!keyword) {
+            navigate('/products');
+          }
         }}
         className={`w-full py-1 pl-2 rounded-md hover:pl-4 hover:bg-slate-100 transition-all cursor-pointer group ${
           currentCategory === category.id ? 'pl-4 bg-slate-100' : ''
@@ -200,6 +216,9 @@ const AllProducts = () => {
                 onClick={() => {
                   setCurrentCategory('');
                   setCurrentPage(1);
+                  if (!keyword) {
+                    navigate('/products');
+                  }
                 }}
                 className={`px-2 rounded-full flex gap-1 items-center bg-rose-100 text-sm text-red-400 hover:brightness-105 transition cursor-pointer ${
                   currentCategory ? 'opacity-100' : 'opacity-0 invisible'
@@ -397,7 +416,17 @@ const AllProducts = () => {
                 </button>
               </div>
             </div>
-            <div className={`w-full p-2 flex ${view === 'grid' ? 'flex-row justify-center flex-wrap' : 'flex-col gap-3'} items-center`}>
+            <div
+              className={`w-full p-2 flex ${
+                view === 'grid' ? 'flex-row justify-center flex-wrap' : 'flex-col gap-3'
+              } items-center min-h-[600px] relative`}
+            >
+              {itemLoading ? (
+                <div className="absolute inset-0 m-2 bg-gray-300 bg-opacity-30 backdrop-blur-sm flex justify-center text-3xl gap-2 pt-[25%] text-gray-600">
+                  <AiOutlineLoading3Quarters className="animate-spin" />
+                  <span className="font-thin">Loading..</span>
+                </div>
+              ) : null}
               {productsList.length ? (
                 renderProducts()
               ) : (
@@ -420,40 +449,38 @@ const AllProducts = () => {
                 </div>
               )}
             </div>
-            <div className="w-full flex justify-center items-center pb-2 gap-2 text-slate-500 font-semibold">
-              <button
-                disabled={currentPage === 1 || !currentPage}
-                onClick={() => setCurrentPage(currentPage - 1)}
-                className={`h-7 w-7 ${
-                  currentPage === 1 || !currentPage ? 'bg-slate-300 text-slate-400' : 'bg-sky-500 text-white'
-                } flex items-center justify-center rounded-full font-bold active:scale-95 transition-all`}
-              >
-                <AiOutlineLeft />
-              </button>
-              <input
-                type="number"
-                className="h-7 w-9 rounded-md border text-center text-bold hover:border-sky-500 focus:outline-sky-500 transition cursor-pointer"
-                value={currentPage}
-                onChange={(e) => {
-                  if (e.target.value > maxPage) {
-                    setCurrentPage(parseInt(maxPage));
-                  } else {
-                    setCurrentPage(parseInt(e.target.value));
-                  }
-                }}
-              />
-              <span>of</span>
-              <span>{maxPage}</span>
-              <button
-                disabled={currentPage === maxPage || !currentPage}
-                onClick={() => setCurrentPage(currentPage + 1)}
-                className={`h-7 w-7 ${
-                  currentPage === maxPage || !currentPage ? 'bg-slate-300 text-slate-400' : 'bg-sky-500 text-white'
-                } flex items-center justify-center rounded-full font-bold active:scale-95 transition-all`}
-              >
-                <AiOutlineRight />
-              </button>
-            </div>
+            {productsList.length ? (
+              <div className="w-full flex justify-center items-center pt-3 pb-5 gap-2 text-slate-500 font-semibold">
+                <button
+                  disabled={currentPage === 1 || !currentPage}
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                  className={`h-7 w-7 bg-sky-500 text-white flex items-center justify-center rounded-full font-bold active:scale-95 transition-all disabled:bg-slate-300 disabled:text-slate-400 disabled:active:scale-100`}
+                >
+                  <AiOutlineLeft />
+                </button>
+                <input
+                  type="number"
+                  className="h-7 w-9 rounded-md border text-center text-bold hover:border-sky-500 focus:outline-sky-500 transition cursor-pointer"
+                  value={currentPage}
+                  onChange={(e) => {
+                    if (e.target.value > maxPage) {
+                      setCurrentPage(parseInt(maxPage));
+                    } else {
+                      setCurrentPage(parseInt(e.target.value));
+                    }
+                  }}
+                />
+                <span>of</span>
+                <span>{maxPage}</span>
+                <button
+                  disabled={currentPage === maxPage || !currentPage}
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  className={`h-7 w-7 bg-sky-500 text-white flex items-center justify-center rounded-full font-bold active:scale-95 transition-all disabled:bg-slate-300 disabled:text-slate-400 disabled:active:scale-100`}
+                >
+                  <AiOutlineRight />
+                </button>
+              </div>
+            ) : null}
           </div>
         </div>
       </div>
