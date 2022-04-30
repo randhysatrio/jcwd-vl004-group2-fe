@@ -15,21 +15,20 @@ import { IoMdClose } from 'react-icons/io';
 
 const Cart = () => {
   const userGlobal = useSelector((state) => state.user);
-  const [conflict, setConflict] = useState(false);
-  const [conflictUnchecked, setConflictUnchecked] = useState(false);
-  const [conflictMsg, setConflictMsg] = useState(false);
-  const [isLoading, setIsloading] = useState(false);
-  const navigate = useNavigate();
-
   const [cartItems, setCartItems] = useState([]);
   const [checkoutItems, setCheckoutItems] = useState([]);
+  const [initConflict, setInitConflict] = useState(false);
+  const [conflictChecked, setConflictChecked] = useState(false);
+  const [conflictUnchecked, setConflictUnchecked] = useState(false);
+  const [isLoading, setIsloading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCartItems = async () => {
       try {
         const response = await axios.get(`${API_URL}/cart/user/${userGlobal.id}`);
 
-        setConflictMsg(response.data.conflict_msg);
+        setInitConflict(response.data.initConflict);
         setCartItems(response.data.cartItems);
         setCheckoutItems(response.data.checkoutItems);
       } catch (error) {
@@ -40,12 +39,12 @@ const Cart = () => {
   }, [userGlobal]);
 
   useEffect(() => {
-    if (!conflictMsg) {
+    if (!initConflict) {
       return;
-    } else if (cartItems.some((item) => item.quantity > item.product.stock_in_unit)) {
-      setConflictMsg(true);
+    } else if (cartItems.some((item) => item.quantity > item.product.stock_in_unit) || cartItems.some((item) => item.product.deletedAt)) {
+      setInitConflict(true);
     } else {
-      setConflictMsg(false);
+      setInitConflict(false);
     }
   }, [cartItems]);
 
@@ -57,22 +56,6 @@ const Cart = () => {
 
     return subtotal;
   };
-
-  // const handCheckout = () => {
-  //   let checkoutData = {
-  //     data: cartGlobal.checkoutItems,
-  //     subtotal: rendSubtotal(),
-  //   };
-  //   cartGlobal.checkoutItems?.forEach((item, i) => {
-  //     checkoutData.data[i].price = item.product.price_sell;
-  //   });
-  //   if (checkoutData.data.length) {
-  //     localStorage.setItem('checkout-data', JSON.stringify(checkoutData));
-  //     navigate('/checkout');
-  //   } else {
-  //     toast.error('Your cart is empty');
-  //   }
-  // };
 
   const checkoutHandler = async () => {
     if (checkoutItems.length) {
@@ -105,27 +88,13 @@ const Cart = () => {
 
   const checkAllHandler = async (e) => {
     try {
-      let response;
-
-      if (e.target.checked) {
-        response = await axios.patch(`${API_URL}/cart/checked-all/${userGlobal.id}`, { isChecked: true });
-      } else {
-        response = await axios.patch(`${API_URL}/cart/checked-all/${userGlobal.id}`, { isChecked: false });
-      }
+      const response = await axios.patch(`${API_URL}/cart/checked-all/${userGlobal.id}`, { isChecked: e.target.checked });
 
       setCartItems(response.data.cartItems);
       setCheckoutItems(response.data.checkoutItems);
     } catch (err) {
       toast.error('Unable to checked all Cart Items');
     }
-  };
-
-  const toIDR = (number) => {
-    return number.toLocaleString('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0,
-    });
   };
 
   const renderCart = () => {
@@ -135,7 +104,7 @@ const Cart = () => {
         item={item}
         setCartItems={setCartItems}
         setCheckoutItems={setCheckoutItems}
-        setConflict={setConflict}
+        setConflictChecked={setConflictChecked}
         setConflictUnchecked={setConflictUnchecked}
       />
     ));
@@ -146,14 +115,17 @@ const Cart = () => {
       <Header />
       <Navbar />
       <div className="flex flex-col m-auto justify-center py-12 2xl:py-32 gap-8 w-11/12">
-        {conflictMsg && (
+        {initConflict && (
           <div className="w-9/12">
             <div className="w-max py-3 px-5 flex items-center gap-2 bg-gray-300 bg-opacity-50 backdrop-blur-sm rounded-lg">
               <ImWarning className="text-amber-400" />
               <span className="text-gray-700 font-semibold">
-                We cannot process one or more items in your cart due to the item's product insufficient stock
+                We cannot process one or more items in your cart. Please see your cart lists for more info
               </span>
-              <span onClick={() => setConflictMsg(false)} className="text-sky-500 font-bold hover:brightness-125 cursor-pointer transition">
+              <span
+                onClick={() => setInitConflict(false)}
+                className="text-sky-500 font-bold hover:brightness-125 cursor-pointer transition"
+              >
                 <IoMdClose />
               </span>
             </div>
@@ -167,7 +139,13 @@ const Cart = () => {
               checked={cartItems?.length && cartItems?.length === checkoutItems?.length}
               className="checkbox"
               onChange={checkAllHandler}
-              disabled={isLoading || conflict || conflictUnchecked || cartItems?.some((item) => item.quantity > item.product.stock_in_unit)}
+              disabled={
+                isLoading ||
+                conflictChecked ||
+                conflictUnchecked ||
+                cartItems?.some((item) => item.quantity > item.product.stock_in_unit) ||
+                cartItems?.some((item) => item.product.deletedAt)
+              }
             />
             <span className="label-text text-lg">Select All</span>
           </label>
@@ -196,7 +174,7 @@ const Cart = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm">Discount</span>
-                  <span>{toIDR(0)}</span>
+                  <span>0</span>
                 </div>
                 <div className="border-gray-300 border-t"></div>
                 <div className="flex justify-between">
@@ -205,7 +183,12 @@ const Cart = () => {
                 </div>
               </div>
               <button
-                disabled={!checkoutItems?.length || conflict || checkoutItems?.some((item) => item.quantity > item.product.stock_in_unit)}
+                disabled={
+                  !checkoutItems?.length ||
+                  conflictChecked ||
+                  checkoutItems?.some((item) => item.quantity > item.product.stock_in_unit) ||
+                  checkoutItems?.some((item) => item.product.deletedAt)
+                }
                 className="btn btn-block btn-primary disabled:btn-error disabled:cursor-not-allowed"
                 onClick={checkoutHandler}
               >

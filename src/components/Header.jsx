@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, Link, createSearchParams } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 import { FaSearch, FaUserAlt, FaShoppingBag } from 'react-icons/fa';

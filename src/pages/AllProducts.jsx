@@ -66,7 +66,7 @@ const AllProducts = () => {
   }, []);
 
   useEffect(() => {
-    const getProductQuery = async () => {
+    const getProductQuery = async (currentCategory, productPerPage, currentPage, currentAppearance, sort, priceRange) => {
       try {
         const query = {
           limit: productPerPage,
@@ -128,7 +128,7 @@ const AllProducts = () => {
         });
       }
     };
-    getProductQuery();
+    getProductQuery(currentCategory, productPerPage, currentPage, currentAppearance, sort, priceRange);
   }, [currentCategory, productPerPage, currentPage, currentAppearance, sort, priceRange, search]);
 
   const renderProducts = () => {
@@ -363,8 +363,8 @@ const AllProducts = () => {
                 <select
                   id="showperpage"
                   onChange={(e) => {
-                    setCurrentPage(1);
                     setProductPerPage(parseInt(e.target.value));
+                    setCurrentPage(1);
                   }}
                   className="p-1 border border-slate-300 rounded-lg focus:outline-none focus:border-sky-400 transition cursor-pointer"
                 >

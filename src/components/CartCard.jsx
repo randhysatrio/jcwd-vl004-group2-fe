@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import { API_URL } from '../assets/constants';
 import { debounce } from 'throttle-debounce';
 
-function CartCard({ item, setCartItems, setCheckoutItems, setConflict, setConflictUnchecked }) {
+function CartCard({ item, setCartItems, setCheckoutItems, setConflictChecked, setConflictUnchecked }) {
   const [isLoading, setIsLoading] = useState(false);
   const [quantity, setQuantity] = useState(item.quantity);
   const [error, setError] = useState('');
@@ -35,24 +35,24 @@ function CartCard({ item, setCartItems, setCheckoutItems, setConflict, setConfli
   }, [quantity]);
 
   useEffect(() => {
-    if (!quantity) {
+    if (!quantity && !item.product.deletedAt) {
       setError('Please enter a valid amount');
       if (item.isChecked) {
-        setConflict(true);
+        setConflictChecked(true);
       } else {
         setConflictUnchecked(true);
       }
-    } else if (quantity > item.product.stock_in_unit) {
+    } else if (quantity > item.product.stock_in_unit && !item.product.deletedAt) {
       setError('Quantity cannot exceed stock');
       if (item.isChecked) {
-        setConflict(true);
+        setConflictChecked(true);
       } else {
         setConflictUnchecked(true);
       }
     } else {
       setError('');
       if (item.isChecked) {
-        setConflict(false);
+        setConflictChecked(false);
       } else {
         setConflictUnchecked(false);
       }
@@ -93,13 +93,7 @@ function CartCard({ item, setCartItems, setCheckoutItems, setConflict, setConfli
 
   const checkedHandler = async (e) => {
     try {
-      let response;
-
-      if (e.target.checked) {
-        response = await axios.patch(`${API_URL}/cart/checked-one/${item.id}`, { isChecked: true, userId: item.userId });
-      } else {
-        response = await axios.patch(`${API_URL}/cart/checked-one/${item.id}`, { isChecked: false, userId: item.userId });
-      }
+      const response = await axios.patch(`${API_URL}/cart/checked-one/${item.id}`, { isChecked: e.target.checked, userId: item.userId });
 
       setCartItems(response.data.cartItems);
       setCheckoutItems(response.data.checkoutItems);
@@ -113,17 +107,21 @@ function CartCard({ item, setCartItems, setCheckoutItems, setConflict, setConfli
       <div className="col-span-7">
         <div className="flex items-center py-2 gap-2">
           <input
-            disabled={quantity > item.product.stock_in_unit || !quantity}
+            disabled={quantity > item.product.stock_in_unit || !quantity || item.product.deletedAt}
             type="checkbox"
             onChange={checkedHandler}
             checked={item.isChecked}
             className="checkbox"
           />
-          {item.quantity > item.product?.stock_in_unit && (
+          {item.quantity > item.product.stock_in_unit || item.product.deletedAt ? (
             <span className="text-md font-semibold text-red-300">
-              This cart item is unprocessable. Please adjust this cart item quantity
+              {item.product.deletedAt
+                ? 'This item is not available anymore. Please remove item from cart'
+                : item.quantity > item.product.stock_in_unit
+                ? 'This cart item is unprocessable. Please adjust this cart item quantity'
+                : null}
             </span>
-          )}
+          ) : null}
         </div>
         <div className="flex p-1">
           <img src={item.product.image} className="h-36" alt="cart product" />
@@ -145,13 +143,12 @@ function CartCard({ item, setCartItems, setCheckoutItems, setConflict, setConfli
         <div className="flex flex-col">
           <div className="flex justify-center items-center">
             <button
-              className={`border border-primary w-10 h-10 flex justify-center items-center text-primary bg-sky-50 hover:bg-sky-100 ${
-                quantity <= item.product.volume ? 'hover:cursor-not-allowed' : null
-              }`}
+              className={`border border-primary w-10 h-10 flex justify-center items-center text-primary bg-sky-50 hover:bg-sky-100 
+               disabled:hover:cursor-not-allowed disabled:bg-gray-100`}
               onClick={() => {
                 setQuantity(quantity - item.product.volume);
               }}
-              disabled={quantity <= item.product.volume || isLoading}
+              disabled={quantity <= item.product.volume || isLoading || item.product.deletedAt}
             >
               <FiMinus />
             </button>
@@ -159,15 +156,20 @@ function CartCard({ item, setCartItems, setCheckoutItems, setConflict, setConfli
               id={`qty-${item.id}`}
               value={quantity}
               type="number"
-              className="w-20 h-10 m-0 focus:outline-none border-y border-primary text-center"
+              className="w-20 h-10 m-0 focus:outline-none border-y border-primary text-center disabled:bg-gray-100"
               onChange={(e) => setQuantity(parseInt(e.target.value))}
-              disabled={isLoading}
+              disabled={isLoading || item.product.deletedAt}
               min={0}
             />
             <button
-              className="border border-primary w-10 h-10 flex justify-center items-center text-primary bg-sky-50 hover:bg-sky-100"
+              className="border border-primary w-10 h-10 flex justify-center items-center text-primary bg-sky-50 hover:bg-sky-100 disabled:hover:cursor-not-allowed disabled:bg-gray-100"
               onClick={() => setQuantity(quantity + item.product.volume)}
-              disabled={quantity === item.product.stock_in_unit || quantity + item.product.volume > item.product.stock_in_unit || isLoading}
+              disabled={
+                quantity === item.product.stock_in_unit ||
+                quantity + item.product.volume > item.product.stock_in_unit ||
+                isLoading ||
+                item.product.deletedAt
+              }
             >
               <FiPlus />
             </button>
