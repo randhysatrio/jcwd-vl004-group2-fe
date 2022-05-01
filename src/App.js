@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Axios from 'axios';
-import { API_URL } from './assets/constants';
+import { API_URL, SOCKET_URL } from './assets/constants';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { io } from 'socket.io-client';
 
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -27,12 +28,16 @@ import User from './pages/User';
 import Profile from './pages/Profile';
 import History from './pages/History';
 import Address from './pages/Address';
+import Messages from './pages/Messages';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const dispatch = useDispatch();
+  const userGlobal = useSelector((state) => state.user);
+  // const [socket, setSocket] = useState(null);
+  const socket = useSelector((state) => state.socket.instance);
 
   useEffect(() => {
     const keepLoginAdmin = async () => {
@@ -53,9 +58,9 @@ function App() {
     };
 
     const persistentLogin = async () => {
-      const userToken = localStorage.getItem('userToken');
-
       let response;
+
+      const userToken = localStorage.getItem('userToken');
 
       if (userToken) {
         response = await Axios.get(`${API_URL}/auth/persistent`, {
@@ -74,6 +79,18 @@ function App() {
       } else {
         localStorage.setItem('userToken', response.data.token);
 
+        dispatch({
+          type: 'USER_LOGIN',
+          payload: response.data.user,
+        });
+
+        dispatch({
+          type: 'SET_SOCKET',
+          payload: io(SOCKET_URL),
+        });
+
+        // setSocket(io(SOCKET_URL));
+
         const cartData = await Axios.get(`${API_URL}/cart/get/${response.data.user.id}`, {
           headers: {
             Authorization: `Bearer ${response.data.token}`,
@@ -81,17 +98,16 @@ function App() {
         });
 
         dispatch({ type: 'CART_LIST', payload: cartData.data });
-
-        dispatch({
-          type: 'USER_LOGIN',
-          payload: response.data.user,
-        });
       }
     };
 
     keepLoginAdmin();
     persistentLogin();
   }, []);
+
+  useEffect(() => {
+    socket?.emit('userJoin', userGlobal.id);
+  }, [socket, userGlobal.id]);
 
   return (
     <BrowserRouter>
@@ -107,6 +123,7 @@ function App() {
           <Route index element={<Profile />} />
           <Route path="history" element={<History />} />
           <Route path="address" element={<Address />} />
+          <Route path="messages" element={<Messages />} />
         </Route>
         <Route path="/admin/login" element={<LoginAdmin />} />
         <Route path="/dashboard/user" element={<DashboardUser />} />

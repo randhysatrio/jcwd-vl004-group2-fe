@@ -1,12 +1,13 @@
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { AiOutlineUser, AiOutlineHistory } from 'react-icons/ai';
+import { FiMail } from 'react-icons/fi';
 import { IoLocationOutline } from 'react-icons/io5';
 
 import { NavLink, Outlet } from 'react-router-dom';
 
 const User = () => {
-  const SidebarLink = ({ children, icon, to, end }) => {
+  const SidebarLink = ({ children, icon, to, end, alert }) => {
     return (
       <NavLink to={to} end={end}>
         {({ isActive }) => (
@@ -27,7 +28,10 @@ const User = () => {
                 } transition`}
               >
                 {icon}
-                <span>{children}</span>
+                <div className="relative">
+                  <span>{children}</span>
+                  {alert && <span className="top-[5px] -left-[13px] absolute h-[7px] w-[7px] rounded-full bg-red-400"></span>}
+                </div>
               </div>
             </div>
           </div>
@@ -49,6 +53,9 @@ const User = () => {
           </SidebarLink>
           <SidebarLink to={'history'} icon={<AiOutlineHistory />}>
             History
+          </SidebarLink>
+          <SidebarLink to={'messages'} icon={<FiMail />} alert={true}>
+            Notifications
           </SidebarLink>
         </div>
         <div className="w-4/5 min-h-full">
