@@ -5,7 +5,6 @@ import { API_URL } from '../assets/constants';
 
 import HistoryCard from '../components/HistoryCard';
 import { BiCalendar } from 'react-icons/bi';
-import { BsChevronBarLeft, BsChevronBarRight } from 'react-icons/bs';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { DateRangePicker } from 'react-date-range';
 import { startOfDay, endOfDay } from 'date-fns';

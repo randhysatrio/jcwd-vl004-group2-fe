@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import Axios from 'axios';
 import { API_URL } from '../assets/constants';
 
@@ -27,7 +27,6 @@ const AllProducts = () => {
   const [appearancesList, setAppearancesList] = useState([]);
   const [currentCategory, setCurrentCategory] = useState('');
   const [currentAppearance, setCurrentAppearance] = useState([]);
-  const [keyword, setKeyword] = useState('');
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [priceRange, setPriceRange] = useState([]);
@@ -37,8 +36,7 @@ const AllProducts = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [sort, setSort] = useState('');
   const [itemLoading, setItemLoading] = useState(false);
-  const categoryQuery = searchParams.get('category');
-  const keywordQuery = searchParams.get('keyword');
+  const { search } = useLocation();
 
   useEffect(() => {
     const getAppearences = async () => {
@@ -65,14 +63,6 @@ const AllProducts = () => {
     };
     getAppearences();
     getCategories();
-
-    if (categoryQuery) {
-      setCurrentCategory(parseInt(categoryQuery));
-    }
-
-    if (keywordQuery) {
-      setKeyword(keywordQuery);
-    }
   }, []);
 
   useEffect(() => {
@@ -83,11 +73,13 @@ const AllProducts = () => {
           offset: productPerPage * currentPage - productPerPage,
         };
 
-        if (keyword) {
-          query.name = keyword;
+        if (searchParams.get('keyword')) {
+          query.keyword = searchParams.get('keyword');
         }
 
-        if (currentCategory) {
+        if (searchParams.get('category')) {
+          query.category = parseInt(searchParams.get('category'));
+        } else if (currentCategory) {
           query.category = currentCategory;
         }
 
@@ -137,7 +129,7 @@ const AllProducts = () => {
       }
     };
     getProductQuery();
-  }, [keyword, currentCategory, productPerPage, currentPage, currentAppearance, sort, priceRange]);
+  }, [currentCategory, productPerPage, currentPage, currentAppearance, sort, priceRange, search]);
 
   const renderProducts = () => {
     return productsList.map((product) => <ProductCardAll key={product.id} product={product} view={view} />);
@@ -154,7 +146,7 @@ const AllProducts = () => {
             setCurrentCategory(category.id);
           }
           setCurrentPage(1);
-          if (!keyword) {
+          if (!searchParams.get('keyword')) {
             navigate('/products');
           }
         }}
@@ -216,7 +208,7 @@ const AllProducts = () => {
                 onClick={() => {
                   setCurrentCategory('');
                   setCurrentPage(1);
-                  if (!keyword) {
+                  if (!searchParams.get('keyword')) {
                     navigate('/products');
                   }
                 }}
@@ -336,16 +328,15 @@ const AllProducts = () => {
               <BsChevronRight className="text-xs" />
               <span className="underline underline-offset-1">Shop</span>
             </div>
-            {keyword && productsList.length ? (
+            {searchParams.get('keyword') && productsList.length ? (
               <div className="w-max h-[55px] my-2 pr-6 flex items-center gap-2 shadow-md rounded-lg overflow-hidden">
                 <div className="h-full w-2 bg-sky-500" />
                 <AiOutlineInfoCircle className="text-slate-600" />
                 <span className="font-semibold text-slate-600">
-                  Currently showing results for <i>'{keyword}'</i>.
+                  Currently showing results for <i>'{searchParams.get('keyword')}'</i>.
                 </span>
                 <span
                   onClick={() => {
-                    setKeyword('');
                     setCurrentCategory('');
                     setCurrentAppearance([]);
                     setCurrentPage(1);
@@ -422,20 +413,19 @@ const AllProducts = () => {
               } items-center min-h-[600px] relative`}
             >
               {itemLoading ? (
-                <div className="absolute inset-0 m-2 bg-gray-300 bg-opacity-30 backdrop-blur-sm flex justify-center text-3xl gap-2 pt-[25%] text-gray-600">
-                  <AiOutlineLoading3Quarters className="animate-spin" />
-                  <span className="font-thin">Loading..</span>
+                <div className="absolute inset-0 m-2 bg-gray-300 bg-opacity-30 backdrop-blur-sm flex justify-center text-3xl gap-2 pt-[25%] ">
+                  <AiOutlineLoading3Quarters className="animate-spin text-sky-500" />
+                  <span className="font-thin text-gray-600">Loading..</span>
                 </div>
               ) : null}
               {productsList.length ? (
                 renderProducts()
               ) : (
-                <div className="w-full h-[600px] flex flex-col items-center justify-center">
+                <div className="w-full h-[500px] flex flex-col items-center justify-center">
                   <span className="text-3xl font-semibold text-slate-400 mb-10">No results found..</span>
-                  {keyword && (
+                  {searchParams.get('keyword') && (
                     <span
                       onClick={() => {
-                        setKeyword('');
                         setCurrentCategory('');
                         setCurrentAppearance([]);
                         setCurrentPage(1);

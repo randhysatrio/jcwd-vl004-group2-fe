@@ -66,7 +66,7 @@ const BuyAgainModal = ({ invoiceId, userId }) => {
   const [loading, setLoading] = useState(false);
   const [itemsList, setItemsList] = useState([]);
   const [itemLoading, setItemLoading] = useState(false);
-  const [refetch, setRefecth] = useState(1);
+  const [refetch, setRefetch] = useState(1);
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -120,7 +120,7 @@ const BuyAgainModal = ({ invoiceId, userId }) => {
     <>
       <button
         onClick={() => {
-          setRefecth(refetch + 1);
+          setRefetch(refetch + 1);
           setOpen(true);
         }}
         className="h-10 w-36 rounded-lg bg-gradient-to-r from-sky-500 to-emerald-500 text-white font-bold hover:brightness-110 transition active:scale-95 focus:outline-none flex items-center justify-center gap-2"
