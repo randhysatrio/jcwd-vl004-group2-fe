@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Axios from 'axios';
-import { API_URL } from './assets/constants';
+import { API_URL, SOCKET_URL } from './assets/constants';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -27,12 +27,15 @@ import User from './pages/User';
 import Profile from './pages/Profile';
 import History from './pages/History';
 import Address from './pages/Address';
+import { io } from 'socket.io-client';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const dispatch = useDispatch();
+  const userGlobal = useSelector((state) => state.user);
+  const [socket, setSocket] = useState(null);
 
   useEffect(() => {
     const keepLoginAdmin = async () => {
@@ -80,12 +83,20 @@ function App() {
         });
 
         dispatch({ type: 'CART_LIST', payload: response.data.user.carts.length });
+
+        setSocket(io(SOCKET_URL));
       }
     };
 
     keepLoginAdmin();
     persistentLogin();
   }, []);
+
+  useEffect(() => {
+    if (userGlobal?.id) {
+      socket?.emit('userJoin', userGlobal.id);
+    }
+  }, [socket, userGlobal.id]);
 
   return (
     <BrowserRouter>
