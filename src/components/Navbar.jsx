@@ -54,6 +54,7 @@ const Navbar = () => {
   const userGlobal = useSelector((state) => state.user);
   const adminGlobal = useSelector((state) => state.adminReducer);
   const [categories, setCategories] = useState([]);
+  const socket = useSelector((state) => state.socket.instance);
 
   useEffect(() => {
     const fetchCategories = async () => {

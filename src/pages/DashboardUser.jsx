@@ -112,7 +112,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen w-full">
-       <NavbarDashboard
+      <NavbarDashboard
         onChange={(e) => setQuery(e.target.value)}
         value={query}
         onClick={() => setQuery('')}
@@ -225,7 +225,7 @@ const Dashboard = () => {
                 className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl"
               >
                 <option value="">Filter by Status</option>
-                {/*sequelize uses "1" and "0" as boolean value */}
+                {/* sequelize uses "1" and "0" as boolean value */}
                 <option value="1">Active</option>
                 <option value="0">Inactive</option>
               </select>

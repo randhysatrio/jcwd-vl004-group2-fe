@@ -14,6 +14,10 @@ const DashboardTransaction = () => {
   // const [search, setSearch] = useState('');
   const [paymentProof, setPaymentProof] = useState('');
   const adminToken = localStorage.getItem('adminToken');
+  const socket = useCallback(
+    useSelector((state) => state.socket.instance),
+    []
+  );
 
   const [searchParams] = useSearchParams();
   const { search } = useLocation();
