@@ -1,13 +1,4 @@
-import {
-  FaSearch,
-  FaBell,
-  FaUserAlt,
-  FaHome,
-  FaBars,
-  FaShoppingBag,
-  FaArrowLeft,
-  FaArrowRight,
-} from 'react-icons/fa';
+import { FaSearch, FaBell, FaUserAlt, FaHome, FaBars, FaShoppingBag, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { AiOutlineClose } from 'react-icons/ai';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
@@ -30,9 +21,7 @@ const Dashboard = () => {
 
   const handleSort = async (e) => {
     let query = e.target.value;
-    const res = await axios.get(
-      `httphttp://localhost:5000/product/sortprice/?q=${query}`
-    );
+    const res = await axios.get(`httphttp://localhost:5000/product/sortprice/?q=${query}`);
     setUsers(res.data);
   };
 
@@ -84,21 +73,19 @@ const Dashboard = () => {
   //   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <NavbarDashboard
+    <div className="min-h-screen w-full">
+      {/* <NavbarDashboard
         onChange={(e) => setQuery(e.target.value)}
         value={query}
         onClick={() => setQuery('')}
       />
-      <SidebarDashboard />
+      <SidebarDashboard /> */}
 
-      <div className="pt-16 pr-8 pl-48">
-        <div className="py-7 px-10">
-          <div>
-            <h1 className="text-3xl text-gray-700 font-bold">User</h1>
-          </div>
-          <div className="flex justify-between items-center space-x-4">
-            {/* <div>
+      <div className="py-3">
+        <h1 className="text-3xl text-gray-700 font-bold">User</h1>
+      </div>
+      <div className="flex justify-between items-center space-x-4">
+        {/* <div>
               <select
                 name=""
                 id=""
@@ -115,7 +102,7 @@ const Dashboard = () => {
                 ))}
               </select>
             </div> */}
-            {/* <div>
+        {/* <div>
               <select
                 name=""
                 id=""
@@ -127,33 +114,27 @@ const Dashboard = () => {
                 <option value="price_sell,DESC">Highest Price</option>
               </select>
             </div> */}
-          </div>
-          <div className="bg-white shadow-sm mt-5 p-5">
-            {/* <form action=""></form> */}
-            <table className="w-full">
-              <thead>
-                <tr className="text-sm font-medium text-gray-700 border-b border-gray-200">
-                  <th className="py-4 px-4 text-center">ID</th>
-                  <th className="py-4 px-4 text-center">Profile Picture</th>
-                  <th className="py-4 px-4 text-center">Name</th>
-                  <th className="py-4 px-4 text-center">Email</th>
-                  <th className="py-4 px-4 text-center">Phone</th>
-                  <th className="py-4 px-4 text-center">Status</th>
-                  <th className="py-4 px-4 text-center">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((value) => (
-                  <UserTable
-                    key={value.id}
-                    user={value}
-                    handleStatusClick={handleStatusClick}
-                  />
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+      </div>
+      <div className="bg-white shadow-sm mt-5">
+        {/* <form action=""></form> */}
+        <table className="w-full">
+          <thead>
+            <tr className="text-sm font-medium text-gray-700 border-b border-gray-200">
+              <th className="py-4 px-4 text-center">ID</th>
+              <th className="py-4 px-4 text-center">Profile Picture</th>
+              <th className="py-4 px-4 text-center">Name</th>
+              <th className="py-4 px-4 text-center">Email</th>
+              <th className="py-4 px-4 text-center">Phone</th>
+              <th className="py-4 px-4 text-center">Status</th>
+              <th className="py-4 px-4 text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((value) => (
+              <UserTable key={value.id} user={value} handleStatusClick={handleStatusClick} />
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

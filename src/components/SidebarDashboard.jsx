@@ -1,57 +1,65 @@
-import {
-  FaHome,
-  FaShoppingBag,
-  FaUserAlt,
-  FaShoppingCart,
-} from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+
+import { FaHome, FaShoppingBag, FaUserAlt, FaShoppingCart } from 'react-icons/fa';
+import { HiOutlineMail } from 'react-icons/hi';
+import { Link, NavLink } from 'react-router-dom';
 
 const SidebarDashboard = () => {
+  const dispatch = useDispatch();
+  const notification = useSelector((state) => state.notification.alert);
+
+  const DashboardLink = ({ children, icon, to, end, notification, clear }) => {
+    return (
+      <NavLink to={to} end={end}>
+        {({ isActive }) => (
+          <div
+            onClick={() => {
+              dispatch({ type: 'ALERT_CLEAR', payload: clear });
+            }}
+            className={`flex items-center gap-3 my-1 px-4 py-3 text-white border-1-4 border-transparent hover:bg-primary transition ${
+              isActive ? 'bg-primary' : 'bg-transparent'
+            }`}
+          >
+            <div className="relative">
+              {notification && <span className="h-2 w-2 rounded-full bg-red-500 absolute top-0 -right-[2px]"></span>}
+              {icon}
+            </div>
+            {children}
+          </div>
+        )}
+      </NavLink>
+    );
+  };
+
   return (
     <div className="fixed left-0 top-0 w-40 h-full bg-gray-800 shadow-md z-10">
-      <div className="text-white font-bold text-base p-5 bg-gray-900">
-        Heisen Berg Co.
-      </div>
+      <Link to="/">
+        <div className="text-white font-bold text-base p-5 bg-gray-900">Heisen Berg Co.</div>
+      </Link>
       <div className="py-5">
-        <Link
-          to="/"
-          className="flex items-center my-1 px-4 py-3 text-white border-1-4 border-transparent hover:bg-primary transition"
-        >
-          <FaHome className="w-5 mr-3" />
+        <DashboardLink icon={<FaHome />} to={'/dashboard'} end>
           Dashboard
-        </Link>
+        </DashboardLink>
 
-        <Link
-          to="/"
-          className="flex items-center my-1 px-4 py-3 text-white border-1-4 border-transparent hover:bg-primary transition"
-        >
-          <FaShoppingBag className="w-5 mr-3" />
+        {/* <DashboardLink icon={<FaHome />} to={'#'}>
           Category
-        </Link>
+        </DashboardLink> */}
 
-        <Link
-          to="/dashboard/product"
-          className="flex items-center my-1 px-4 py-3 text-white border-1-4 border-transparent hover:bg-primary transition"
-        >
-          <FaHome className="w-5 mr-3" />
+        <DashboardLink icon={<FaShoppingBag />} to={'product'}>
           Product
-        </Link>
+        </DashboardLink>
 
-        <Link
-          to="/dashboard/user"
-          className="flex items-center my-1 px-4 py-3 text-white border-1-4 border-transparent hover:bg-primary transition"
-        >
-          <FaUserAlt className="w-5 mr-3" />
+        <DashboardLink icon={<FaUserAlt />} to={'user'}>
           User
-        </Link>
+        </DashboardLink>
 
-        <Link
-          to="/dashboard/transaction"
-          className="flex items-center my-1 px-4 py-3 text-white border-1-4 border-transparent hover:bg-primary transition"
-        >
-          <FaShoppingCart className="w-5 mr-3" />
+        <DashboardLink icon={<FaShoppingCart />} to={'transaction'}>
           Transaction
-        </Link>
+        </DashboardLink>
+
+        <DashboardLink icon={<HiOutlineMail />} to={'notification'} notification={notification} clear={'alert'}>
+          Notification
+        </DashboardLink>
       </div>
     </div>
   );

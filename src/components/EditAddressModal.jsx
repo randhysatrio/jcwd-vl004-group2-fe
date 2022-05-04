@@ -20,6 +20,7 @@ const EditAddressModal = ({ openEdit, setOpenEdit, address, setAddresses, curren
       postalcode: address.postalcode,
       is_default: address.is_default,
     },
+    enableReinitialize: true,
     validationSchema: Yup.object({
       address: Yup.string().required('This field is required'),
       city: Yup.string().required('This field is required'),

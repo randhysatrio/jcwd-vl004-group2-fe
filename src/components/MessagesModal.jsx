@@ -1,43 +1,122 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useState } from 'react';
+import Axios from 'axios';
+import { API_URL } from '../assets/constants';
 
 import { IoIosMail, IoIosMailOpen, IoIosSend } from 'react-icons/io';
 import { BsTrash } from 'react-icons/bs';
+import { toast } from 'react-toastify';
+import { format, formatRelative } from 'date-fns';
+import { enUS } from 'date-fns/esm/locale';
 
-const MessagesModal = () => {
+const MessagesModal = ({ message, userId, currentPage, limit, setMessages, setMaxPage, setTotalMsg }) => {
   const [open, setOpen] = useState(false);
+  const [isNew, setIsNew] = useState(message.is_new);
+  const [isRead, setIsRead] = useState(message.is_read);
+
+  const renderContent = () => {
+    return message.content?.split('|').map((sentence) => <span className="first-of-type:mb-3 mb-2 last-of-type:mb-0">{sentence}</span>);
+  };
+
+  const formatRelativeLocale = {
+    lastWeek: "'Last' eeee",
+    yesterday: "'Yesterday'",
+    today: 'p',
+    tomorrow: "'Tomorrow'",
+    nextWeek: 'eeee do',
+    other: 'P',
+  };
 
   return (
     <>
-      <div className="w-11/12 h-24 rounded-lg hover:bg-gray-50 ring-1 hover:ring ring-gray-300 flex focus:outline-none transition cursor-pointer">
-        <div onClick={() => setOpen(true)} className="flex h-full">
+      <div className="w-[750px] h-24 rounded-lg hover:bg-gray-50 ring-1 hover:ring ring-gray-300 flex focus:outline-none transition cursor-pointer">
+        <div
+          onClick={async () => {
+            try {
+              setOpen(true);
+              if (!message.is_read) {
+                setIsNew(false);
+                setIsRead(true);
+                await Axios.patch(`${API_URL}/message/read/${message.id}`);
+              }
+            } catch (err) {
+              toast.error('Unable to set message as read!', { position: 'bottom-left', theme: 'colored' });
+            }
+          }}
+          className="flex h-full"
+        >
           <div className="w-20 h-full flex items-center justify-center">
             <div className="relative">
-              <IoIosMail className="text-3xl text-gray-600 text-opacity-80" />
-              <div className="h-[10px] w-[10px] absolute top-[2px] -right-[2px] rounded-lg bg-white flex justify-center items-center">
-                <span className="h-[8px] w-[8px] rounded-full bg-red-400"></span>
-              </div>
+              {isRead ? (
+                <IoIosMailOpen className="text-3xl text-gray-600 text-opacity-80" />
+              ) : (
+                <IoIosMail className="text-3xl text-gray-600 text-opacity-80" />
+              )}
+              {isNew ? (
+                <div className="h-[10px] w-[10px] absolute top-[2px] -right-[2px] rounded-lg bg-white flex justify-center items-center">
+                  <span className="h-[8px] w-[8px] rounded-full bg-red-400"></span>
+                </div>
+              ) : null}
             </div>
           </div>
           <div className="w-[320px] h-full flex flex-col justify-center">
-            <span className="text-lg font-bold text-zinc-700 hover:text-sky-400 hover:text-opacity-70 transition">
-              Payment Approved for Invoice #1
+            <span
+              className={`text-lg ${
+                isRead ? 'font-semibold text-gray-400' : 'font-bold'
+              } text-zinc-700 hover:text-sky-400 hover:text-opacity-70 transition`}
+            >
+              {message.header?.length > 35 ? message.header.slice(0, 35) + '...' : message.header}
             </span>
             {/* maxchar = 44 */}
-            <span className="text-sm text-gray-500 text-opacity-70">Hi, Randhy Satrio! We have received the paym..</span>
+            <span className="text-sm text-gray-500 text-opacity-70">
+              {message.content?.length > 44 ? message.content?.replace('|', ' ').slice(0, 44) + '..' : message.content?.replace('|', ' ')}
+            </span>
           </div>
           <div className="h-full w-44 flex flex-col justify-center">
             <span className="text-sm text-gray-500 text-opacity-70 leading-none">From:</span>
             {/* maxchar = 17 */}
-            <span className="text-md font-bold text-gray-600">Heizen Berg Admin..</span>
+            <span className="text-md font-bold text-gray-600">
+              {message.to === 'user' ? 'Heizen Berg Admin T..' : `ID#${message.userId} (${message.user?.name})`}
+            </span>
           </div>
-          <div className="w-24 h-full flex flex-col justify-center">
+          <div className="w-28 h-full flex flex-col justify-center items-center">
             <span className="text-sm text-gray-500 text-opacity-70 leading-none">Received:</span>
-            <span className="font-bold text-gray-600">12/12/2022</span>
+            <span className="font-semibold text-gray-600">
+              {formatRelative(new Date(message.createdAt), new Date(), {
+                locale: { ...enUS, formatRelative: (token) => formatRelativeLocale[token] },
+              })}
+            </span>
           </div>
         </div>
-        <div className="w-20 h-full pl-4 flex items-center">
-          <BsTrash className="text-2xl text-gray-500 hover:text-red-500 active:scale-95 transition cursor-pointer" />
+        <div className="w-16 h-full pl-4 flex items-center">
+          <BsTrash
+            onClick={async () => {
+              try {
+                let response;
+
+                if (message.to === 'user') {
+                  response = await Axios.post(`${API_URL}/message/delete-user/${message.id}`, {
+                    userId: message.userId,
+                    limit,
+                    currentPage,
+                  });
+                } else {
+                  response = await Axios.post(`${API_URL}/message/delete-admin/${message.id}`, {
+                    limit,
+                    currentPage,
+                  });
+                }
+
+                setMessages(response.data.rows);
+                setMaxPage(Math.ceil(response.data.count / limit));
+                setTotalMsg(response.data.count);
+                toast.success(response.data.message, { position: 'bottom-left', theme: 'colored' });
+              } catch (err) {
+                toast.error('Unable to delete message!', { position: 'bottom-left', theme: 'colored' });
+              }
+            }}
+            className="text-2xl text-gray-500 hover:text-red-500 active:scale-95 transition cursor-pointer"
+          />
         </div>
       </div>
 
@@ -57,33 +136,39 @@ const MessagesModal = () => {
 
           <Transition.Child
             as={Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-80 -translate-y-2"
+            enter="ease-out duration-200"
+            enterFrom="opacity-90 -translate-y-2"
             enterTo="opacity-100 translate-y-0"
             leave="ease-in duration-200"
             leaveFrom="opacity-100 translate-y-0"
-            leaveTo="opacity-80 -translate-y-2"
+            leaveTo="opacity-90 -translate-y-2"
           >
-            <div className="w-[40%] bg-gray-50 rounded-lg absolute z-20 shadow">
-              <div className="flex flex-col px-5 py-2">
-                <div className="flex justify-between">
-                  <div className="flex flex-col">
-                    <span className="text-xl font-bold text-gray-600 mb-[2px]">Payment Approved for Invoice #1</span>
+            <div className="w-[40%] bg-gray-50 rounded-lg fixed z-20 shadow">
+              <div className="flex flex-col px-5 p-2">
+                <div className="w-full flex flex-col">
+                  <span className="text-xl font-bold text-gray-600 my-[2px]">{message.header}</span>
+                  <div className="flex items-center justify-between">
                     <div className="flex items-center text-sm">
-                      <IoIosSend className="text-emerald-300" />:<span className="text-gray-800 font-semibold ml-1">Heizen Berg Co.</span>
+                      <IoIosSend className="text-emerald-300" />:
+                      <span className="text-gray-800 font-semibold mr-auto">
+                        {message.to === 'user' ? 'Heizen Berg Co.' : `ID#${message.userId} (${message.user?.name})`}
+                      </span>
                     </div>
+                    <span className="text-sm text-gray-600 font-semibold mt-auto">{format(new Date(message.createdAt), 'PPPp')}</span>
                   </div>
-                  <span className="text-sm text-gray-600 font-semibold mt-auto">May 1st, 2022</span>
                 </div>
                 <div className="w-full h-[1px] my-1 bg-gradient-to-r from-sky-400 to-emerald-400 mx-auto" />
               </div>
-              <div className="w-full h-52 px-4 pb-3">
-                <div className="w-full h-full rounded-xl p-3 bg-gray-200 bg-opacity-80 flex flex-col text-sm">
-                  <span className="mb-3">Hello Randhy Satrio!,</span>
-                  <span className="mb-2">We have approved the payment you made for Invoice ID:1.</span>
-                  <span className="mb-2">Please wait while we packed your order and shipped it to you immediately!,</span>
-                  <span>Regards,</span>
-                  <span>Heizen Berg Co. Admin Team</span>
+              <div className="w-full h-56 px-4 pb-3">
+                <div className="w-full h-full rounded-xl p-3 bg-gray-200 bg-opacity-80 text-sm">
+                  <div className="flex flex-col">{renderContent()}</div>
+                  {message.to === 'user' && (
+                    <div className="flex items-center">
+                      <span>
+                        <i>{message.admin?.name} -Heizen Berg Co. Admin Team</i>
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="flex justify-end items-center px-4 pb-3">

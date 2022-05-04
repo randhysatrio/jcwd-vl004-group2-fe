@@ -5,13 +5,26 @@ import { FiMail } from 'react-icons/fi';
 import { IoLocationOutline } from 'react-icons/io5';
 
 import { NavLink, Outlet } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 
 const User = () => {
-  const SidebarLink = ({ children, icon, to, end, alert }) => {
+  const dispatch = useDispatch();
+  const notification = useSelector((state) => state.notification.alert);
+  const history = useSelector((state) => state.notification.history);
+
+  const SidebarLink = ({ children, icon, to, end, notification, clear }) => {
     return (
       <NavLink to={to} end={end}>
         {({ isActive }) => (
-          <div className="w-full h-12 flex items-center my-1 px-2">
+          <div
+            onClick={() => {
+              dispatch({
+                type: 'ALERT_CLEAR',
+                payload: clear,
+              });
+            }}
+            className="w-full h-12 flex items-center my-1 px-2"
+          >
             <div
               className={`w-full h-full pl-3 flex items-center rounded-lg text-lg ${
                 isActive ? 'hover:bg-sky-300 bg-white bg-opacity-80 backdrop-blur-sm' : 'hover:bg-sky-300'
@@ -27,10 +40,16 @@ const User = () => {
                   isActive ? 'translate-x-5 text-sky-400 group-hover:text-white' : 'translate-x-0 group-hover:text-white text-sky-500'
                 } transition`}
               >
-                {icon}
                 <div className="relative">
+                  {icon}
+                  <span
+                    className={`top-0 -right-[2px] absolute h-[7px] w-[7px] rounded-full bg-red-400 transition-all ${
+                      notification ? 'opacity-100' : 'opacity-0'
+                    }`}
+                  ></span>
+                </div>
+                <div>
                   <span>{children}</span>
-                  {alert && <span className="top-[5px] -left-[13px] absolute h-[7px] w-[7px] rounded-full bg-red-400"></span>}
                 </div>
               </div>
             </div>
@@ -51,10 +70,10 @@ const User = () => {
           <SidebarLink to={'address'} icon={<IoLocationOutline />}>
             Address
           </SidebarLink>
-          <SidebarLink to={'history'} icon={<AiOutlineHistory />}>
+          <SidebarLink to={'history'} icon={<AiOutlineHistory />} notification={history} clear={'history'}>
             History
           </SidebarLink>
-          <SidebarLink to={'messages'} icon={<FiMail />} alert={true}>
+          <SidebarLink to={'notification'} icon={<FiMail />} notification={notification} clear={'alert'}>
             Notifications
           </SidebarLink>
         </div>
