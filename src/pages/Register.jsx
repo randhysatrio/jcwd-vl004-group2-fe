@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Axios from 'axios';
-import { API_URL } from '../assets/constants';
+import { API_URL, SOCKET_URL } from '../assets/constants';
+import { io } from 'socket.io-client';
 
 import '../assets/styles/Register.css';
 import { FcGoogle } from 'react-icons/fc';
@@ -68,6 +69,11 @@ const Register = () => {
         dispatch({
           type: 'USER_LOGIN',
           payload: response.data.user,
+        });
+
+        dispatch({
+          type: 'SET_SOCKET',
+          payload: io(SOCKET_URL),
         });
 
         navigate('/', { replace: true });

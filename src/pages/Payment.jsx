@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+import { useSelector } from 'react-redux';
 import { FiCreditCard, FiCopy } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -12,6 +13,10 @@ function Payment() {
   const [isLoading, setIsLoading] = useState(false);
   const [addFile, setAddFile] = useState();
   const [paymentData, setPaymentData] = useState({});
+  const socket = useCallback(
+    useSelector((state) => state.socket.instance),
+    []
+  );
 
   const navigate = useNavigate();
 
@@ -44,25 +49,20 @@ function Payment() {
       if (addFile) {
         let formData = new FormData();
 
-        formData.append(
-          'data',
-          JSON.stringify({ invoiceheaderId: paymentData.invoice })
-        );
+        formData.append('data', JSON.stringify({ invoiceheaderId: paymentData.invoice }));
         formData.append('file', addFile);
 
-        const response = await axios.post(
-          `${API_URL}/checkout/proof`,
-          formData,
-          {
-            headers: {
-              Authorization: `Bearer ${userToken}`,
-            },
-          }
-        );
+        const response = await axios.post(`${API_URL}/checkout/proof`, formData, {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        });
 
         setIsLoading(false);
         toast.success(response.data.message);
         localStorage.removeItem('payment-data');
+        socket?.emit('adminNotif');
+
         return setTimeout(() => navigate('/', { replace: true }), 3000);
       }
       setIsLoading(false);
@@ -81,9 +81,7 @@ function Payment() {
         <div className="flex flex-col items-center justify-center w-full">
           <h2 className="text-3xl font-semibold mb-3">Please pay your bill</h2>
           <span className="text-md">this bill will be expire at</span>
-          <span className="font-semibold text-lg">
-            Monday, 18 April 2021, 10:17 AM
-          </span>
+          <span className="font-semibold text-lg">Monday, 18 April 2021, 10:17 AM</span>
         </div>
         <div className="border-gray-300 border rounded-md mt-10 mb-7 py-4 px-3 min-h-48 w-4/6">
           <div className="flex justify-between px-5">
@@ -108,12 +106,7 @@ function Payment() {
                   {paymentData.noAccount}
                 </span>
               </div>
-              <FiCopy
-                size={28}
-                color="#0EA5E9"
-                className="hover:cursor-pointer"
-                onClick={handCopy}
-              />
+              <FiCopy size={28} color="#0EA5E9" className="hover:cursor-pointer" onClick={handCopy} />
             </div>
           </div>
           <div className="divider" />
@@ -126,9 +119,7 @@ function Payment() {
           <div className="divider" />
           <div className="flex justify-between px-5 pb-3">
             <div className="flex flex-col gap-2">
-              <span className="text-lg text-gray-500">
-                Upload proof of payment here
-              </span>
+              <span className="text-lg text-gray-500">Upload proof of payment here</span>
               <label className="block">
                 <span className="sr-only">Choose profile photo</span>
                 <input
@@ -141,11 +132,7 @@ function Payment() {
           </div>
         </div>
         <div className="flex justify-end w-4/6">
-          <button
-            disabled={isLoading}
-            className="btn btn-primary"
-            onClick={handUpload}
-          >
+          <button disabled={isLoading} className="btn btn-primary" onClick={handUpload}>
             Confirm Payment
           </button>
         </div>

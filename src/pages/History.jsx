@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Axios from 'axios';
 import { API_URL } from '../assets/constants';
 
@@ -13,6 +13,7 @@ import 'react-date-range/dist/theme/default.css';
 import { toast } from 'react-toastify';
 
 const History = () => {
+  const dispatch = useDispatch();
   const userGlobal = useSelector((state) => state.user);
   const [invoices, setInvoices] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -61,6 +62,10 @@ const History = () => {
       }
     };
     fetchInvoices();
+
+    return () => {
+      dispatch({ type: 'ALERT_CLEAR', payload: 'history' });
+    };
   }, [userGlobal, view, currentPage, selectedDates]);
 
   const renderInvoices = () => {

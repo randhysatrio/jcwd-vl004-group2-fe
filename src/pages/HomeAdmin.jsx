@@ -1,38 +1,21 @@
-import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
 
 const HomeAdmin = () => {
-  const globalState = useSelector((state) => state);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    let token = localStorage.getItem('tokenAdmin');
-    if (!token) navigate('/admin/login');
-  }, []);
+  const adminGlobal = useSelector((state) => state.adminReducer);
+  const socket = useSelector((state) => state.socket.instance);
 
   return (
-    <div className="flex justify-between items-center px-5 h-14">
-      <h1> Home Admin</h1>
-      <div className="flex justify-between items-center w-36">
-        {globalState.adminReducer.id ? (
-          <>
-            <span>Halo {globalState.adminReducer.name}</span>
-            <button
-              onClick={() => {
-                localStorage.removeItem('tokenAdmin');
-                localStorage.removeItem('dataAdmin');
-                navigate('/admin/login');
-              }}
-            >
-              logout
-            </button>
-          </>
-        ) : (
-          <Link to="/admin/login">login</Link>
-        )}
+    <div className="h-full w-full">
+      <div className="w-full py-5 px-4 flex flex-col">
+        <span className="text-3xl font-bold text-sky-700">Dashboard</span>
+        <span className="font-thin text-gray-500">Welcome, {adminGlobal?.name}!</span>
       </div>
+      <button
+        onClick={() => socket.emit('userNotif', 20)}
+        className="h-8 w-24 rounded-lg bg-sky-500 font-bold text-white active:scale-95 transiton"
+      >
+        Alert User
+      </button>
     </div>
   );
 };

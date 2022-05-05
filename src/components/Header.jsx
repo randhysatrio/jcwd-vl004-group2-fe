@@ -1,14 +1,16 @@
 import { useState } from 'react';
-import { useNavigate, Link, createSearchParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useNavigate, Link } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 
-import { FaSearch, FaUserAlt, FaShoppingBag } from 'react-icons/fa';
+import { FaSearch, FaUserAlt, FaShoppingBag, FaBell } from 'react-icons/fa';
 import AccountButton from './AccountButton';
 
 const Header = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const userGlobal = useSelector((state) => state.user);
   const cartGlobal = useSelector((state) => state.cart);
+  const notification = useSelector((state) => state.notification.alert);
   const [keyword, setKeyword] = useState('');
 
   return (
@@ -49,6 +51,25 @@ const Header = () => {
           </div>
         </form>
         <div className="flex items-center space-x-4 p-1">
+          <div
+            onClick={() => {
+              if (!userGlobal.name) {
+                navigate('/login');
+              } else {
+                navigate('/user/notification');
+                dispatch({ type: 'ALERT_CLEAR', payload: 'alert' });
+              }
+            }}
+            className="flex flex-col items-center text-gray-700 hover:text-primary transition cursor-pointer"
+          >
+            <div className="text-2xl mb-1 relative">
+              <FaBell />
+              {notification && (
+                <span className="absolute -right-1 -top-[2px] w-2 h-2 rounded-full flex items-center justify-center bg-red-500 text-white text-xs"></span>
+              )}
+            </div>
+            <div className="text-xs leading-3">Notifications</div>
+          </div>
           <div className="text-center text-gray-700 hover:text-primary transition relative">
             <Link to="/cart">
               <div className="text-2xl mb-1">

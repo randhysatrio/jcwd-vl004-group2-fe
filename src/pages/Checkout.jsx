@@ -1,14 +1,6 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import {
-  FiEdit,
-  FiMapPin,
-  FiPhone,
-  FiPlusSquare,
-  FiSave,
-  FiUser,
-  FiXSquare,
-} from 'react-icons/fi';
+import { FiEdit, FiMapPin, FiPhone, FiPlusSquare, FiSave, FiUser, FiXSquare } from 'react-icons/fi';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -21,11 +13,11 @@ import Navbar from '../components/Navbar';
 
 function Checkout() {
   const [paymentMethod, setPaymentMethod] = useState();
-  const [address, setAddress] = useState();
+  const [address, setAddress] = useState({});
   const [addressList, setAddressList] = useState([]);
   const [deliveryOptions, setDeliveryOptions] = useState([]);
   const [delivery, setDelivery] = useState('');
-  const [phone, setPhone] = useState();
+  const [phone, setPhone] = useState('');
   const [editPhone, setEditPhone] = useState(false);
   const [subtotal, setSubtotal] = useState(0);
   const [costDelivery, setCostDelivery] = useState(0);
@@ -36,9 +28,10 @@ function Checkout() {
   const [orderItems, setOrderItems] = useState([]);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const userToken = localStorage.getItem('userToken');
   const userGlobal = useSelector((state) => state.user);
-  const dispatch = useDispatch();
+
   const payments = [
     {
       type: 'transfer',
@@ -62,19 +55,30 @@ function Checkout() {
 
   const getAddress = async () => {
     try {
-      const response = await axios.get(`${API_URL}/address/find`, {
-        headers: {
-          Authorization: `Bearer ${userToken}`,
+      const response = await axios.post(
+        `${API_URL}/address/find`,
+        {
+          limit: 8,
+          currentPage: 1,
         },
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
 
-      setAddressList(response.data);
+      setAddressList(response.data.rows);
 
-      let selectedAddress = response.data.filter((item) => {
-        return item.is_default === true;
-      });
+      // let selectedAddress = response.data.rows.filter((item) => {
+      //   return item.is_default === true;
+      // });
 
-      setAddress(selectedAddress[0]);
+      setAddress(
+        response.data.rows.find((item) => {
+          return item.is_default === true;
+        })
+      );
     } catch (error) {
       toast.error(error.response.data.message);
     }
@@ -89,28 +93,29 @@ function Checkout() {
     }
   };
 
-  const getPhone = async () => {
-    try {
-      const response = await axios.get(
-        `${API_URL}/checkout/phone/${userGlobal.id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-          },
-        }
-      );
-      setPhone(response.data.data);
-    } catch (error) {
-      toast.error(error.response.data.message);
-    }
-  };
+  // const getPhone = async () => {
+  //   try {
+  //     const response = await axios.get(`${API_URL}/checkout/phone/${userGlobal.id}`, {
+  //       headers: {
+  //         Authorization: `Bearer ${userToken}`,
+  //       },
+  //     });
+  //     setPhone(response.data.data);
+  //   } catch (error) {
+  //     toast.error(error.response.data.message);
+  //   }
+  // };
 
   useEffect(() => {
     // get data user
-    if (userGlobal.id) {
+    if (!userToken) {
+      navigate('/', { replace: true });
+    } else if (!localStorage.getItem('checkout-data')) {
+      navigate('/cart', { replace: true });
+    } else {
       getAddress();
       getDelivery();
-      getPhone();
+      setPhone(userGlobal?.phone_number);
     }
 
     // Get data checkout from cart
@@ -165,16 +170,14 @@ function Checkout() {
         localStorage.setItem('payment-data', JSON.stringify(paymentData));
 
         // update new cart
-        const cartData = await axios.get(
-          `${API_URL}/cart/get/${userGlobal.id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${userToken}`,
-            },
-          }
-        );
+        const cartData = await axios.get(`${API_URL}/cart/get/${userGlobal.id}`, {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        });
 
         dispatch({ type: 'CART_LIST', payload: cartData.data });
+        dispatch({ type: 'ALERT_NEW', payload: 'history' });
 
         setIsLoading(false);
         toast.success(response.data.message);
@@ -193,7 +196,8 @@ function Checkout() {
 
       if (!phone_number) {
         setIsLoading(false);
-        getPhone();
+        setPhone(userGlobal?.phone_number);
+        setEditPhone(false);
         return toast.error('Number can not empty');
       }
 
@@ -207,7 +211,7 @@ function Checkout() {
         }
       );
 
-      getPhone();
+      // getPhone();
       setIsLoading(false);
       setEditPhone(false);
       toast.success(response.data.message);
@@ -217,27 +221,27 @@ function Checkout() {
     }
   };
 
-  const handSetAddress = async (id) => {
-    try {
-      setIsLoading(true);
-      const response = await axios.patch(
-        `${API_URL}/checkout/select-address`,
-        { id, lastId: address.id },
-        {
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-          },
-        }
-      );
+  // const handSetAddress = async (id) => {
+  //   try {
+  //     setIsLoading(true);
+  //     const response = await axios.patch(
+  //       `${API_URL}/checkout/select-address`,
+  //       { id, lastId: address.id },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${userToken}`,
+  //         },
+  //       }
+  //     );
 
-      getAddress();
-      setIsLoading(false);
-      toast.success(response.data.message);
-    } catch (error) {
-      setIsLoading(false);
-      toast.error(error.response.data.message);
-    }
-  };
+  //     getAddress();
+  //     setIsLoading(false);
+  //     toast.success(response.data.message);
+  //   } catch (error) {
+  //     setIsLoading(false);
+  //     toast.error(error.response.data.message);
+  //   }
+  // };
 
   const toIDR = (number) => {
     return number.toLocaleString('id-ID', {
@@ -277,28 +281,13 @@ function Checkout() {
                         className="input input-bordered input-sm w-36 max-w-xs mr-4"
                         onChange={(e) => setPhone(e.target.value)}
                       ></input>
-                      <FiSave
-                        size={24}
-                        color="#0EA5E9"
-                        className="hover:cursor-pointer"
-                        onClick={() => handEditPhone(phone)}
-                      />
-                      <FiXSquare
-                        size={24}
-                        color="red"
-                        className="hover:cursor-pointer"
-                        onClick={() => setEditPhone(!editPhone)}
-                      />
+                      <FiSave size={24} color="#0EA5E9" className="hover:cursor-pointer" onClick={() => handEditPhone(phone)} />
+                      <FiXSquare size={24} color="red" className="hover:cursor-pointer" onClick={() => setEditPhone(!editPhone)} />
                     </>
                   ) : (
                     <>
                       <span className="w-36">{phone ? phone : '-'}</span>
-                      <FiEdit
-                        size={24}
-                        color="#0EA5E9"
-                        className="hover:cursor-pointer"
-                        onClick={() => setEditPhone(!editPhone)}
-                      />
+                      <FiEdit size={24} color="#0EA5E9" className="hover:cursor-pointer" onClick={() => setEditPhone(!editPhone)} />
                     </>
                   )}
                 </div>
@@ -306,14 +295,10 @@ function Checkout() {
                   <FiMapPin size={20} />
                   {address ? (
                     <span>
-                      {address.address}, {address.city}, {address.province},{' '}
-                      {address.country}, {address.postalcode}
+                      {address.address}, {address.city}, {address.province}, {address.country}, {address.postalcode}
                     </span>
                   ) : (
-                    <a
-                      href="#my-modal-4"
-                      className="text-primary border-primary border-b font-semibold"
-                    >
+                    <a href="#my-modal-4" className="text-primary border-primary border-b font-semibold">
                       Add Address
                     </a>
                   )}
@@ -366,8 +351,7 @@ function Checkout() {
           <div className="flex flex-col gap-2">
             <div className="flex justify-between">
               <span>
-                Subtotal ({orderItems.length}{' '}
-                {orderItems.length > 1 ? 'items' : 'item'})
+                Subtotal ({orderItems.length} {orderItems.length > 1 ? 'items' : 'item'})
               </span>
               <span>{toIDR(subtotal)}</span>
             </div>
@@ -378,35 +362,20 @@ function Checkout() {
             <div className="divider"></div>
             <div className="flex justify-between">
               <span className="font-bold text-lg">TOTAL</span>
-              <span className="font-bold text-lg">
-                {toIDR(subtotal + costDelivery)}
-              </span>
+              <span className="font-bold text-lg">{toIDR(subtotal + costDelivery)}</span>
             </div>
           </div>
-          <a
-            href="#my-modal-3"
-            className="h-20 bg-gray-200 rounded-md flex justify-center items-center hover:cursor-pointer"
-          >
+          <a href="#my-modal-3" className="h-20 bg-gray-200 rounded-md flex justify-center items-center hover:cursor-pointer">
             {paymentMethod ? (
               <span className="font-semibold text-lg">
                 {paymentMethod.bankName} - {paymentMethod.type}
               </span>
             ) : (
-              <span className="font-semibold text-lg">
-                Select payment method
-              </span>
+              <span className="font-semibold text-lg">Select payment method</span>
             )}
           </a>
-          <textarea
-            className="textarea my-4 h-14 bg-gray-100"
-            placeholder="Write your note"
-            onChange={(e) => setNotes(e.target.value)}
-          />
-          <button
-            disabled={isLoading}
-            className="btn btn-block btn-primary"
-            onClick={handCheckout}
-          >
+          <textarea className="textarea my-4 h-14 bg-gray-100" placeholder="Write your note" onChange={(e) => setNotes(e.target.value)} />
+          <button disabled={isLoading} className="btn btn-block btn-primary" onClick={handCheckout}>
             PLACE ORDER
           </button>
         </div>
@@ -419,18 +388,12 @@ function Checkout() {
       <div className="modal" id="my-modal-2">
         <div className="modal-box">
           <div className="modal-action">
-            <a
-              href="#"
-              className="btn btn-sm btn-circle absolute right-2 top-2"
-            >
+            <a href="#" className="btn btn-sm btn-circle absolute right-2 top-2">
               ✕
             </a>
           </div>
           <h3 className="text-lg font-bold mb-3">Select Your Address</h3>
-          <a
-            href="#my-modal-4"
-            className="btn w-full bg-gray-300 text-gray-700 font-semibold border-0 hover:bg-gray-400 flex gap-3"
-          >
+          <a href="#my-modal-4" className="btn w-full bg-gray-300 text-gray-700 font-semibold border-0 hover:bg-gray-400 flex gap-3">
             Add Address <FiPlusSquare size={24} />
           </a>
           <div className=" flex flex-col gap-1 ">
@@ -438,23 +401,16 @@ function Checkout() {
               return (
                 <div
                   key={item.id}
-                  className={`flex justify-between items-center border-b py-4 ${
-                    item.is_default ? 'text-primary font-semibold' : null
-                  }`}
+                  className={`flex justify-between items-center border-b py-4 ${address === item ? 'text-primary font-semibold' : null}`}
                 >
                   <div className="w-4/5">
                     <span>
-                      {item.address}, {item.city}, {item.province},{' '}
-                      {item.country}, {item.postalcode}
+                      {item.address}, {item.city}, {item.province}, {item.country}, {item.postalcode}
                     </span>
                   </div>
                   <div className="modal-action">
-                    {!item.is_default && (
-                      <a
-                        href="#"
-                        className="btn btn-sm btn-primary"
-                        onClick={() => handSetAddress(item.id)}
-                      >
+                    {address !== item && (
+                      <a href="#" className="btn btn-sm btn-primary" onClick={() => setAddress(item)}>
                         Select
                       </a>
                     )}
@@ -470,10 +426,7 @@ function Checkout() {
       <div className="modal" id="my-modal-3">
         <div className="modal-box">
           <div className="modal-action">
-            <a
-              href="#"
-              className="btn btn-sm btn-circle absolute right-2 top-2"
-            >
+            <a href="#" className="btn btn-sm btn-circle absolute right-2 top-2">
               ✕
             </a>
           </div>
@@ -497,11 +450,7 @@ function Checkout() {
                     </div>
                   </div>
                   <div className="modal-action">
-                    <a
-                      href="#"
-                      className="btn btn-sm btn-primary"
-                      onClick={() => setPaymentMethod(item)}
-                    >
+                    <a href="#" className="btn btn-sm btn-primary" onClick={() => setPaymentMethod(item)}>
                       Select
                     </a>
                   </div>

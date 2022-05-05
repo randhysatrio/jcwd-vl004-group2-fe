@@ -52,6 +52,7 @@ const NavbarLink = ({ children, path }) => {
 
 const Navbar = () => {
   const userGlobal = useSelector((state) => state.user);
+  const adminGlobal = useSelector((state) => state.adminReducer);
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
@@ -103,7 +104,11 @@ const Navbar = () => {
           </div>
         </div>
 
-        {userGlobal.name ? (
+        {adminGlobal.id ? (
+          <div className="flex items-center ml-auto">
+            <NavbarLink path={'/dashboard'}>Admin</NavbarLink>
+          </div>
+        ) : userGlobal.name ? (
           <div className="flex items-center">
             <span className="text-md font-semibold text-white">Hello, {userGlobal.name}!</span>
           </div>

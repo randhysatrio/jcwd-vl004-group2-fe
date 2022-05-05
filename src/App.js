@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Axios from 'axios';
-import { API_URL } from './assets/constants';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { API_URL, SOCKET_URL } from './assets/constants';
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { io } from 'socket.io-client';
 
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -27,37 +28,43 @@ import User from './pages/User';
 import Profile from './pages/Profile';
 import History from './pages/History';
 import Address from './pages/Address';
+import Messages from './pages/Messages';
 
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import MessagesAdmin from './pages/MessagesAdmin';
+import Dashboard from './pages/Dashboard';
 
 function App() {
   const dispatch = useDispatch();
+  const userGlobal = useSelector((state) => state.user);
+  const socket = useSelector((state) => state.socket.instance);
 
   useEffect(() => {
-    const keepLoginAdmin = async () => {
-      const token = localStorage.getItem('tokenAdmin');
-      if (token) {
-        const response = await Axios.post(
+    const persistentLogin = async () => {
+      let response;
+
+      const userToken = localStorage.getItem('userToken');
+      const adminToken = localStorage.getItem('adminToken');
+
+      if (adminToken) {
+        const adminresponse = await Axios.post(
           `${API_URL}/admin/auth/get`,
           {},
           {
             headers: {
-              Authorization: token,
+              Authorization: `Bearer ${adminToken}`,
             },
           }
         );
 
-        dispatch({ type: 'AUTH_ADMIN', payload: response.data.data });
-      }
-    };
+        dispatch({ type: 'AUTH_ADMIN', payload: adminresponse.data.data });
 
-    const persistentLogin = async () => {
-      const userToken = localStorage.getItem('userToken');
-
-      let response;
-
-      if (userToken) {
+        dispatch({
+          type: 'SET_SOCKET',
+          payload: io(SOCKET_URL),
+        });
+      } else if (userToken) {
         response = await Axios.get(`${API_URL}/auth/persistent`, {
           headers: {
             Authorization: `Bearer ${userToken}`,
@@ -74,6 +81,16 @@ function App() {
       } else {
         localStorage.setItem('userToken', response.data.token);
 
+        dispatch({
+          type: 'USER_LOGIN',
+          payload: response.data.user,
+        });
+
+        dispatch({
+          type: 'SET_SOCKET',
+          payload: io(SOCKET_URL),
+        });
+
         const cartData = await Axios.get(`${API_URL}/cart/get/${response.data.user.id}`, {
           headers: {
             Authorization: `Bearer ${response.data.token}`,
@@ -81,17 +98,22 @@ function App() {
         });
 
         dispatch({ type: 'CART_LIST', payload: cartData.data });
-
-        dispatch({
-          type: 'USER_LOGIN',
-          payload: response.data.user,
-        });
       }
     };
 
-    keepLoginAdmin();
     persistentLogin();
   }, []);
+
+  useEffect(() => {
+    if (userGlobal.id) {
+      socket?.emit('userJoin', userGlobal.id);
+
+      socket?.on('newUserNotif', (totalNotif) => {
+        dispatch({ type: 'ALERT_NEW', payload: 'alert' });
+        toast.info(`You have ${totalNotif} new notification(s)`, { position: 'top-center', theme: 'colored' });
+      });
+    }
+  }, [socket]);
 
   return (
     <BrowserRouter>
@@ -107,22 +129,25 @@ function App() {
           <Route index element={<Profile />} />
           <Route path="history" element={<History />} />
           <Route path="address" element={<Address />} />
+          <Route path="notification" element={<Messages />} />
         </Route>
-        <Route path="/admin/login" element={<LoginAdmin />} />
-        <Route path="/dashboard/user" element={<DashboardUser />} />
         <Route path="/products" element={<AllProducts />} />
         <Route path="/products/:id" element={<ProductDetail />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/payment" element={<Payment />} />
-        <Route path="/admin" element={<HomeAdmin />} />
         <Route path="/admin/login" element={<LoginAdmin />} />
         <Route path="/admin/reset" element={<ResetAdmin />} />
         <Route path="/admin/change-password/:token" element={<ChangePassAdmin />} />
-        <Route path="/dashboard/product" element={<DashboardProduct />} />
-        <Route path="/dashboard/product/addproduct" element={<AddProduct />} />
-        <Route path="/dashboard/product/editproduct" element={<EditProduct />} />
-        <Route path="/dashboard/transaction" element={<DashboardTransaction />} />
+        <Route path="/dashboard" element={<Dashboard />}>
+          <Route index element={<HomeAdmin />} />
+          <Route path="user" element={<DashboardUser />} />
+          <Route path="product" element={<DashboardProduct />} />
+          <Route path="product/addproduct" element={<AddProduct />} />
+          <Route path="product/editproduct" element={<EditProduct />} />
+          <Route path="transaction" element={<DashboardTransaction />} />
+          <Route path="notification" element={<MessagesAdmin />} />
+        </Route>
       </Routes>
       <ToastContainer />
     </BrowserRouter>

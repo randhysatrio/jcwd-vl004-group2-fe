@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Axios from 'axios';
 import { API_URL } from '../assets/constants';
@@ -52,6 +53,10 @@ const HistoryItem = ({ item, index }) => {
 const HistoryCard = ({ invoice, userId }) => {
   const [received, setReceived] = useState(invoice.is_received);
   const [loading, setLoading] = useState(false);
+  const socket = useCallback(
+    useSelector((state) => state.socket.instance),
+    []
+  );
 
   const renderItem = () => {
     return invoice.invoiceitems.map((item, index) => <HistoryItem key={item.id} item={item} index={index} />);
@@ -78,6 +83,8 @@ const HistoryCard = ({ invoice, userId }) => {
       } else {
         setReceived(response.data.received);
 
+        socket.emit('adminNotif');
+
         toast.success(response.data.message, { position: 'bottom-left', theme: 'colored' });
       }
     } catch (err) {
@@ -90,8 +97,8 @@ const HistoryCard = ({ invoice, userId }) => {
   return (
     <div className="w-full border rounded-lg flex flex-col items-center overflow-hidden shadow">
       <div className="w-full py-2 px-4 text-sm font-semibold text-gray-500 flex items-center">
-        <span className="mr-auto">#1</span>
-        <span>{format(new Date(invoice.createdAt), 'ccc, MMM do yyyy - HH:mm:s aaa')}</span>
+        <span className="mr-auto">#{invoice.id}</span>
+        <span>{format(new Date(invoice.createdAt), 'ccc, MMM do yyyy - pp')}</span>
         {invoice.status === 'pending' && <span className="py-1 px-3 rounded-lg bg-sky-200 text-sky-600 font-semibold ml-3">Pending</span>}
         {invoice.status === 'rejected' && (
           <span className="py-1 px-3 rounded-lg bg-rose-200 text-rose-600 font-semibold ml-3">Rejected</span>

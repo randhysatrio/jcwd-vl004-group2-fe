@@ -20,6 +20,7 @@ const AccountButton = ({ children }) => {
 
         localStorage.removeItem('userToken');
 
+        dispatch({ type: 'REMOVE_SOCKET' });
         dispatch({ type: 'USER_LOGOUT' });
       } else {
         navigate(to);
