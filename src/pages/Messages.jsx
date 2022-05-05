@@ -31,6 +31,7 @@ const Messages = () => {
         setMessages(response.data.rows);
         setMaxPage(Math.ceil(response.data.count / limit));
         setTotalMsg(response.data.count);
+
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } catch (err) {
         toast.error('Unable to fetch Messages!', { position: 'bottom-left', theme: 'colored' });
