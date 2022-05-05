@@ -1,28 +1,27 @@
 import { FaSearch, FaBell, FaUserAlt, FaHome, FaShoppingBag, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { AiOutlineClose } from 'react-icons/ai';
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import ProductTable from '../components/ProductTable';
 import Pagination from '../components/Pagination';
 import Swal from 'sweetalert2';
 import CategoryList from '../components/CategoryList';
 import { API_URL } from '../assets/constants';
-import NavbarDashboard from '../components/NavbarDashboard';
-import SidebarDashboard from '../components/SidebarDashboard';
 
 const Dashboard = () => {
-  const Swal = require('sweetalert2');
   const navigate = useNavigate();
-
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [currentCategory, setCurrentCategory] = useState('');
   const [currentSortPrice, setCurrentSortPrice] = useState('');
-  const [search, setSearch] = useState('');
+  // const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [maxPage, setMaxPage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(0);
+
+  const [searchParams] = useSearchParams();
+  const { search } = useLocation();
 
   const fetchProducts = async () => {
     const res = await axios.get(`${API_URL}/product/all`);
@@ -34,9 +33,8 @@ const Dashboard = () => {
       const productList = await axios.post(`${API_URL}/product/query`, {
         category: currentCategory,
         sort: currentSortPrice,
-        name: search,
+        keyword: searchParams.get('keyword'),
       });
-      console.log(productList.data.length);
       const categoryList = await axios.get(`${API_URL}/category/all`);
       setCategories(categoryList.data);
       // nested objects
@@ -98,19 +96,8 @@ const Dashboard = () => {
     }
   };
 
-  const handleReset = () => {
-    setSearch('');
-  };
-
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* <NavbarDashboard
-        onChange={(e) => setSearch(e.target.value)}
-        value={search}
-        onClick={() => setSearch('')}
-      />
-      <SidebarDashboard /> */}
-
       <div className="flex items-center justify-between py-7 px-10">
         <div>
           <h1 className="text-3xl text-gray-700 font-bold">Products</h1>

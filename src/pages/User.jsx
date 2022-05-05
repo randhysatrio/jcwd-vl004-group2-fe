@@ -1,16 +1,24 @@
+import { useEffect } from 'react';
+import { useNavigate, NavLink, Outlet } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { AiOutlineUser, AiOutlineHistory } from 'react-icons/ai';
 import { FiMail } from 'react-icons/fi';
 import { IoLocationOutline } from 'react-icons/io5';
 
-import { NavLink, Outlet } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-
 const User = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const notification = useSelector((state) => state.notification.alert);
   const history = useSelector((state) => state.notification.history);
+
+  useEffect(() => {
+    if (!localStorage.getItem('userToken')) {
+      navigate('/', { replace: true });
+    }
+  }, []);
 
   const SidebarLink = ({ children, icon, to, end, notification, clear }) => {
     return (
@@ -43,7 +51,7 @@ const User = () => {
                 <div className="relative">
                   {icon}
                   <span
-                    className={`top-0 -right-[2px] absolute h-[7px] w-[7px] rounded-full bg-red-400 transition-all ${
+                    className={`top-0 -right-[2px] absolute h-[7px] w-[7px] rounded-full bg-red-400 ${
                       notification ? 'opacity-100' : 'opacity-0'
                     }`}
                   ></span>

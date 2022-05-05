@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,7 +11,10 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const adminGlobal = useSelector((state) => state.adminReducer);
-  const socket = useSelector((state) => state.socket.instance);
+  const socket = useCallback(
+    useSelector((state) => state.socket.instance),
+    []
+  );
 
   useEffect(() => {
     const adminToken = localStorage.getItem('adminToken');
@@ -28,9 +31,9 @@ const Dashboard = () => {
     if (adminGlobal.id) {
       socket?.emit('adminJoin', adminGlobal.id);
 
-      socket?.on('newAdminNotif', () => {
+      socket?.on('newAdminNotif', (totalNotif) => {
         dispatch({ type: 'ALERT_NEW', payload: 'alert' });
-        toast.info('You have 1 new notification(s)', { position: 'top-center', theme: 'colored' });
+        toast.info(`You have ${totalNotif} new notification(s)`, { position: 'top-center', theme: 'colored' });
       });
     }
   }, [socket]);
@@ -39,7 +42,7 @@ const Dashboard = () => {
     <div className="h-screen flex flex-col">
       <NavbarDashboard />
       <SidebarDashboard />
-      <div className="flex h-full pt-16 pl-44 pr-8">
+      <div className="h-full pt-16 pl-44 pr-8">
         <Outlet />
       </div>
     </div>

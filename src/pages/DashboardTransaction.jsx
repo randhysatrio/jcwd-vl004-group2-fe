@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { useEffect, useState, useCallback } from 'react';
-import { useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { useSearchParams, useLocation } from 'react-router-dom';
 import { FaArrowLeft, FaArrowRight, FaSearchPlus } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { API_URL } from '../assets/constants';
@@ -11,13 +11,12 @@ const DashboardTransaction = () => {
   const [activePage, setActivePage] = useState(1);
   const [startNumber, setStartNumber] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
-  const [search, setSearch] = useState('');
+  // const [search, setSearch] = useState('');
   const [paymentProof, setPaymentProof] = useState('');
   const adminToken = localStorage.getItem('adminToken');
-  const socket = useCallback(
-    useSelector((state) => state.socket.instance),
-    []
-  );
+
+  const [searchParams] = useSearchParams();
+  const { search } = useLocation();
 
   useEffect(() => {
     const getTransaction = async () => {
@@ -25,15 +24,18 @@ const DashboardTransaction = () => {
         if ((activePage > totalPage && search) || activePage < 1) {
           return;
         }
-        const response = await axios.post(`${API_URL}/admin/transaction/get`, null, {
-          params: {
+        const response = await axios.post(
+          `${API_URL}/admin/transaction/get`,
+          {
             page: activePage,
-            search,
+            search: searchParams.get('keyword'),
           },
-          headers: {
-            Authorization: `Bearer ${adminToken}`,
-          },
-        });
+          {
+            headers: {
+              Authorization: `Bearer ${adminToken}`,
+            },
+          }
+        );
 
         setTransactions(response.data.data);
         setTotalPage(response.data.totalPage);
@@ -92,13 +94,6 @@ const DashboardTransaction = () => {
 
   return (
     <div className="min-h-screen w-full bg-gray-100">
-      {/* <NavbarDashboard
-        onChange={(e) => setSearch(e.target.value)}
-        value={search}
-        onClick={() => setSearch('')}
-      />
-      <SidebarDashboard /> */}
-
       <div className="flex items-center justify-between py-7 px-10">
         <div>
           <h1 className="text-3xl text-gray-700 font-bold">Transactions</h1>

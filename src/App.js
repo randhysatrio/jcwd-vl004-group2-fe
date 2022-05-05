@@ -108,12 +108,12 @@ function App() {
     if (userGlobal.id) {
       socket?.emit('userJoin', userGlobal.id);
 
-      socket?.on('newUserNotif', () => {
+      socket?.on('newUserNotif', (totalNotif) => {
         dispatch({ type: 'ALERT_NEW', payload: 'alert' });
-        toast.info('You have 1 new notification(s)', { position: 'top-center', theme: 'colored' });
+        toast.info(`You have ${totalNotif} new notification(s)`, { position: 'top-center', theme: 'colored' });
       });
     }
-  }, [socket, userGlobal]);
+  }, [socket]);
 
   return (
     <BrowserRouter>

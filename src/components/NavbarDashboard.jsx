@@ -1,36 +1,52 @@
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 
 import { AiOutlineClose } from 'react-icons/ai';
 import { FaBell, FaSearch, FaUserAlt } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
 
 const NavbarDashboard = ({ onChange, value, onClick }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const socket = useSelector((state) => state.socket.instance);
   const notification = useSelector((state) => state.notification.alert);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [keyword, setKeyword] = useState('');
+  const { pathname } = useLocation();
 
   return (
     <div className="h-16 bg-white shadow-sm pl-80 pr-8 fixed z-[3] w-full top-0 left-0 flex items-center">
       <div className="flex justify-center items-center relative">
-        <FaSearch className="absolute left-2 text-gray-400 bg-gray-100" />
+        <FaSearch
+          onClick={() => {
+            setSearchParams({ keyword }, { replace: true });
+          }}
+          className="absolute left-2 text-gray-400 bg-gray-100 cursor-pointer active:scale-95 transition"
+        />
         <input
           type="text"
-          value={value}
+          value={keyword}
           id="myInput"
           placeholder="Search..."
-          onChange={onChange}
+          onChange={(e) => setKeyword(e.target.value)}
           className="search block w-72 shadow border-none rounded-3x1 focus:outline-none py-2 bg-gray-100 text-base text-gray-600 pl-11 pr-7"
         />
-        <AiOutlineClose className="hover cursor-pointer absolute right-2" onClick={onClick} />
+        <AiOutlineClose
+          onClick={() => {
+            setKeyword('');
+            navigate(pathname);
+          }}
+          className="hover:brightness-110 cursor-pointer absolute right-2"
+        />
       </div>
 
       <div className="ml-auto flex items-center">
-        <div className="relative">
-          <FaBell className="w-6 cursor-pointer hover:text-primary" />
-          {notification && <span className="h-2 w-2 top-0 right-[3px] rounded-full bg-red-500 absolute"></span>}
-        </div>
+        <Link to="/dashboard/notification">
+          <div className="relative">
+            <FaBell className="w-6 cursor-pointer hover:text-primary" />
+            {notification && <span className="h-2 w-2 top-0 right-[3px] rounded-full bg-red-500 absolute"></span>}
+          </div>
+        </Link>
 
         <div className="ml-4 relative dropdown dropdown-end">
           <label tabIndex={0}>

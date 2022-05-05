@@ -9,7 +9,7 @@ import { toast } from 'react-toastify';
 import { format, formatRelative } from 'date-fns';
 import { enUS } from 'date-fns/esm/locale';
 
-const MessagesModal = ({ message, userId, currentPage, limit, setMessages, setMaxPage, setTotalMsg }) => {
+const MessagesModal = ({ message, currentPage, limit, setMessages, setMaxPage, setTotalMsg }) => {
   const [open, setOpen] = useState(false);
   const [isNew, setIsNew] = useState(message.is_new);
   const [isRead, setIsRead] = useState(message.is_read);
@@ -67,14 +67,12 @@ const MessagesModal = ({ message, userId, currentPage, limit, setMessages, setMa
             >
               {message.header?.length > 35 ? message.header.slice(0, 35) + '...' : message.header}
             </span>
-            {/* maxchar = 44 */}
             <span className="text-sm text-gray-500 text-opacity-70">
               {message.content?.length > 44 ? message.content?.replace('|', ' ').slice(0, 44) + '..' : message.content?.replace('|', ' ')}
             </span>
           </div>
           <div className="h-full w-44 flex flex-col justify-center">
             <span className="text-sm text-gray-500 text-opacity-70 leading-none">From:</span>
-            {/* maxchar = 17 */}
             <span className="text-md font-bold text-gray-600">
               {message.to === 'user' ? 'Heizen Berg Admin T..' : `ID#${message.userId} (${message.user?.name})`}
             </span>

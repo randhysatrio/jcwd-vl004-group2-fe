@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { useSearchParams, useLocation } from 'react-router-dom';
 import Axios from 'axios';
 import { API_URL } from '../assets/constants';
 
@@ -9,6 +10,8 @@ import { toast } from 'react-toastify';
 
 const MessagesAdmin = () => {
   const dispatch = useDispatch();
+  const { search } = useLocation();
+  const [searchParams] = useSearchParams();
   const [messages, setMessages] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [maxPage, setMaxPage] = useState(0);
@@ -21,6 +24,7 @@ const MessagesAdmin = () => {
         const response = await Axios.post(`${API_URL}/message/admin`, {
           limit,
           currentPage,
+          keyword: searchParams.get('keyword'),
         });
 
         setMessages(response.data.rows);
@@ -45,7 +49,7 @@ const MessagesAdmin = () => {
         toast.error('Unable to update messages status!', { position: 'bottom-left', theme: 'colored' });
       }
     };
-  }, [currentPage]);
+  }, [currentPage, search]);
 
   const renderMessages = () => {
     return messages?.map((message) => (
