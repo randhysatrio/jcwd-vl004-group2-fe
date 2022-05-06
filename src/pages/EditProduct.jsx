@@ -367,7 +367,7 @@ const EditProduct = () => {
               Edit Product
             </button>
             <button className="mt-8 py-2.5 px-6 text-white bg-red-500 hover:bg-red-400 transition rounded-xl items-center">
-              <a href="http://localhost:3000/dashboard/product">Cancel</a>
+              <a href="http://localhost:3000/dashboard/product">Cancel yha</a>
               {/*<Link> React-Router-dom APIURL + dashboard */}
             </button>
           </div>
