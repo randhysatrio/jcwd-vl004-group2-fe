@@ -12,10 +12,13 @@ import AllProducts from './pages/AllProducts';
 import ChangePassword from './pages/ChangePassword';
 import LoginAdmin from './pages/LoginAdmin';
 import Verify from './pages/Verify';
+import Dashboard from './pages/Dashboard';
 import DashboardProduct from './pages/DashboardProduct';
 import DashboardUser from './pages/DashboardUser';
 import DashboardTransaction from './pages/DashboardTransaction';
 import DashboardReport from './pages/DashboardReport';
+import DashboardAdmin from './pages/DashboardAdmin';
+import MessagesAdmin from './pages/MessagesAdmin';
 import ChangePassAdmin from './pages/ChangePassAdmin';
 import HomeAdmin from './pages/HomeAdmin';
 import ResetAdmin from './pages/ResetAdmin';
@@ -33,8 +36,6 @@ import Messages from './pages/Messages';
 
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import MessagesAdmin from './pages/MessagesAdmin';
-import Dashboard from './pages/Dashboard';
 
 function App() {
   const dispatch = useDispatch();
@@ -124,8 +125,8 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/changepassword/:token" element={<ChangePassword />} />
         <Route path="/verify/:token" element={<Verify />} />
-        <Route path="/products" element={<AllProducts />} />
-        <Route path="/products/:id" element={<ProductDetail />} />
+        <Route path="/products/:val" element={<AllProducts />} />
+        <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/user" element={<User />}>
           <Route index element={<Profile />} />
           <Route path="history" element={<History />} />
@@ -143,6 +144,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />}>
           <Route index element={<HomeAdmin />} />
           <Route path="user" element={<DashboardUser />} />
+          <Route path="admin" element={<DashboardAdmin />} />
           <Route path="product" element={<DashboardProduct />} />
           <Route path="product/addproduct" element={<AddProduct />} />
           <Route path="product/editproduct" element={<EditProduct />} />

@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { FaSearch, FaUserAlt, FaShoppingBag, FaBell } from 'react-icons/fa';
+import { MdOutlineDashboard } from 'react-icons/md';
 import AccountButton from './AccountButton';
 
 const Header = () => {
@@ -11,6 +12,7 @@ const Header = () => {
   const userGlobal = useSelector((state) => state.user);
   const cartGlobal = useSelector((state) => state.cart);
   const notification = useSelector((state) => state.notification.alert);
+  const adminToken = localStorage.getItem('adminToken');
   const [keyword, setKeyword] = useState('');
 
   return (
@@ -25,7 +27,7 @@ const Header = () => {
           onSubmit={(e) => {
             e.preventDefault();
 
-            navigate(`/products?keyword=${keyword}`);
+            navigate(`/products/all?keyword=${keyword}`);
             setKeyword('');
           }}
         >
@@ -51,45 +53,58 @@ const Header = () => {
           </div>
         </form>
         <div className="flex items-center space-x-4 p-1">
-          <div
-            onClick={() => {
-              if (!userGlobal.name) {
-                navigate('/login');
-              } else {
-                navigate('/user/notification');
-                dispatch({ type: 'ALERT_CLEAR', payload: 'alert' });
-              }
-            }}
-            className="flex flex-col items-center text-gray-700 hover:text-primary transition cursor-pointer"
-          >
-            <div className="text-2xl mb-1 relative">
-              <FaBell />
-              {notification && (
-                <span className="absolute -right-1 -top-[2px] w-2 h-2 rounded-full flex items-center justify-center bg-red-500 text-white text-xs"></span>
-              )}
-            </div>
-            <div className="text-xs leading-3">Notifications</div>
-          </div>
-          <div className="text-center text-gray-700 hover:text-primary transition relative">
-            <Link to="/cart">
-              <div className="text-2xl mb-1">
-                <FaShoppingBag />
-              </div>
-              <div className="text-xs leading-3">Cart</div>
-              <span className="absolute -right-2 -top-1 w-5 h-5 rounded-full flex items-center justify-center bg-red-500 text-white text-xs">
-                {cartGlobal.total_data}
-              </span>
-            </Link>
-          </div>
-          {userGlobal.name ? (
-            <AccountButton>{userGlobal.name}</AccountButton>
-          ) : (
-            <Link to="/login">
-              <div className="text-center text-gray-700 hover:text-primary transition relative group">
-                <div className="text-2xl mb-1">
-                  <FaUserAlt className="ml-2" />
+          {!adminToken ? (
+            <>
+              <div
+                onClick={() => {
+                  if (!userGlobal.name) {
+                    navigate('/login');
+                  } else {
+                    navigate('/user/notification');
+                    dispatch({ type: 'ALERT_CLEAR', payload: 'alert' });
+                  }
+                }}
+                className="flex flex-col items-center text-gray-700 hover:text-primary transition cursor-pointer"
+              >
+                <div className="text-2xl mb-1 relative">
+                  <FaBell />
+                  {notification && (
+                    <span className="absolute -right-1 -top-[2px] w-2 h-2 rounded-full flex items-center justify-center bg-red-500 text-white text-xs"></span>
+                  )}
                 </div>
-                <div className="text-xs leading-3">Account</div>
+                <div className="text-xs leading-3">Notifications</div>
+              </div>
+              <div className="text-center text-gray-700 hover:text-primary transition relative">
+                <Link to="/cart">
+                  <div className="text-2xl mb-1">
+                    <FaShoppingBag />
+                  </div>
+                  <div className="text-xs leading-3">Cart</div>
+                  <span className="absolute -right-2 -top-1 w-5 h-5 rounded-full flex items-center justify-center bg-red-500 text-white text-xs">
+                    {cartGlobal.total_data}
+                  </span>
+                </Link>
+              </div>
+              {userGlobal.name ? (
+                <AccountButton>{userGlobal.name}</AccountButton>
+              ) : (
+                <Link to="/login">
+                  <div className="text-center text-gray-700 hover:text-primary transition relative group">
+                    <div className="text-2xl mb-1">
+                      <FaUserAlt className="ml-2" />
+                    </div>
+                    <div className="text-xs leading-3">Account</div>
+                  </div>
+                </Link>
+              )}
+            </>
+          ) : (
+            <Link to="/dashboard">
+              <div className="text-center text-gray-700 hover:text-primary transition flex flex-col items-center">
+                <div className="text-2xl mb-1">
+                  <MdOutlineDashboard />
+                </div>
+                <div className="text-xs leading-3">Dashboard</div>
               </div>
             </Link>
           )}

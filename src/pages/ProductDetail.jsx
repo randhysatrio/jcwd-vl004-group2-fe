@@ -26,12 +26,12 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const [productData, setProductData] = useState({});
   const [relatedProducts, setRelatedProducts] = useState([]);
-  const [category, setCategory] = useState({});
   const [quantity, setQuantity] = useState(0);
   const [qtyError, setQtyError] = useState('');
   const [cartLoading, setCartLoading] = useState(false);
   const userGlobal = useSelector((state) => state.user);
   const userToken = localStorage.getItem('userToken');
+  const adminToken = localStorage.getItem('adminToken');
 
   useEffect(() => {
     const fetchProductData = async () => {
@@ -39,7 +39,6 @@ const ProductDetail = () => {
         const response = await Axios.get(`${API_URL}/product/find/${params.id}`);
 
         setProductData(response.data);
-        setCategory(response.data.category);
 
         if (response.data.stock_in_unit) {
           if (!response.data.stock) {
@@ -58,19 +57,20 @@ const ProductDetail = () => {
   }, [params.id]);
 
   useEffect(() => {
-    const fetchRelatedCategory = async () => {
+    const fetchRelatedProducts = async () => {
       try {
         const response = await Axios.post(`${API_URL}/product/query`, {
-          category: productData.categoryId,
+          category: productData.category?.name,
           limit: 8,
           offset: 0,
+          exclude: productData?.id,
         });
-        setRelatedProducts(response.data.products.filter((product) => product.id !== productData.id));
+        setRelatedProducts(response.data.products);
       } catch (err) {
         toast.error('Unable to fetch product carousel!', { position: 'bottom-left', theme: 'colored' });
       }
     };
-    fetchRelatedCategory();
+    fetchRelatedProducts();
   }, [productData]);
 
   useEffect(() => {
@@ -133,7 +133,7 @@ const ProductDetail = () => {
           <BsChevronRight className="text-xs" />
           <span
             onClick={() => {
-              navigate('/products');
+              navigate('/products/all');
             }}
             className="hover:text-sky-500 hover:underline transition-all cursor-pointer"
           >
@@ -170,7 +170,7 @@ const ProductDetail = () => {
             </div>
             <div className="w-full h-11 flex flex-col justify-center text-sm">
               <span className="font-bold">Category:</span>
-              <span className="text-slate-800">{category.name}</span>
+              <span className="text-slate-800">{productData.category?.name}</span>
             </div>
             <div className="w-full h-[140px] flex flex-col text-sm mb-1">
               <div className="w-full h-6 flex items-center">
@@ -239,99 +239,104 @@ const ProductDetail = () => {
                     <span>{productData.unit}</span>
                   </div>
                 </div>
-                <div className="w-full h-12 flex">
-                  <div className="h-full w-[90%] flex items-center justify-center p-1 relative">
-                    <button
-                      onClick={() => setQuantity(quantity - productData.volume)}
-                      disabled={quantity <= productData.volume || !productData.stock_in_unit}
-                      className="w-11 h-[43px] bg-transparent text-xl border-r flex items-center justify-center absolute top-[3px] left-1 group"
-                    >
-                      <AiOutlineMinus
-                        className={`${
-                          quantity <= productData.volume || !productData.stock_in_unit
-                            ? 'text-slate-400'
-                            : 'group-active:scale-90 group-hover:text-sky-500'
-                        } transition`}
-                      />
-                    </button>
-                    <input
-                      type="number"
-                      value={quantity}
-                      min={0}
-                      disabled={!productData.stock_in_unit}
-                      onChange={(e) => {
-                        setQuantity(parseInt(e.target.value));
-                      }}
-                      className={`w-full h-[45px] rounded-lg border border-slate-400 focus:outline-none ${
-                        !productData.stock_in_unit ? 'bg-slate-200 cursor-default' : 'bg-white focus-within:border-sky-400'
-                      }  transition px-12 text-center cursor-pointer font-semibold`}
-                    />
-                    <button
-                      onClick={() => setQuantity(quantity + productData.volume)}
-                      disabled={
-                        quantity >= productData.stock_in_unit ||
-                        quantity + productData.volume > productData.stock_in_unit ||
-                        !productData.stock_in_unit
-                      }
-                      className="w-11 h-[43px] bg-transparent text-xl border-l flex items-center justify-center absolute top-[3px] right-1 group"
-                    >
-                      <AiOutlinePlus
-                        className={`${
-                          quantity >= productData.stock_in_unit ||
-                          quantity + productData.volume > productData.stock_in_unit ||
-                          !productData.stock_in_unit
-                            ? 'text-slate-400'
-                            : 'group-active:scale-90 group-hover:text-sky-500'
-                        } transition`}
-                      />
-                    </button>
-                  </div>
-                  <div className="w-[10%] h-full flex flex-col justify-center items-center">
-                    <span className="text-xs leading-none">in</span>
-                    <span className="text-md font-semibold leading-none">{productData.unit}</span>
-                  </div>
-                </div>
-                <div className="w-[90%] py-[1px] flex justify-center items-center leading-0">
-                  {qtyError && <span className="text-xs text-red-400">{qtyError}</span>}
-                </div>
-              </div>
-            </div>
-            <div className="w-full h-[52px] my-2 flex items-center p-1 gap-1">
-              <button
-                disabled={qtyError || !productData.stock_in_unit}
-                className={`h-full w-1/2 rounded-lg flex justify-center items-center gap-1 text-white font-semibold ${
-                  qtyError || !productData.stock_in_unit ? 'bg-emerald-300' : 'bg-emerald-500 hover:brightness-110 active:scale-95'
-                } transition`}
-              >
-                <IoBagCheckOutline />
-                Checkout
-              </button>
-              <button
-                onClick={addToCart}
-                disabled={qtyError || !productData.stock_in_unit || cartLoading}
-                className={`h-full w-1/2 rounded-lg flex justify-center items-center gap-1 text-white font-semibold ${
-                  qtyError || !productData.stock_in_unit || cartLoading ? 'bg-sky-300' : 'bg-sky-500 hover:brightness-110 active:scale-95'
-                } transition`}
-              >
-                {cartLoading ? (
+                {!adminToken && (
                   <>
-                    <AiOutlineLoading3Quarters className="animate-spin" />
-                    Adding item..
-                  </>
-                ) : (
-                  <>
-                    <BsCartPlus />
-                    Add to Cart
+                    <div className="w-full h-12 flex">
+                      <div className="h-full w-[90%] flex items-center justify-center p-1 relative">
+                        <button
+                          onClick={() => setQuantity(quantity - productData.volume)}
+                          disabled={quantity <= productData.volume || !productData.stock_in_unit}
+                          className="w-11 h-[43px] bg-transparent text-xl border-r flex items-center justify-center absolute top-[3px] left-1 group"
+                        >
+                          <AiOutlineMinus
+                            className={`${
+                              quantity <= productData.volume || !productData.stock_in_unit
+                                ? 'text-slate-400'
+                                : 'group-active:scale-90 group-hover:text-sky-500'
+                            } transition`}
+                          />
+                        </button>
+                        <input
+                          type="number"
+                          value={quantity}
+                          min={0}
+                          disabled={!productData.stock_in_unit}
+                          onChange={(e) => {
+                            setQuantity(parseInt(e.target.value));
+                          }}
+                          className={`w-full h-[45px] rounded-lg border border-slate-400 focus:outline-none ${
+                            !productData.stock_in_unit ? 'bg-slate-200 cursor-default' : 'bg-white focus-within:border-sky-400'
+                          }  transition px-12 text-center cursor-pointer font-semibold`}
+                        />
+                        <button
+                          onClick={() => setQuantity(quantity + productData.volume)}
+                          disabled={
+                            quantity >= productData.stock_in_unit ||
+                            quantity + productData.volume > productData.stock_in_unit ||
+                            !productData.stock_in_unit
+                          }
+                          className="w-11 h-[43px] bg-transparent text-xl border-l flex items-center justify-center absolute top-[3px] right-1 group"
+                        >
+                          <AiOutlinePlus
+                            className={`${
+                              quantity >= productData.stock_in_unit ||
+                              quantity + productData.volume > productData.stock_in_unit ||
+                              !productData.stock_in_unit
+                                ? 'text-slate-400'
+                                : 'group-active:scale-90 group-hover:text-sky-500'
+                            } transition`}
+                          />
+                        </button>
+                      </div>
+                      <div className="w-[10%] h-full flex flex-col justify-center items-center">
+                        <span className="text-xs leading-none">in</span>
+                        <span className="text-md font-semibold leading-none">{productData.unit}</span>
+                      </div>
+                    </div>
+                    <div className="w-[90%] py-[1px] flex justify-center items-center leading-0">
+                      {qtyError && <span className="text-xs text-red-400">{qtyError}</span>}
+                    </div>
                   </>
                 )}
-              </button>
+              </div>
             </div>
+            {!adminToken && (
+              <div className="w-full h-[52px] my-2 flex items-center p-1 gap-1">
+                <button
+                  disabled={qtyError || !productData.stock_in_unit}
+                  className={`h-full w-1/2 rounded-lg flex justify-center items-center gap-1 text-white font-semibold ${
+                    qtyError || !productData.stock_in_unit ? 'bg-emerald-300' : 'bg-emerald-500 hover:brightness-110 active:scale-95'
+                  } transition`}
+                >
+                  <IoBagCheckOutline />
+                  Checkout
+                </button>
+                <button
+                  onClick={addToCart}
+                  disabled={qtyError || !productData.stock_in_unit || cartLoading}
+                  className={`h-full w-1/2 rounded-lg flex justify-center items-center gap-1 text-white font-semibold ${
+                    qtyError || !productData.stock_in_unit || cartLoading ? 'bg-sky-300' : 'bg-sky-500 hover:brightness-110 active:scale-95'
+                  } transition`}
+                >
+                  {cartLoading ? (
+                    <>
+                      <AiOutlineLoading3Quarters className="animate-spin" />
+                      Adding item..
+                    </>
+                  ) : (
+                    <>
+                      <BsCartPlus />
+                      Add to Cart
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
           </div>
         </div>
         <ProductDetailCarousel
           header={'More from'}
-          category={category.name}
-          categoryId={category.id}
+          category={productData.category?.name}
           relatedProducts={relatedProducts}
           navigate={navigate}
         />

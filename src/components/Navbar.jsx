@@ -52,7 +52,7 @@ const NavbarLink = ({ children, path }) => {
 
 const Navbar = () => {
   const userGlobal = useSelector((state) => state.user);
-  const adminGlobal = useSelector((state) => state.adminReducer);
+  const adminToken = localStorage.getItem('adminToken');
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
@@ -97,27 +97,24 @@ const Navbar = () => {
         <div className="flex items-center flex-grow pl-12">
           <div className="flex items-center space-x-6">
             <NavbarLink path={'/'}>Home</NavbarLink>
-            <NavbarLink path={'/products'}>Shop</NavbarLink>
-            <NavbarLink path={'/products'}>Blog</NavbarLink>
+            <NavbarLink path={'/products/all'}>Shop</NavbarLink>
+            <NavbarLink path={'/products/all'}>Blog</NavbarLink>
             <NavbarLink path={'/'}>About Us</NavbarLink>
             <NavbarLink path={'/'}>Contact Us</NavbarLink>
           </div>
         </div>
 
-        {adminGlobal.id ? (
-          <div className="flex items-center ml-auto">
-            <NavbarLink path={'/dashboard'}>Admin</NavbarLink>
-          </div>
-        ) : userGlobal.name ? (
-          <div className="flex items-center">
-            <span className="text-md font-semibold text-white">Hello, {userGlobal.name}!</span>
-          </div>
-        ) : (
-          <div className="flex items-center gap-4 ml-auto">
-            <NavbarLink path={'/login'}>Login</NavbarLink>
-            <NavbarLink path={'/register'}>Register</NavbarLink>
-          </div>
-        )}
+        {!adminToken &&
+          (userGlobal.name ? (
+            <div className="flex items-center">
+              <span className="text-md font-semibold text-white">Hello, {userGlobal.name}!</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-4 ml-auto">
+              <NavbarLink path={'/login'}>Login</NavbarLink>
+              <NavbarLink path={'/register'}>Register</NavbarLink>
+            </div>
+          ))}
       </div>
     </nav>
   );

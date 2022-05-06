@@ -15,8 +15,13 @@ const User = () => {
   const history = useSelector((state) => state.notification.history);
 
   useEffect(() => {
-    if (!localStorage.getItem('userToken')) {
+    const userToken = localStorage.getItem('userToken');
+    const adminToken = localStorage.getItem('adminToken');
+
+    if (!userToken) {
       navigate('/', { replace: true });
+    } else if (adminToken) {
+      navigate('/dashboard', { replace: true });
     }
   }, []);
 

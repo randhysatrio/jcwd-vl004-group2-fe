@@ -7,7 +7,7 @@ import 'swiper/css/navigation';
 import { AiFillStar, AiFillFire, AiOutlineCloseCircle, AiOutlineArrowRight, AiOutlineCheckCircle } from 'react-icons/ai';
 import { BsChevronRight, BsChevronLeft } from 'react-icons/bs';
 
-const ProductDetailCarousel = ({ header, category, categoryId, relatedProducts, navigate }) => {
+const ProductDetailCarousel = ({ header, category, relatedProducts, navigate }) => {
   return (
     <div className="w-screen flex flex-col items-center">
       <div className="w-2/3 h-16 flex items-center gap-2 border-b cursor-default">
@@ -41,7 +41,7 @@ const ProductDetailCarousel = ({ header, category, categoryId, relatedProducts, 
             <SwiperSlide key={product.id} className="flex items-center justify-center">
               <div
                 onClick={() => {
-                  navigate(`/products/${product.id}`);
+                  navigate(`/product/${product.id}`);
                 }}
                 className="h-[330px] w-[220px] rounded-xl border border-slate-300 bg-white cursor-pointer shadow transition"
               >
@@ -102,7 +102,7 @@ const ProductDetailCarousel = ({ header, category, categoryId, relatedProducts, 
           ))}
           <SwiperSlide className="flex justify-center items-center">
             <div
-              onClick={() => navigate(`/products?category=${categoryId}`)}
+              onClick={() => navigate(`/products/${category}`)}
               className="h-[330px] w-[220px] rounded-xl flex flex-col justify-center border bg-gradient-to-b from-sky-200 to-white cursor-pointer shadow relative"
             >
               <div className="w-full flex flex-col gap-1 px-6 text-xl font-bold absolute z-10">

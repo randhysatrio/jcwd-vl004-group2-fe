@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
+import { useSearchParams, useNavigate, useLocation, useParams } from 'react-router-dom';
 import Axios from 'axios';
 import { API_URL } from '../assets/constants';
 
@@ -19,13 +19,14 @@ import { toast } from 'react-toastify';
 
 const AllProducts = () => {
   const navigate = useNavigate();
+  const { val } = useParams();
+  const { search } = useLocation();
   const [searchParams] = useSearchParams();
   const [view, setView] = useState('list');
   const [productsList, setProductsList] = useState([]);
   const [totalProducts, setTotalProducts] = useState(0);
   const [categoryList, setCategoryList] = useState([]);
   const [appearancesList, setAppearancesList] = useState([]);
-  const [currentCategory, setCurrentCategory] = useState('');
   const [currentAppearance, setCurrentAppearance] = useState([]);
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
@@ -36,7 +37,6 @@ const AllProducts = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [sort, setSort] = useState('');
   const [itemLoading, setItemLoading] = useState(false);
-  const { search } = useLocation();
 
   useEffect(() => {
     const getAppearences = async () => {
@@ -70,17 +70,11 @@ const AllProducts = () => {
       try {
         const query = {
           limit: productPerPage,
-          offset: productPerPage * currentPage - productPerPage,
+          category: val,
         };
 
         if (searchParams.get('keyword')) {
           query.keyword = searchParams.get('keyword');
-        }
-
-        if (searchParams.get('category')) {
-          query.category = parseInt(searchParams.get('category'));
-        } else if (currentCategory) {
-          query.category = currentCategory;
         }
 
         if (currentAppearance.length) {
@@ -129,7 +123,7 @@ const AllProducts = () => {
       }
     };
     getProductQuery();
-  }, [currentCategory, productPerPage, currentPage, currentAppearance, sort, priceRange, search]);
+  }, [val, search, productPerPage, currentPage, currentAppearance, sort, priceRange]);
 
   const renderProducts = () => {
     return productsList.map((product) => <ProductCardAll key={product.id} product={product} view={view} />);
@@ -140,23 +134,28 @@ const AllProducts = () => {
       <div
         key={category.id}
         onClick={() => {
-          if (currentCategory === category.id) {
-            setCurrentCategory('');
+          if (val === category.name) {
+            navigate('/products/all');
+
+            if (searchParams.get('keyword')) {
+              navigate(`/products/all${search}`);
+            }
           } else {
-            setCurrentCategory(category.id);
+            navigate(`/products/${category.name}`);
+
+            if (searchParams.get('keyword')) {
+              navigate(`/products/${category.name}${search}`);
+            }
           }
           setCurrentPage(1);
-          if (!searchParams.get('keyword')) {
-            navigate('/products');
-          }
         }}
         className={`w-full py-1 pl-2 rounded-md hover:pl-4 hover:bg-slate-100 transition-all cursor-pointer group ${
-          currentCategory === category.id ? 'pl-4 bg-slate-100' : ''
+          val === category.name ? 'pl-4 bg-slate-100' : ''
         }`}
       >
         <span
           className={`text-md font-semibold  group-hover:text-sky-400 transition ${
-            currentCategory === category.id ? 'text-sky-500' : 'text-slate-700'
+            val === category.name ? 'text-sky-500' : 'text-slate-700'
           }`}
         >
           {category.name}
@@ -206,14 +205,15 @@ const AllProducts = () => {
               </span>
               <div
                 onClick={() => {
-                  setCurrentCategory('');
                   setCurrentPage(1);
-                  if (!searchParams.get('keyword')) {
-                    navigate('/products');
+                  if (searchParams.get('keyword')) {
+                    navigate(`/products/all${search}`);
+                  } else {
+                    navigate(`/products/all`);
                   }
                 }}
                 className={`px-2 rounded-full flex gap-1 items-center bg-rose-100 text-sm text-red-400 hover:brightness-105 transition cursor-pointer ${
-                  currentCategory ? 'opacity-100' : 'opacity-0 invisible'
+                  val !== 'all' ? 'opacity-100' : 'opacity-0 invisible'
                 }`}
               >
                 <AiOutlineClose />
@@ -337,10 +337,9 @@ const AllProducts = () => {
                 </span>
                 <span
                   onClick={() => {
-                    setCurrentCategory('');
                     setCurrentAppearance([]);
                     setCurrentPage(1);
-                    navigate('/products');
+                    navigate('/products/all');
                   }}
                   className="font-semibold text-sky-600 hover:text-emerald-400 transition cursor-pointer"
                 >
@@ -426,10 +425,9 @@ const AllProducts = () => {
                   {searchParams.get('keyword') && (
                     <span
                       onClick={() => {
-                        setCurrentCategory('');
                         setCurrentAppearance([]);
                         setCurrentPage(1);
-                        navigate('/products');
+                        navigate('/products/all');
                       }}
                       className="text-lg font-bold text-gray-500 hover:text-sky-500 transition cursor-pointer"
                     >

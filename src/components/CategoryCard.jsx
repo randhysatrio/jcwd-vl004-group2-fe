@@ -1,13 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 
-const CategoryCard = ({ name, img, id }) => {
+const CategoryCard = ({ name, img }) => {
   const navigate = useNavigate();
 
   return (
     <div className="h-60 flex-1 px-3 flex items-center">
       <div
         onClick={() => {
-          navigate(`/products?category=${id}`);
+          navigate(`/products/${name}`);
         }}
         className="w-full h-52 cursor-pointer active:scale-95 transition"
       >

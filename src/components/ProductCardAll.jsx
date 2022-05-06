@@ -19,6 +19,7 @@ const ProductCardAll = ({ view, product }) => {
   const [cartLoading, setCartLoading] = useState(false);
   const userGlobal = useSelector((state) => state.user);
   const userToken = localStorage.getItem('userToken');
+  const adminToken = localStorage.getItem('adminToken');
 
   const addToCart = async () => {
     try {
@@ -64,7 +65,7 @@ const ProductCardAll = ({ view, product }) => {
             <span className="text-sm font-light text-slate-400">{product.category.name}</span>
             <div className="w-full h-12 flex items-center break-words overflow-hidden">
               <span
-                onClick={() => navigate(`/products/${product.id}`)}
+                onClick={() => navigate(`/product/${product.id}`)}
                 className="text-base text-slate-800 font-semibold hover:text-sky-500 transition"
               >
                 {product.name.length > 40 ? product.name.slice(0, 40) + '...' : product.name}
@@ -109,23 +110,25 @@ const ProductCardAll = ({ view, product }) => {
                 </>
               )}
             </div>
-            <button
-              onClick={addToCart}
-              disabled={cartLoading}
-              className="w-[90%] h-9 rounded-md mt-auto mx-auto bg-gradient-to-r from-sky-400 to-sky-600 text-white font-bold hover:brightness-110 cursor-pointer transition active:scale-95 text-sm gap-2 flex justify-center items-center shadow disabled:from-sky-300 disabled:to-sky-500 disabled:active:scale-100"
-            >
-              {cartLoading ? (
-                <>
-                  <AiOutlineLoading3Quarters className="animate-spin" />
-                  Adding item..
-                </>
-              ) : (
-                <>
-                  <AiOutlineShoppingCart />
-                  <span className="font-semibold">Add to Cart</span>
-                </>
-              )}
-            </button>
+            {!adminToken && (
+              <button
+                onClick={addToCart}
+                disabled={cartLoading}
+                className="w-[90%] h-9 rounded-md mt-auto mx-auto bg-gradient-to-r from-sky-400 to-sky-600 text-white font-bold hover:brightness-110 cursor-pointer transition active:scale-95 text-sm gap-2 flex justify-center items-center shadow disabled:from-sky-300 disabled:to-sky-500 disabled:active:scale-100"
+              >
+                {cartLoading ? (
+                  <>
+                    <AiOutlineLoading3Quarters className="animate-spin" />
+                    Adding item..
+                  </>
+                ) : (
+                  <>
+                    <AiOutlineShoppingCart />
+                    <span className="font-semibold">Add to Cart</span>
+                  </>
+                )}
+              </button>
+            )}
           </div>
         </div>
       ) : (
@@ -138,7 +141,7 @@ const ProductCardAll = ({ view, product }) => {
           <div className="w-[45%] h-full flex flex-col pt-4">
             <div className="w-full flex flex-col gap-1 mb-2">
               <span
-                onClick={() => navigate(`/products/${product.id}`)}
+                onClick={() => navigate(`/product/${product.id}`)}
                 className="text-xl font-semibold text-zinc-800 hover:text-sky-500 transition cursor-pointer"
               >
                 {product.name.length > 42 ? product.name.slice(0, 42) + '...' : product.name}
@@ -190,23 +193,25 @@ const ProductCardAll = ({ view, product }) => {
               </div>
             </div>
             <div className="w-full flex justify-end">
-              <button
-                onClick={addToCart}
-                disabled={cartLoading}
-                className="w-[75%] h-10 rounded-lg bg-gradient-to-r from-sky-400 to-sky-600 text-white font-bold hover:brightness-110 cursor-pointer transition active:scale-95 text-md gap-2 flex justify-center items-center shadow disabled:from-sky-300 disabled:to-sky-500 disabled:active:scale-100"
-              >
-                {cartLoading ? (
-                  <>
-                    <AiOutlineLoading3Quarters className="animate-spin" />
-                    Adding item..
-                  </>
-                ) : (
-                  <>
-                    <AiOutlineShoppingCart />
-                    <span className="font-semibold">Add to Cart</span>
-                  </>
-                )}
-              </button>
+              {!adminToken && (
+                <button
+                  onClick={addToCart}
+                  disabled={cartLoading}
+                  className="w-[75%] h-10 rounded-lg bg-gradient-to-r from-sky-400 to-sky-600 text-white font-bold hover:brightness-110 cursor-pointer transition active:scale-95 text-md gap-2 flex justify-center items-center shadow disabled:from-sky-300 disabled:to-sky-500 disabled:active:scale-100"
+                >
+                  {cartLoading ? (
+                    <>
+                      <AiOutlineLoading3Quarters className="animate-spin" />
+                      Adding item..
+                    </>
+                  ) : (
+                    <>
+                      <AiOutlineShoppingCart />
+                      <span className="font-semibold">Add to Cart</span>
+                    </>
+                  )}
+                </button>
+              )}
             </div>
           </div>
         </div>

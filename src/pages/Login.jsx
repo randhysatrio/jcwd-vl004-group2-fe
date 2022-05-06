@@ -24,9 +24,12 @@ const Login = () => {
 
   useEffect(() => {
     const userToken = localStorage.getItem('userToken');
+    const adminToken = localStorage.getItem('adminToken');
 
     if (userToken) {
       navigate('/', { replace: true });
+    } else if (adminToken) {
+      navigate('/dashboard', { replace: true });
     }
   }, []);
 

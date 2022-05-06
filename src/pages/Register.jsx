@@ -22,8 +22,12 @@ const Register = () => {
 
   useEffect(() => {
     const userToken = localStorage.getItem('userToken');
+    const adminToken = localStorage.getItem('adminToken');
+
     if (userToken) {
       navigate(-1, { replace: true });
+    } else if (adminToken) {
+      navigate('/dashboard', { replace: true });
     }
   }, []);
 
