@@ -17,7 +17,6 @@ const EditProduct = () => {
   const Swal = require("sweetalert2");
   // useState([]) is different from useState({})
   const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [images, setImage] = useState(null);
   const [category, setCategory] = useState();
 
@@ -33,11 +32,6 @@ const EditProduct = () => {
   console.log(products.categoryId);
   console.log(category);
 
-  const fetchCategories = async () => {
-    const res = await axios.get(`${API_URL}/category/all`);
-    setCategories(res.data);
-  };
-
   const fetchImagePreview = async () => {
     console.log(images);
     let preview = document.getElementById("imgpreview");
@@ -48,7 +42,6 @@ const EditProduct = () => {
   useEffect(() => {
     fetchImagePreview();
     fetchProductsId();
-    fetchCategories();
   }, []);
 
   const navigate = useNavigate();
@@ -100,145 +93,7 @@ const EditProduct = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <h1 className="text-3xl text-gray-700 font-bold py-3">Edit Product</h1>
-      <div>
-        {/* <form> */}
-        <div className="grid grid-cols-6 gap-4 justify-items-star">
-          <div>
-            <label className="mr-3">Name:</label>
-          </div>
-          <div className="col-start-2 col-span-3">
-            <textarea
-              type="text"
-              name="name"
-              className="h-32 w-5/6"
-              required
-              defaultValue={products.name}
-              ref={name}
-            />
-          </div>
-          <div className="col-start-1">
-            <label className="">Description:</label>
-          </div>
-          <div className="col-start-2 col-span-3">
-            <textarea
-              type="text"
-              name="description"
-              className="h-32 w-5/6"
-              required
-              defaultValue={products.description}
-              ref={description}
-            />
-          </div>
-          <div className="col-start-1">
-            <label className="">Image:</label>
-          </div>
-          <div className="col-start-2 col-span-3">
-            <input
-              type="file"
-              name="image"
-              required
-              onChange={onBtAddFile}
-              accept="image/*"
-              defaultValue={products.image}
-            />
-          </div>
-          <div className="col-start-2">
-            <img id="imgpreview" />
-          </div>
-          <div className="col-start-1">
-            <label className="mr-3">Price Buy:</label>
-          </div>
-          <div className="col-start-2 col-span-3">
-            <input
-              type="number"
-              name="price_buy"
-              className=""
-              required
-              defaultValue={products.price_buy}
-              ref={price_buy}
-            />
-          </div>
-          <div className="col-start-1">
-            <label className="">Price Sell:</label>
-          </div>
-          <div className="col-start-2 col-span-3">
-            <input
-              type="number"
-              name="price_sell"
-              className=""
-              required
-              defaultValue={products.price_sell}
-              ref={price_sell}
-            />
-          </div>
-          <div className="col-start-1">
-            <label className="">Unit:</label>
-          </div>
-          <div>
-            <input
-              type="text"
-              name="unit"
-              className=""
-              required
-              defaultValue={products.unit}
-              ref={unit}
-            />
-          </div>
-          <div className="col-start-1">
-            <label className="">Volume:</label>
-          </div>
-          <div>
-            <input
-              type="number"
-              name="volume"
-              className=""
-              required
-              defaultValue={products.volume}
-              ref={volume}
-            />
-          </div>
-          <div className="col-start-1">
-            <label className="">Stock:</label>
-          </div>
-          <div>
-            <input
-              type="number"
-              name="stock"
-              className=""
-              required
-              defaultValue={products.stock}
-              ref={stock}
-            />
-          </div>
-          <div className="col-start-1">
-            <label className="">Appearance:</label>
-          </div>
-          <div>
-            <input
-              type="text"
-              name="appearance"
-              className=""
-              required
-              defaultValue={products.appearance}
-              ref={appearance}
-            />
-          </div>
-          <div className="col-start-1">
-            <label className="">Category:</label>
-          </div>
-          {/* <DropdownCategories /> */}
-          <select name="categoryId" id="">
-            <option value="">Choose a category</option>
-            {categories.map((item, index) => (
-              <option ref={categoryId} value={item.id} key={item?.id}>
-                {item.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+
 
       <div className="fixed left-0 top-0 w-40 h-full bg-gray-800 shadow-md z-10">
         <div className="text-white font-bold text-base p-5 bg-gray-900">
