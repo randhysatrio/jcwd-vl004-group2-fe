@@ -77,7 +77,10 @@ const EditProduct = () => {
       categoryId: parseInt(categoryId.current.value),
     };
     formData.append("productData", JSON.stringify(newProduct));
-    formData.append("image", images);
+    if (images) {
+      formData.append("image", images);
+    }
+
     console.log(newProduct);
 
     try {
