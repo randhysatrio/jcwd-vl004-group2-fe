@@ -4,20 +4,24 @@ import { useSearchParams, useLocation } from 'react-router-dom';
 import Axios from 'axios';
 import { API_URL } from '../assets/constants';
 
+import AdminList from '../components/AdminList';
 import { BsArrowDownUp } from 'react-icons/bs';
 import { GoChevronLeft, GoChevronRight } from 'react-icons/go';
-import AdminList from '../components/AdminList';
+import { RiAdminFill, RiAdminLine } from 'react-icons/ri';
 import { toast } from 'react-toastify';
+import NewAdminModal from '../components/NewAdminModal';
+import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 
 const DashboardAdmin = () => {
   const socket = useSelector((state) => state.socket.instance);
-  const [searchParams] = useSearchParams();
   const { search } = useLocation();
+  const [searchParams] = useSearchParams();
+  const [loading, setLoading] = useState(false);
   const [onlineAdmins, setOnlineAdmins] = useState([]);
   const [admins, setAdmins] = useState([]);
+  const [totalAdmins, setTotalAdmins] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [maxPage, setMaxPage] = useState(0);
-  const [totalAdmins, setTotalAdmins] = useState(0);
   const [sort, setSort] = useState('');
   const limit = 10;
 
@@ -42,12 +46,17 @@ const DashboardAdmin = () => {
           query.sort = sort;
         }
 
+        setLoading(true);
+
         const response = await Axios.post(`${API_URL}/admin/account/all`, query);
 
         setAdmins(response.data.rows);
-        setMaxPage(response.data.maxPage);
-        setTotalAdmins(response.data.count);
+        setMaxPage(response.data.maxPage || 1);
+        setTotalAdmins(response.data.totalAdmins);
+        setLoading(false);
       } catch (err) {
+        setLoading(false);
+
         toast.error('Unable to fetch Admins!', { position: 'bottom-left', theme: 'colored' });
       }
     };
@@ -72,7 +81,15 @@ const DashboardAdmin = () => {
 
   const renderAdmins = () => {
     return admins.map((admin) => (
-      <AdminList key={admin.id} admin={admin} online={onlineAdmins.some((onlineAdmin) => onlineAdmin.id === admin.id)} />
+      <AdminList
+        key={admin.id}
+        admin={admin}
+        online={onlineAdmins.some((onlineAdmin) => onlineAdmin.id === admin.id)}
+        setAdmins={setAdmins}
+        setMaxPage={setMaxPage}
+        setTotalAdmins={setTotalAdmins}
+        limit={limit}
+      />
     ));
   };
 
@@ -149,7 +166,15 @@ const DashboardAdmin = () => {
             </div>
             <div className="h-[1px] w-full bg-gray-200" />
           </div>
-          <div className="w-full py-3 flex flex-col gap-3 mb-auto">
+          <div className="w-full py-3 flex flex-col gap-3 mb-auto relative">
+            {loading && (
+              <div className="absolute inset-0 z-20 rounded-lg bg-gray-200 bg-opacity-30 backdrop-blur-sm flex justify-center items-center">
+                <div className="text-2xl flex items-center gap-2">
+                  <AiOutlineLoading3Quarters className="animate-spin" />
+                  <span className="font-thin">Loading..</span>
+                </div>
+              </div>
+            )}
             {admins.length ? (
               renderAdmins()
             ) : (
@@ -187,12 +212,34 @@ const DashboardAdmin = () => {
             </button>
           </div>
         </div>
-        <div className="w-[30%] px-6">
-          <div className="w-full h-80 px-5 rounded-xl bg-white shadow ring-1 ring-emerald-200 ring-offset-2 ring-inset flex flex-col">
+        <div className="w-[27%] px-6">
+          <div className="w-full px-5 rounded-xl bg-white shadow ring-1 ring-emerald-200 ring-offset-2 ring-inset flex flex-col">
             <div className="pt-3 pb-1 border-b">
               <span className="text-lg font-bold bg-gradient-to-r from-sky-400 to-sky-300 bg-clip-text text-transparent">
                 Admin Summary
               </span>
+            </div>
+            <div className="w-full py-3">
+              <div className="w-full h-full p-2 rounded-xl bg-gradient-to-b from-sky-50 to-sky-100 flex flex-col gap-2">
+                <div className="w-full flex items-center text-gray-600">
+                  <div className="relative mr-1">
+                    <RiAdminFill />
+                  </div>
+                  <span className="font-semibold mr-auto">Total Admins:</span>
+                  <span className="font-bold">{totalAdmins}</span>
+                </div>
+                <div className="w-full flex items-center text-gray-600">
+                  <div className="relative mr-1">
+                    <RiAdminLine />
+                    <span className="h-1 w-1 rounded-full bg-green-400 absolute top-0 right-0"></span>
+                  </div>
+                  <span className="font-semibold mr-auto">Online Admins:</span>
+                  <span className="font-bold">{onlineAdmins.length}</span>
+                </div>
+              </div>
+            </div>
+            <div className="w-full pb-4">
+              <NewAdminModal setAdmins={setAdmins} setMaxPage={setMaxPage} setTotalAdmins={setTotalAdmins} limit={limit} />
             </div>
           </div>
         </div>

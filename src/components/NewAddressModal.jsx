@@ -88,7 +88,7 @@ const NewAddressModal = ({ setAddresses, setMaxPage }) => {
             leaveFrom="scale-100 opaciy-100"
             leaveTo="scale-90 opacity-90"
           >
-            <div className="w-1/3 bg-white rounded-xl z-20 ring-2 ring-offset-2 ring-sky-300 ring-inset flex flex-col addressModalBody">
+            <div className="w-[450px] bg-white rounded-xl z-20 ring-2 ring-offset-2 ring-sky-300 ring-inset flex flex-col addressModalBody">
               <div className="py-8 flex justify-center relative">
                 <span className="text-2xl font-bold bg-gradient-to-r from-sky-500 to-sky-400 bg-clip-text text-transparent">
                   Add New Address

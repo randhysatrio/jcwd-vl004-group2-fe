@@ -1,18 +1,25 @@
 import { useState, Fragment } from 'react';
+import { useSelector } from 'react-redux';
+import Axios from 'axios';
 import { API_URL } from '../assets/constants';
 
 import { Dialog, Transition } from '@headlessui/react';
+import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import { MdOutlineNoAccounts } from 'react-icons/md';
 import { format } from 'date-fns';
+import { toast } from 'react-toastify';
 
-const DeleteAdminModal = ({ setOpenMain }) => {
+const DeleteAdminModal = ({ adminId, online, setOpenMain, setAdmins, setMaxPage, setTotalAdmins, limit }) => {
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const adminGlobal = useSelector((state) => state.adminReducer);
 
   return (
     <>
       <button
+        disabled={adminGlobal.id === adminId || online}
         onClick={() => setOpen(true)}
-        className="w-full h-12 rounded-xl bg-gradient-to-r from-red-500 to-rose-500 flex justify-center items-center gap-1 text-lg font-bold text-white cursor-pointer hover:brightness-125 active:scale-95 transition-all"
+        className="w-full h-12 rounded-xl bg-gradient-to-r from-red-500 to-rose-500 disabled:from-red-300 disabled:to-rose-300 flex justify-center items-center gap-1 text-lg font-bold text-white cursor-pointer hover:brightness-125 disabled:hover:brightness-100 active:scale-95 disabled:active:scale-100 transition-all disabled:cursor-default"
       >
         <MdOutlineNoAccounts />
         <span>Delete Account</span>
@@ -56,13 +63,37 @@ const DeleteAdminModal = ({ setOpenMain }) => {
                   Cancel
                 </button>
                 <button
-                  onClick={() => {
-                    setOpen(false);
-                    setOpenMain(false);
+                  disabled={loading}
+                  onClick={async () => {
+                    try {
+                      setLoading(true);
+
+                      const response = await Axios.post(`${API_URL}/admin/account/delete/${adminId}`, { limit });
+
+                      setAdmins(response.data.rows);
+                      setMaxPage(response.data.maxPage);
+                      setTotalAdmins(response.data.totalAdmins);
+                      setLoading(false);
+
+                      toast.success(response.data.message, { position: 'bottom-left', theme: 'colored' });
+                      setOpen(false);
+                      setOpenMain(false);
+                    } catch (error) {
+                      setLoading(false);
+
+                      toast.error('Unable to delete Admin Account', { position: 'bottom-left', theme: 'colored' });
+                    }
                   }}
-                  className="h-10 w-32 rounded-full bg-gradient-to-r from-emerald-500 to-green-400 hover:brightness-125 font-bold text-white active:scale-95 transition"
+                  className="h-10 w-32 rounded-full bg-gradient-to-r from-emerald-500 disabled:from-emerald-300 to-green-400 disabled:to-green-300 hover:brightness-125 disabled:hover:brightness-100 font-bold text-white active:scale-95 disabled:active:scale-100 transition flex justify-center items-center gap-2"
                 >
-                  Yes, I'm sure
+                  {loading ? (
+                    <>
+                      <AiOutlineLoading3Quarters className="animate-spin" />
+                      Deleting..
+                    </>
+                  ) : (
+                    "Yes, I'm sure"
+                  )}
                 </button>
               </div>
             </div>
@@ -73,7 +104,7 @@ const DeleteAdminModal = ({ setOpenMain }) => {
   );
 };
 
-const AdminList = ({ admin, online }) => {
+const AdminList = ({ admin, online, setAdmins, setMaxPage, setTotalAdmins, limit }) => {
   const [openMain, setOpenMain] = useState(false);
 
   return (
@@ -142,7 +173,7 @@ const AdminList = ({ admin, online }) => {
               </button>
               <div className="flex items-center justify-between pl-2 pr-5 mb-3">
                 <div className="flex flex-col">
-                  <div className="flex items-center gap-1 leading-none">
+                  <div className="flex items-center gap-2 leading-none">
                     <span className={`h-2 w-2 rounded-full ${online ? 'bg-green-400' : 'bg-red-400'}`}></span>
                     {online ? (
                       <span className="font-semibold text-gray-600">Online</span>
@@ -185,7 +216,15 @@ const AdminList = ({ admin, online }) => {
                   <span className="text-xl leading-7 font-bold text-gray-700">{format(new Date(admin.createdAt), 'PPP')}</span>
                 </div>
               </div>
-              <DeleteAdminModal setOpenMain={setOpenMain} />
+              <DeleteAdminModal
+                adminId={admin.id}
+                setOpenMain={setOpenMain}
+                setAdmins={setAdmins}
+                setMaxPage={setMaxPage}
+                setTotalAdmins={setTotalAdmins}
+                limit={limit}
+                online={online}
+              />
             </div>
           </Transition.Child>
         </Dialog>

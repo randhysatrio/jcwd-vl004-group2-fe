@@ -10,12 +10,12 @@ import { AiOutlineUser } from 'react-icons/ai';
 import { FiLogOut } from 'react-icons/fi';
 
 const AccountButton = ({ children }) => {
-  const MenuLink = ({ children, red, icon, to }) => {
+  const MenuLink = ({ children, logout, icon, to }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
     const menuLinkHandler = () => {
-      if (red) {
+      if (logout) {
         window.open(`${API_URL}/auth/logout`, '_self');
 
         localStorage.removeItem('userToken');
@@ -33,7 +33,7 @@ const AccountButton = ({ children }) => {
           <div onClick={menuLinkHandler} className="h-12 w-40 p-1 bg-white flex items-center border-b cursor-pointer transition">
             <div
               className={`w-full h-full rounded-lg ${
-                active ? (red ? 'bg-rose-200 text-red-600' : 'bg-sky-100 text-sky-600') : 'bg-white'
+                active ? (logout ? 'bg-rose-200 text-red-600' : 'bg-sky-100 text-sky-600') : 'bg-white'
               } transition duration-100 flex items-center text-gray-700 pl-3 gap-2`}
             >
               {icon}
@@ -51,8 +51,8 @@ const AccountButton = ({ children }) => {
         <Menu.Button as="div" className="flex flex-col items-center text-gray-700 hover:text-sky-500 transition cursor-pointer">
           <FaUserAlt className="text-2xl mb-1" />
           <span className="text-xs leading-3">{children}</span>
+          <div className="h-2 w-2 rounded-full bg-green-500 absolute -top-1 right-5"></div>
         </Menu.Button>
-        <div className="h-2 w-2 rounded-full bg-green-500 absolute -top-1 right-3"></div>
         <Transition
           as={Fragment}
           enter="transition duration-100 ease-out"
@@ -66,7 +66,7 @@ const AccountButton = ({ children }) => {
             <MenuLink icon={<AiOutlineUser />} to="/user">
               Profile
             </MenuLink>
-            <MenuLink icon={<FiLogOut />} red>
+            <MenuLink icon={<FiLogOut />} logout>
               Logout
             </MenuLink>
           </Menu.Items>

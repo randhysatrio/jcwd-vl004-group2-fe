@@ -11,10 +11,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const adminGlobal = useSelector((state) => state.adminReducer);
-  const socket = useCallback(
-    useSelector((state) => state.socket.instance),
-    []
-  );
+  const socket = useSelector((state) => state.socket.instance);
 
   useEffect(() => {
     const adminToken = localStorage.getItem('adminToken');

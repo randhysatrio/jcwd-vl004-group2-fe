@@ -117,6 +117,21 @@ const ProductDetail = () => {
     }
   };
 
+  const checkoutHandler = () => {
+    if (!userToken) {
+      navigate('/login');
+    } else {
+      const checkoutData = {
+        data: [{ userId: userGlobal.id, quantity, price: productData.price_sell, product: productData }],
+        subtotal: productData.price_sell * quantity,
+      };
+
+      localStorage.setItem('checkout-data', JSON.stringify(checkoutData));
+
+      navigate('/checkout');
+    }
+  };
+
   return (
     <>
       <Header />
@@ -303,6 +318,7 @@ const ProductDetail = () => {
             {!adminToken && (
               <div className="w-full h-[52px] my-2 flex items-center p-1 gap-1">
                 <button
+                  onClick={checkoutHandler}
                   disabled={qtyError || !productData.stock_in_unit}
                   className={`h-full w-1/2 rounded-lg flex justify-center items-center gap-1 text-white font-semibold ${
                     qtyError || !productData.stock_in_unit ? 'bg-emerald-300' : 'bg-emerald-500 hover:brightness-110 active:scale-95'

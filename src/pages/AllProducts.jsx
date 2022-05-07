@@ -397,7 +397,9 @@ const AllProducts = () => {
                   />
                 </button>
                 <button
-                  onClick={() => setView('grid')}
+                  onClick={() => {
+                    setView('grid');
+                  }}
                   className="w-8 h-8 flex justify-center items-center rounded-r-lg border active:scale-95 transition group"
                 >
                   <BsFillGridFill

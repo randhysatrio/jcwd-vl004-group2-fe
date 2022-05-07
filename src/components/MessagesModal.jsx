@@ -29,7 +29,7 @@ const MessagesModal = ({ message, currentPage, limit, setMessages, setMaxPage, s
 
   return (
     <>
-      <div className="w-[750px] h-24 rounded-lg hover:bg-gray-50 ring-1 hover:ring ring-gray-300 flex focus:outline-none transition cursor-pointer">
+      <div className="w-[780px] h-24 rounded-lg hover:bg-gray-50 ring-1 hover:ring ring-gray-300 flex focus:outline-none transition cursor-pointer">
         <div
           onClick={async () => {
             try {
@@ -43,9 +43,9 @@ const MessagesModal = ({ message, currentPage, limit, setMessages, setMaxPage, s
               toast.error('Unable to set message as read!', { position: 'bottom-left', theme: 'colored' });
             }
           }}
-          className="flex h-full"
+          className="flex h-full w-[90%]"
         >
-          <div className="w-20 h-full flex items-center justify-center">
+          <div className="w-[10%] h-full flex items-center justify-center">
             <div className="relative">
               {isRead ? (
                 <IoIosMailOpen className="text-3xl text-gray-600 text-opacity-80" />
@@ -59,7 +59,7 @@ const MessagesModal = ({ message, currentPage, limit, setMessages, setMaxPage, s
               ) : null}
             </div>
           </div>
-          <div className="w-[320px] h-full flex flex-col justify-center">
+          <div className="w-[45%] h-full flex flex-col justify-center">
             <span
               className={`text-lg ${
                 isRead ? 'font-semibold text-gray-400' : 'font-bold'
@@ -68,16 +68,16 @@ const MessagesModal = ({ message, currentPage, limit, setMessages, setMaxPage, s
               {message.header?.length > 35 ? message.header.slice(0, 35) + '...' : message.header}
             </span>
             <span className="text-sm text-gray-500 text-opacity-70">
-              {message.content?.length > 44 ? message.content?.replace('|', ' ').slice(0, 44) + '..' : message.content?.replace('|', ' ')}
+              {message.content?.length > 48 ? message.content?.replace('|', ' ').slice(0, 48) + '..' : message.content?.replace('|', ' ')}
             </span>
           </div>
-          <div className="h-full w-44 flex flex-col justify-center">
+          <div className="h-full w-[28%] flex flex-col justify-center">
             <span className="text-sm text-gray-500 text-opacity-70 leading-none">From:</span>
             <span className="text-md font-bold text-gray-600">
-              {message.to === 'user' ? 'Heizen Berg Admin T..' : `ID#${message.userId} (${message.user?.name})`}
+              {message.to === 'user' ? 'Heizen Berg Admin Te..' : `ID#${message.userId} (${message.user?.name})`}
             </span>
           </div>
-          <div className="w-28 h-full flex flex-col justify-center items-center">
+          <div className="w-[17%] h-full flex flex-col justify-center">
             <span className="text-sm text-gray-500 text-opacity-70 leading-none">Received:</span>
             <span className="font-semibold text-gray-600">
               {formatRelative(new Date(message.createdAt), new Date(), {
@@ -86,7 +86,7 @@ const MessagesModal = ({ message, currentPage, limit, setMessages, setMaxPage, s
             </span>
           </div>
         </div>
-        <div className="w-16 h-full pl-4 flex items-center">
+        <div className="w-[10%] h-full justify-center flex items-center">
           <BsTrash
             onClick={async () => {
               try {

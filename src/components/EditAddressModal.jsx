@@ -77,7 +77,7 @@ const EditAddressModal = ({ openEdit, setOpenEdit, address, setAddresses, curren
             leaveFrom="opacity-100 translate-y-0"
             leaveTo="opacity-90 -translate-y-2"
           >
-            <div className="w-1/3 h-max bg-white rounded-xl z-20 ring ring-offset-2 ring-sky-400 ring-inset flex flex-col addressModalBody">
+            <div className="w-[450px] bg-white rounded-xl z-20 ring ring-offset-2 ring-sky-400 ring-inset flex flex-col addressModalBody">
               <div className="py-8 flex justify-center relative">
                 <span className="text-2xl font-bold bg-gradient-to-r from-sky-500 to-sky-400 bg-clip-text text-transparent">
                   Edit Address
