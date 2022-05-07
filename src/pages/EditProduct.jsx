@@ -20,6 +20,7 @@ const EditProduct = () => {
   const [categories, setCategories] = useState([]);
   const [images, setImage] = useState(null);
   const [category, setCategory] = useState();
+  const navigate = useNavigate();
 
   const id = window.location.search.substring(1);
 
@@ -50,8 +51,6 @@ const EditProduct = () => {
     fetchProductsId();
     fetchCategories();
   }, []);
-
-  const navigate = useNavigate();
 
   const name = useRef();
   const price_buy = useRef();
@@ -102,10 +101,16 @@ const EditProduct = () => {
     preview.src = URL.createObjectURL(e.target.files[0]);
   };
 
+  const handleCancelClick = async () => {
+    navigate(``);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
-      <h1 className="text-3xl text-gray-700 font-bold py-3">Edit Product</h1>
-      <div>
+      <div className="flex items-center justify-between py-7 px-10">
+        <h1 className="text-3xl text-gray-700 font-bold">Edit Product</h1>
+      </div>
+      <div className="shadow-sm p-3">
         {/* <form> */}
         <div className="grid grid-cols-6 gap-4 justify-items-star">
           <div>
@@ -238,7 +243,6 @@ const EditProduct = () => {
             value={category}
             onChange={(e) => setCategory(e.target.value)}
           >
-            {/* <option value="">Choose a category</option> */}
             {categories.map((item, index) => (
               <option value={item.id} key={item?.id}>
                 {item.name}
@@ -253,12 +257,13 @@ const EditProduct = () => {
           >
             Edit Product
           </button>
-          <button className="mt-8 py-2.5 px-6 text-white bg-red-500 hover:bg-red-400 transition rounded-xl items-center">
-            <a href="http://localhost:3000/dashboard/product">Cancel</a>
-            {/*<Link> React-Router-dom APIURL + dashboard */}
+          <button
+            className="mt-8 py-2.5 px-6 text-white bg-red-500 hover:bg-red-400 transition rounded-xl items-center"
+            onClick={() => navigate(-1)}
+          >
+            Cancel
           </button>
         </div>
-        {/* </form> */}
       </div>
     </div>
   );
