@@ -42,7 +42,7 @@ const Dashboard = () => {
     <div className="h-screen flex flex-col">
       <NavbarDashboard />
       <SidebarDashboard />
-      <div className="h-full pt-16 pl-44 pr-8">
+      <div className="h-full pl-40 pt-16">
         <Outlet />
       </div>
     </div>

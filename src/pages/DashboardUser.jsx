@@ -15,10 +15,9 @@ import axios from "axios";
 import UserTable from "../components/UserTable";
 import Pagination from "../components/Pagination";
 import Swal from "sweetalert2";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { API_URL } from "../assets/constants";
 import AdminPagination from "../components/AdminPagination";
-import NavbarDashboard from "../components/NavbarDashboard";
-import SidebarDashboard from "../components/SidebarDashboard";
 
 const Dashboard = () => {
   const Swal = require("sweetalert2");
@@ -27,8 +26,6 @@ const Dashboard = () => {
   const [users, setUsers] = useState([]);
   const [query, setQuery] = useState("");
 
-  const sortOptions = ["sortlowprice", "sorthighprice"];
-
   const handleSort = async (e) => {
     let query = e.target.value;
     const res = await axios.get(
@@ -36,10 +33,13 @@ const Dashboard = () => {
     );
     setUsers(res.data);
   };
-  const [search, setSearch] = useState("");
+
   const [page, setPage] = useState(1);
   const [maxPage, setMaxPage] = useState(0);
   const [status, setStatus] = useState();
+
+  const [searchParams] = useSearchParams();
+  const { search } = useLocation();
 
   const fetchUsers = async () => {
     const res = await axios.get(`${API_URL}/user/all`);
@@ -49,8 +49,8 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       const userList = await axios.post(`${API_URL}/user/query`, {
-        name: search,
         active: status,
+        keyword: searchParams.get("keyword"),
       });
       setUsers(userList.data.users);
       setMaxPage(Math.ceil(userList.data.length / 5));
@@ -122,10 +122,10 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen w-full">
-      <div className="flex justify-between items-center space-x-4">
+    <div className="min-h-screen bg-gray-100">
+      <div className="flex items-center justify-between py-7 px-10">
         <h1 className="text-3xl text-gray-700 font-bold">User</h1>
-        <div>
+        <div className="flex justify-between items-center space-x-4">
           <select
             name=""
             id=""
@@ -139,7 +139,7 @@ const Dashboard = () => {
           </select>
         </div>
       </div>
-      <div className="bg-white shadow-sm mt-5">
+      <div className="bg-white shadow-sm p-5">
         {/* <form action=""></form> */}
         <table className="w-full">
           <thead>
@@ -153,16 +153,19 @@ const Dashboard = () => {
               <th className="py-4 px-4 text-center">Actions</th>
             </tr>
           </thead>
-          <tbody>
-            {users.map((value) => (
-              <UserTable
-                key={value.id}
-                user={value}
-                handleStatusClick={handleStatusClick}
-              />
-            ))}
-          </tbody>
+          <tbody>{renderUsers()}</tbody>
         </table>
+        <div className="mt-3 flex justify-center items-center gap-4 pt-3">
+          <button onClick={prevPageHandler}>
+            <FaArrowLeft />
+          </button>
+          <div>
+            Page {page} of {maxPage}
+          </div>
+          <button onClick={nextPageHandler}>
+            <FaArrowRight />
+          </button>
+        </div>
       </div>
     </div>
   );
