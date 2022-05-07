@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from 'react-redux';
 
-import { FaHome, FaShoppingBag, FaUserAlt, FaShoppingCart } from 'react-icons/fa';
+import { FaHome, FaShoppingBag, FaUserAlt, FaShoppingCart, FaFileAlt, } from 'react-icons/fa';
 import { HiOutlineMail } from 'react-icons/hi';
 import { Link, NavLink } from 'react-router-dom';
 
@@ -59,6 +59,10 @@ const SidebarDashboard = () => {
 
         <DashboardLink icon={<HiOutlineMail />} to={'notification'} notification={notification} clear={'alert'}>
           Notification
+        </DashboardLink>
+        
+        <DashboardLink icon={<FaFileAlt />} to={'report'}>
+          Report
         </DashboardLink>
       </div>
     </div>

@@ -15,6 +15,7 @@ import Verify from './pages/Verify';
 import DashboardProduct from './pages/DashboardProduct';
 import DashboardUser from './pages/DashboardUser';
 import DashboardTransaction from './pages/DashboardTransaction';
+import DashboardReport from './pages/DashboardReport';
 import ChangePassAdmin from './pages/ChangePassAdmin';
 import HomeAdmin from './pages/HomeAdmin';
 import ResetAdmin from './pages/ResetAdmin';
@@ -147,6 +148,7 @@ function App() {
           <Route path="product/editproduct" element={<EditProduct />} />
           <Route path="transaction" element={<DashboardTransaction />} />
           <Route path="notification" element={<MessagesAdmin />} />
+          <Route path="report" element={<DashboardReport />} />
         </Route>
       </Routes>
       <ToastContainer />
