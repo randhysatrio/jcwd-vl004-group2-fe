@@ -115,7 +115,7 @@ const Messages = () => {
 
   return (
     <div className="w-full h-full">
-      <div className="w-10/12 h-full mx-auto pt-5 flex flex-col">
+      <div className="w-11/12 xl:w-9/12 h-full mx-auto pt-5 flex flex-col">
         <div className="w-full flex flex-col">
           <div className="flex items-center gap-2 pl-2 py-1 border-b">
             <HiMail className="text-emerald-400 text-3xl" />

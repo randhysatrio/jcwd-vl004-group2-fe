@@ -83,20 +83,20 @@ const Login = () => {
           Logo Here
         </span>
       </div>
-      <div className="w-full overflow-y-hidden md:w-[850px] h-[500px] md:rounded-l-3xl shadow-md bg-slate-50 flex flex-col justify-center items-center md:items-start pl-2 md:pl-8 loginWrapper">
-        <div className="h-[80px] w-full flex items-center md:mt-4">
+      <div className="w-5/6 rounded-xl overflow-y-hidden md:w-[850px] h-[500px] md:rounded-r-none shadow-md bg-slate-50 flex flex-col justify-center items-center md:items-start pl-2 md:pl-8 loginWrapper">
+        <div className="h-[80px] w-full flex items-center justify-center md:justify-start md:mt-4">
           <span className="text-3xl leading-10 w-max bg-gradient-to-r from-sky-500 to-emerald-400 flex bg-clip-text font-bold text-transparent">
             Login
           </span>
         </div>
         <div className="h-[300px] w-full flex pt-4">
-          <div className="h-full w-full md:w-1/2 flex flex-col">
+          <div className="h-full w-full md:w-1/2 flex flex-col items-center md:items-start">
             <form onSubmit={formik.handleSubmit}>
               <div className="h-[80px] w-full flex flex-col relative">
                 <input
                   id="email"
                   type="email"
-                  className={`h-11 w-[350px] border-2 ${
+                  className={`h-11 w-full md:w-[350px] border-2 ${
                     formik.touched.email && formik.errors.email ? 'border-red-400' : 'border-slate-400'
                   } rounded-md pl-4 hover:shadow hover:shadow-sky-300 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-sky-500 transition cursor-pointer placeholder-transparent mb-1 peer`}
                   placeholder="Email"

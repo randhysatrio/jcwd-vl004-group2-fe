@@ -185,11 +185,11 @@ const AddressCard = ({ address, setAddresses, currentPage, setMaxPage }) => {
 
   return (
     <div
-      className={`w-5/6 py-4 px-6 h-40 rounded-lg flex shadow ring addressCardBody transition ${
+      className={`w-full xl:w-5/6 py-4 px-6 h-40 rounded-lg flex shadow ring addressCardBody transition ${
         address.is_default ? 'ring-sky-300' : 'ring-gray-200'
       }`}
     >
-      <div className="h-full w-4/6 flex flex-col gap-2 relative">
+      <div className="h-full w-[75%] mr-3 flex flex-col gap-2 relative">
         {address.is_default && (
           <div className="h-full absolute -top-1 -left-6 transition">
             <div className="h-2 w-[5px] rounded-tr-full bg-sky-300" />
@@ -199,7 +199,7 @@ const AddressCard = ({ address, setAddresses, currentPage, setMaxPage }) => {
         )}
         <div className="w-full flex flex-col">
           <span className="text-sm font-bold text-sky-500 text-opacity-60">Address:</span>
-          <span className="text-slate-700 font-semibold">{address.address}</span>
+          <span className="text-slate-700 font-semibold max-w-full truncate">{address.address}</span>
         </div>
         <div className="w-full flex flex-col">
           <span className="text-sm font-bold text-sky-500 text-opacity-60">City:</span>
@@ -211,7 +211,7 @@ const AddressCard = ({ address, setAddresses, currentPage, setMaxPage }) => {
           )}
         </div>
       </div>
-      <div className="h-full w-2/6 flex flex-col border-l pl-5 justify-center relative">
+      <div className="h-full w-[25%] flex flex-col border-l pl-5 justify-center relative">
         <div className="w-full flex flex-col">
           <span className="text-sm font-bold text-sky-500 text-opacity-60">Province:</span>
           <span className="text-slate-700 font-semibold">{address.province}</span>

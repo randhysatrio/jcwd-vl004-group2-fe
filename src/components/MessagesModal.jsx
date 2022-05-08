@@ -29,7 +29,7 @@ const MessagesModal = ({ message, currentPage, limit, setMessages, setMaxPage, s
 
   return (
     <>
-      <div className="w-[780px] h-24 rounded-lg hover:bg-gray-50 ring-1 hover:ring ring-gray-300 flex focus:outline-none transition cursor-pointer">
+      <div className="w-full xl:w-[780px] h-24 rounded-lg hover:bg-gray-50 ring-1 hover:ring ring-gray-300 flex focus:outline-none transition cursor-pointer">
         <div
           onClick={async () => {
             try {
@@ -46,11 +46,11 @@ const MessagesModal = ({ message, currentPage, limit, setMessages, setMaxPage, s
           className="flex h-full w-[90%]"
         >
           <div className="w-[10%] h-full flex items-center justify-center">
-            <div className="relative">
+            <div className="relative text-2xl lg:text-3xl">
               {isRead ? (
-                <IoIosMailOpen className="text-3xl text-gray-600 text-opacity-80" />
+                <IoIosMailOpen className="text-gray-600 text-opacity-80" />
               ) : (
-                <IoIosMail className="text-3xl text-gray-600 text-opacity-80" />
+                <IoIosMail className="text-gray-600 text-opacity-80" />
               )}
               {isNew ? (
                 <div className="h-[10px] w-[10px] absolute top-[2px] -right-[2px] rounded-lg bg-white flex justify-center items-center">
@@ -61,25 +61,25 @@ const MessagesModal = ({ message, currentPage, limit, setMessages, setMaxPage, s
           </div>
           <div className="w-[45%] h-full flex flex-col justify-center">
             <span
-              className={`text-lg ${
+              className={`text-md md:text-sm lg:text-lg ${
                 isRead ? 'font-semibold text-gray-400' : 'font-bold'
               } text-zinc-700 hover:text-sky-400 hover:text-opacity-70 transition`}
             >
               {message.header?.length > 35 ? message.header.slice(0, 35) + '...' : message.header}
             </span>
-            <span className="text-sm text-gray-500 text-opacity-70">
-              {message.content?.length > 48 ? message.content?.replace('|', ' ').slice(0, 48) + '..' : message.content?.replace('|', ' ')}
+            <span className="text-xs lg:text-sm text-gray-500 text-opacity-70">
+              {message.content?.length > 43 ? message.content?.replace('|', ' ').slice(0, 43) + '..' : message.content?.replace('|', ' ')}
             </span>
           </div>
           <div className="h-full w-[28%] flex flex-col justify-center">
             <span className="text-sm text-gray-500 text-opacity-70 leading-none">From:</span>
-            <span className="text-md font-bold text-gray-600">
+            <span className="text-sm md:text-xs lg:text-base font-bold text-gray-600">
               {message.to === 'user' ? 'Heizen Berg Admin Te..' : `ID#${message.userId} (${message.user?.name})`}
             </span>
           </div>
           <div className="w-[17%] h-full flex flex-col justify-center">
             <span className="text-sm text-gray-500 text-opacity-70 leading-none">Received:</span>
-            <span className="font-semibold text-gray-600">
+            <span className="text-xs lg:text-base font-semibold text-gray-600">
               {formatRelative(new Date(message.createdAt), new Date(), {
                 locale: { ...enUS, formatRelative: (token) => formatRelativeLocale[token] },
               })}
@@ -113,7 +113,7 @@ const MessagesModal = ({ message, currentPage, limit, setMessages, setMaxPage, s
                 toast.error('Unable to delete message!', { position: 'bottom-left', theme: 'colored' });
               }
             }}
-            className="text-2xl text-gray-500 hover:text-red-500 active:scale-95 transition cursor-pointer"
+            className="text-xl lg:text-2xl text-gray-500 hover:text-red-500 active:scale-95 transition cursor-pointer"
           />
         </div>
       </div>
@@ -141,7 +141,7 @@ const MessagesModal = ({ message, currentPage, limit, setMessages, setMaxPage, s
             leaveFrom="opacity-100 translate-y-0"
             leaveTo="opacity-90 -translate-y-2"
           >
-            <div className="w-[40%] bg-gray-50 rounded-lg fixed z-20 shadow">
+            <div className="w-[65%] md:w-[60%] lg:w-[55%] xl:w-[40%] bg-gray-50 rounded-lg fixed z-20 shadow">
               <div className="flex flex-col px-5 p-2">
                 <div className="w-full flex flex-col">
                   <span className="text-xl font-bold text-gray-600 my-[2px]">{message.header}</span>
@@ -157,7 +157,7 @@ const MessagesModal = ({ message, currentPage, limit, setMessages, setMaxPage, s
                 </div>
                 <div className="w-full h-[1px] my-1 bg-gradient-to-r from-sky-400 to-emerald-400 mx-auto" />
               </div>
-              <div className="w-full h-56 px-4 pb-3">
+              <div className="w-full h-60 xl:h-56 px-4 pb-3">
                 <div className="w-full h-full rounded-xl p-3 bg-gray-200 bg-opacity-80 text-sm">
                   <div className="flex flex-col">{renderContent()}</div>
                   {message.to === 'user' && (

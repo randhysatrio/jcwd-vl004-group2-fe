@@ -196,7 +196,7 @@ const AllProducts = () => {
   return (
     <>
       <Header />
-      <div className="container mx-auto">
+      <div className="md:container mx-auto">
         <div className="flex h-max w-full">
           <div className="w-1/5 h-max flex flex-col items-center pt-2">
             <div className="w-4/5 py-2 border-b border-slate-400 flex items-center justify-between">

@@ -5,7 +5,7 @@ import { API_URL } from '../assets/constants';
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 
-import { FaUserAlt } from 'react-icons/fa';
+import { FaUserAlt, FaShoppingBag, FaBell } from 'react-icons/fa';
 import { AiOutlineUser } from 'react-icons/ai';
 import { FiLogOut } from 'react-icons/fi';
 
@@ -47,11 +47,13 @@ const AccountButton = ({ children }) => {
 
   return (
     <>
-      <Menu as="div" className="relative">
+      <Menu as="div">
         <Menu.Button as="div" className="flex flex-col items-center text-gray-700 hover:text-sky-500 transition cursor-pointer">
-          <FaUserAlt className="text-2xl mb-1" />
+          <div className="relative">
+            <FaUserAlt className="md:text-2xl mb-1" />
+            <div className="h-1 w-1 md:h-2 md:w-2 rounded-full bg-green-500 absolute -top-[2px] -right-[2px]  md:-top-1 md:-right-1"></div>
+          </div>
           <span className="text-xs leading-3">{children}</span>
-          <div className="h-2 w-2 rounded-full bg-green-500 absolute -top-1 right-5"></div>
         </Menu.Button>
         <Transition
           as={Fragment}
@@ -66,6 +68,14 @@ const AccountButton = ({ children }) => {
             <MenuLink icon={<AiOutlineUser />} to="/user">
               Profile
             </MenuLink>
+            <div className="w-full sm:hidden flex flex-col">
+              <MenuLink icon={<FaShoppingBag />} to="/cart">
+                Cart
+              </MenuLink>
+              <MenuLink icon={<FaBell />} to="/user/notification">
+                Notification
+              </MenuLink>
+            </div>
             <MenuLink icon={<FiLogOut />} logout>
               Logout
             </MenuLink>

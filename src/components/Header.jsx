@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { FaSearch, FaUserAlt, FaShoppingBag, FaBell } from 'react-icons/fa';
 import { MdOutlineDashboard } from 'react-icons/md';
 import AccountButton from './AccountButton';
+import UserSidebar from './UserSidebar';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -17,11 +18,15 @@ const Header = () => {
 
   return (
     // header
-    <header className="py-4 shadow-sm bg-white">
-      <div className="container flex items-center justify-between">
-        <Link to="/">
-          <h1 className="text-lg font-bold text-slate-600 hover:brightness-110 transition cursor-pointer">Heizen Berg Co.</h1>
-        </Link>
+    <header className="py-2 lg:py-4 shadow-sm bg-white">
+      <div className="px-3 lg:container flex items-center justify-around lg:justify-between">
+        <h1
+          onClick={() => navigate('/')}
+          className="hidden md:block text-lg font-bold text-slate-600 hover:brightness-110 transition cursor-pointer"
+        >
+          Heizen Berg Co.
+        </h1>
+        <UserSidebar />
         {/* Searchbar */}
         <form
           onSubmit={(e) => {
@@ -31,9 +36,9 @@ const Header = () => {
             setKeyword('');
           }}
         >
-          <div className="w-[500px] max-w-xl relative flex">
+          <div className="w-[400px] sm:w-[350px] md:w-[400px] lg:w-[500px] relative flex">
             <span className="absolute left-4 top-3 text-lg text-gray-400">
-              <FaSearch className="mt-1" />
+              <FaSearch className="lg:mt-1" />
             </span>
             <input
               type="text"
@@ -41,18 +46,18 @@ const Header = () => {
                 setKeyword(e.target.value);
               }}
               value={keyword}
-              className="w-full border border-primary border-r-0 pl-12 py-3 pr-3 rounded-l-md focus:outline-none"
+              className="w-full border border-primary border-r-0 pl-12 py-2 lg:py-3 pr-3 rounded-l-md focus:outline-none"
               placeholder="Search"
             />
             <button
               type="submit"
-              className="bg-primary border border-primary text-white px-8 rounded-r-md hover:bg-transparent hover:text-primary transition"
+              className="bg-primary border border-primary text-white px-3 lg:px-8 rounded-r-md hover:bg-transparent hover:text-primary transition"
             >
               Search
             </button>
           </div>
         </form>
-        <div className="flex items-center space-x-4 p-1">
+        <div className="flex items-center space-x-1 lg:space-x-4 p-1">
           {!adminToken ? (
             <>
               <div
@@ -64,19 +69,19 @@ const Header = () => {
                     dispatch({ type: 'ALERT_CLEAR', payload: 'alert' });
                   }
                 }}
-                className="flex flex-col items-center text-gray-700 hover:text-primary transition cursor-pointer"
+                className="hidden sm:flex flex-col items-center text-gray-700 hover:text-primary transition cursor-pointer"
               >
-                <div className="text-2xl mb-1 relative">
+                <div className="md:text-2xl mb-1 relative">
                   <FaBell />
                   {notification && (
-                    <span className="absolute -right-1 -top-[2px] w-2 h-2 rounded-full flex items-center justify-center bg-red-500 text-white text-xs"></span>
+                    <span className="absolute -right-1 -top-[2px] w-1 h-1 md:w-2 md:h-2 rounded-full flex items-center justify-center bg-red-500 text-white text-xs"></span>
                   )}
                 </div>
                 <div className="text-xs leading-3">Notifications</div>
               </div>
-              <div className="text-center text-gray-700 hover:text-primary transition relative">
+              <div className="hidden sm:flex flex-col items-center text-center text-gray-700 hover:text-primary transition relative">
                 <Link to="/cart">
-                  <div className="text-2xl mb-1">
+                  <div className="md:text-2xl mb-1">
                     <FaShoppingBag />
                   </div>
                   <div className="text-xs leading-3">Cart</div>
@@ -90,7 +95,7 @@ const Header = () => {
               ) : (
                 <Link to="/login">
                   <div className="text-center text-gray-700 hover:text-primary transition relative group">
-                    <div className="text-2xl mb-1">
+                    <div className="md:text-2xl mb-1">
                       <FaUserAlt className="ml-2" />
                     </div>
                     <div className="text-xs leading-3">Account</div>
@@ -101,7 +106,7 @@ const Header = () => {
           ) : (
             <Link to="/dashboard">
               <div className="text-center text-gray-700 hover:text-primary transition flex flex-col items-center">
-                <div className="text-2xl mb-1">
+                <div className="md:text-2xl mb-1">
                   <MdOutlineDashboard />
                 </div>
                 <div className="text-xs leading-3">Dashboard</div>

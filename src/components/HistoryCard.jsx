@@ -28,20 +28,20 @@ const HistoryItem = ({ item, index }) => {
         <div className="h-full w-[36%] flex flex-col justify-center">
           <span
             onClick={() => navigate(`/products/${item.product.id}`)}
-            className="text-md font-semibold text-sky-700 hover:brightness-150 transition cursor-pointer"
+            className="text-sm md:text-md xl:text-base font-semibold text-sky-700 hover:brightness-150 transition cursor-pointer max-w-full truncate"
           >
-            {item.product.name.length > 33 ? item.product.name.slice(0, 33) + '...' : item.product.name}
+            {item.product.name}
           </span>
-          <span className="font-semibold opacity-70">{item.product.category.name}</span>
+          <span className="text-sm md:text-md xl:text-base font-semibold opacity-70">{item.product.category.name}</span>
         </div>
-        <div className="h-full w-[14%] flex justify-center items-center text-md font-semibold">
+        <div className="h-full w-[14%] flex justify-center items-center text-sm md:text-md xl:text-base font-semibold">
           <span>Rp. {item.price.toLocaleString('id')}</span>
         </div>
-        <div className="h-full w-[13%] flex justify-center items-center text-md font-semibold">
+        <div className="h-full w-[13%] flex justify-center items-center text-sm md:text-md xl:text-base font-semibold">
           <span>{item.quantity.toLocaleString('id')}</span>
           <span className="text-sm">{item.product.unit}</span>
         </div>
-        <div className="flex-1 flex justify-center items-center text-md font-semibold">
+        <div className="flex-1 flex justify-center items-center text-sm md:text-md xl:text-base font-semibold">
           <span>Rp. {item.subtotal.toLocaleString('id')}</span>
         </div>
       </div>
@@ -111,7 +111,7 @@ const HistoryCard = ({ invoice, userId }) => {
       <div className="w-full p-3">
         <div className="w-full h-full bg-gray-100 rounded-xl flex flex-col">
           <div className="w-full p-2">
-            <div className="w-full h-10 rounded-lg bg-gray-200 text-sm font-semibold text-gray-500 flex overflow-hidden">
+            <div className="w-full h-10 rounded-lg bg-gray-200 text-xs md:text-sm font-semibold text-gray-500 flex overflow-hidden">
               <div className="h-full w-[7%] flex justify-center items-center">
                 <span>No.</span>
               </div>
@@ -137,8 +137,8 @@ const HistoryCard = ({ invoice, userId }) => {
           </div>
           <div className="w-full h-32 bg-gray-100 rounded-b-lg px-2 pb-2">
             <div className="w-full h-full flex justify-between">
-              <div className="w-[64%] h-full">
-                <div className="w-full h-full rounded-lg bg-white brightness-105 relative z-[20] overflow-hidden">
+              <div className="w-[65%] md:w-[60%] h-full">
+                <div className="w-[98%] h-full rounded-lg bg-white brightness-105 relative z-[20] overflow-hidden">
                   <div className="py-[6px] flex gap-6">
                     <span className="h-[6px] w-20 skew-x-[24deg] bg-red-400"></span>
                     <span className="h-[6px] w-20 skew-x-[24deg] bg-blue-400"></span>
@@ -147,15 +147,15 @@ const HistoryCard = ({ invoice, userId }) => {
                     <span className="h-[6px] w-20 skew-x-[24deg] bg-red-400"></span>
                     <span className="h-[6px] w-20 skew-x-[24deg] bg-blue-400"></span>
                   </div>
-                  <div className="w-full h-full flex px-3">
+                  <div className="w-full h-full flex px-1 md:px-3">
                     <div className="flex p-2 border-r">
-                      <div className="w-48 h-full flex flex-col text-sm">
+                      <div className="w-36 md:w-28 lg:w-32 xl:w-48 h-full flex flex-col text-xs xl:text-sm">
                         <span className="font-semibold mb-1">
                           {invoice.address.address.length > 47 ? invoice.address.address.slice(0, 47) + '...' : invoice.address.address}
                         </span>
                         <span>{invoice.user.phone_number}</span>
                       </div>
-                      <div className="w-24 h-full flex flex-col text-sm">
+                      <div className="w-20 xl:w-24 h-full flex flex-col text-xs xl:text-sm">
                         <span>{invoice.address.city}</span>
                         <span className="uppercase">
                           {invoice.address.province.length > 15 ? invoice.address.province.slice(0, 15) + '...' : invoice.address.province}
@@ -171,13 +171,13 @@ const HistoryCard = ({ invoice, userId }) => {
                   </div>
                 </div>
               </div>
-              <div className="h-full w-[35%] relative">
-                <div className="h-4 w-4 rounded-tr-full absolute -left-[6%] 2xl:-left-[5%] -top-[7%] z-10 bg-gray-100"></div>
+              <div className="h-full w-[35%] md:w-[40%] relative">
+                <div className="h-4 w-4 rounded-tr-full absolute -left-[7%] md:-left-[16px] lg:-left-[15px] 2xl:-left-[5%] -top-[7%] z-10 bg-gray-100"></div>
                 <div className="bg-gray-50 w-full h-full before:h-[8px] before:w-[105%] before:bg-gray-50 before:absolute before:-top-2 before:right-0 rounded-b-lg flex flex-col pl-4 pr-2">
                   <div className="w-full border-b text-sm font-bold flex justify-end bg-gradient-to-r from-sky-400 to-emerald-500 bg-clip-text text-transparent">
                     <span>Summary:</span>
                   </div>
-                  <div className="w-full flex justify-between py-[1px]">
+                  <div className="w-full flex justify-between py-[1px] text-sm xl:text-base">
                     <span className="font-bold">Total:</span>
                     <span className="font-semibold">Rp. {parseInt(invoice.total).toLocaleString('id')}</span>
                   </div>
@@ -186,12 +186,12 @@ const HistoryCard = ({ invoice, userId }) => {
                     <span className="text-[11px] mr-1 font-semibold">({invoice.deliveryoption.name})</span>
                     <span className="font-semibold">Rp. {invoice.deliveryoption.cost.toLocaleString('id')}</span>
                   </div>
-                  <div className="w-full flex items-center text-sm border-b py-[1px]">
+                  <div className="w-full flex items-center border-b py-[1px] text-sm xl:text-base">
                     <span className="font-bold mr-auto">Tax:</span>
                     <span className="text-xs mr-1 font-semibold">(5%)</span>
                     <span className="font-semibold">Rp. {(parseInt(invoice.total) * 0.05).toLocaleString('id')}</span>
                   </div>
-                  <div className="w-full flex items-center py-[2px]">
+                  <div className="w-full flex items-center py-[2px] text-sm xl:text-base">
                     <span className="font-bold mr-auto">Grand Total:</span>
                     <span className="font-semibold">
                       Rp. {(parseInt(invoice.total) + invoice.deliveryoption.cost + parseInt(invoice.total) * 0.05).toLocaleString('id')}
@@ -205,7 +205,7 @@ const HistoryCard = ({ invoice, userId }) => {
       </div>
       <div className="w-full pb-2 px-3 flex justify-end gap-4 relative">
         {received ? (
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 text-sm xl:text-base">
             <BsCheckAll className="text-sky-500" />
             <span className="text-gray-400">I have received this</span>
           </div>
@@ -213,7 +213,7 @@ const HistoryCard = ({ invoice, userId }) => {
           <button
             disabled={loading}
             onClick={receivedHandler}
-            className="h-10 w-36 rounded-lg bg-gradient-to-r from-green-500 to-emerald-400 text-white font-bold cursor-pointer hover:brightness-110 active:scale-95 transition flex items-center justify-center gap-2"
+            className="h-10 w-32 xl:w-36 rounded-lg bg-gradient-to-r from-green-500 to-emerald-400 text-white font-bold cursor-pointer hover:brightness-110 active:scale-95 transition flex items-center justify-center gap-2 text-sm xl:text-base"
           >
             {loading ? (
               <>

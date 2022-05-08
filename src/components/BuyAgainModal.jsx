@@ -32,9 +32,7 @@ const BuyAgainRow = ({ item, selected, setSelected }) => {
         </div>
       </div>
       <div className="h-full w-[52%] flex flex-col justify-center items-start">
-        <span className="font-semibold text-slate-700">
-          {item.product.name.length > 28 ? item.product.name.slice(0, 28) + '...' : item.product.name}
-        </span>
+        <span className="font-semibold text-slate-700 max-w-full truncate">{item.product.name}</span>
         <span className="text-sm font-semibold text-gray-400">{item.product.category.name}</span>
         {item.quantity > item.product.stock_in_unit || item.product.deletedAt ? (
           <span className="text-xs text-red-400 relative z-[51]">
@@ -123,7 +121,7 @@ const BuyAgainModal = ({ invoiceId, userId }) => {
           setRefetch(refetch + 1);
           setOpen(true);
         }}
-        className="h-10 w-36 rounded-lg bg-gradient-to-r from-sky-500 to-emerald-500 text-white font-bold hover:brightness-110 transition active:scale-95 focus:outline-none flex items-center justify-center gap-2"
+        className="h-10 w-32 xl:w-36 rounded-lg bg-gradient-to-r from-sky-500 to-emerald-500 text-white font-bold hover:brightness-110 transition active:scale-95 focus:outline-none flex items-center justify-center gap-2 text-sm xl:text-base"
       >
         <BsArrowRepeat />
         Buy Again
@@ -152,7 +150,7 @@ const BuyAgainModal = ({ invoiceId, userId }) => {
             leaveFrom="opacity-100 translate-y-0"
             leaveTo="opacity-80 -translate-y-5"
           >
-            <div className="w-[550px] h-max bg-gradient-to-r from-white to-emerald-50 rounded-xl flex flex-col z-[30] shadow">
+            <div className="w-4/6 md:w-[550px] h-max bg-gradient-to-r from-white to-emerald-50 rounded-xl flex flex-col z-[30] shadow">
               <div className="w-full py-6 flex justify-center text-xl font-bold relative">
                 <span className="bg-gradient-to-r from-sky-600 to-sky-400 bg-clip-text text-transparent">
                   Which item would like you to buy again?
