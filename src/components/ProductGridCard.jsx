@@ -10,7 +10,7 @@ const ProductGridCard = ({ product, newarrival, bestseller }) => {
     <div className="h-[340px] w-56 flex flex-col justify-center items-center rounded-lg overflow-hidden border relative shadow-md group">
       <div className="absolute z-2 inset-0 bg-gray-600 bg-opacity-0 group-hover:bg-opacity-30 group-hover:backdrop-blur-sm transition-all"></div>
       <div
-        onClick={() => navigate(`/products/${product.id}`)}
+        onClick={() => navigate(`/product/${product.id}`)}
         className="h-12 w-12 rounded-full bg-white absolute z-3 my-auto mx-auto opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center text-sky-600 active:scale-95 cursor-pointer"
       >
         <FaSearch className="hover:brightness-125 transition" />

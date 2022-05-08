@@ -15,8 +15,13 @@ const User = () => {
   const history = useSelector((state) => state.notification.history);
 
   useEffect(() => {
-    if (!localStorage.getItem('userToken')) {
+    const userToken = localStorage.getItem('userToken');
+    const adminToken = localStorage.getItem('adminToken');
+
+    if (!userToken) {
       navigate('/', { replace: true });
+    } else if (adminToken) {
+      navigate('/dashboard', { replace: true });
     }
   }, []);
 
@@ -34,7 +39,7 @@ const User = () => {
             className="w-full h-12 flex items-center my-1 px-2"
           >
             <div
-              className={`w-full h-full pl-3 flex items-center rounded-lg text-lg ${
+              className={`w-full h-full pl-3 flex items-center rounded-lg text-md lg:text-lg ${
                 isActive ? 'hover:bg-sky-300 bg-white bg-opacity-80 backdrop-blur-sm' : 'hover:bg-sky-300'
               } font-bold transition group`}
             >
@@ -71,7 +76,7 @@ const User = () => {
     <>
       <Header />
       <div className="min-h-screen w-full flex justify-end relative">
-        <div className="w-1/5 min-h-full bg-gradient-to-t from-white to-sky-100 py-2 flex flex-col shadow-r">
+        <div className="hidden md:flex py-2 flex-col md:w-[25vw] xl:w-1/5 min-h-full bg-gradient-to-t from-white to-sky-100 shadow-r">
           <SidebarLink to={'/user'} icon={<AiOutlineUser />} end>
             Profile
           </SidebarLink>
@@ -85,7 +90,7 @@ const User = () => {
             Notifications
           </SidebarLink>
         </div>
-        <div className="w-4/5 min-h-full">
+        <div className="w-full md:w-[75vw] xl:w-5/6 min-h-full">
           <Outlet />
         </div>
       </div>

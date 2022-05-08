@@ -2,37 +2,25 @@ import truck from '../assets/images/delivery-van.svg';
 import money from '../assets/images/money-back.svg';
 import service from '../assets/images/service-hours.svg';
 
+const FeatureCard = ({ header, text, img }) => {
+  return (
+    <div className="border border-primary rounded-lg px-6 py-4 md:px-10 lg:px-14 lg:py-10 flex justify-center items-center gap-5">
+      <img src={img} className="w-12 h-12 object-contain" />
+      <div>
+        <h4 className="font-medium capitalize text-lg">{header}</h4>
+        <p className="text-gray-500 text-sm">{text}</p>
+      </div>
+    </div>
+  );
+};
+
 const Features = () => {
   return (
-    <div className="container py-14">
-      <div className="w-10/12 grid grid-cols-3 gap-6 mx-auto justify-center">
-        {/* single feature */}
-        <div className="border border-primary rounded-lg px-3 py-6 flex justify-center items-center gap-5">
-          <img src={truck} className="w-12 h-12 object-contain" />
-          <div>
-            <h4 className="font-medium capitalize text-lg">Free Shipping</h4>
-            <p className="text-gray-500 text-sm">order over $200</p>
-          </div>
-        </div>
-        {/* single featur end */}
-        {/* single feature */}
-        <div className="border border-primary rounded-lg px-3 py-6 flex justify-center items-center gap-5">
-          <img src={money} className="w-12 h-12 object-contain" alt="" />
-          <div>
-            <h4 className="font-medium capitalize text-lg">Money returns</h4>
-            <p className="text-gray-500 text-sm">30 Days money return</p>
-          </div>
-        </div>
-        {/* single featur end */}
-        {/* single feature */}
-        <div className="border border-primary rounded-lg px-3 py-6 flex justify-center items-center gap-5">
-          <img src={service} className="w-12 h-12 object-contain" alt="" />
-          <div>
-            <h4 className="font-medium capitalize text-lg">24/7 Support</h4>
-            <p className="text-gray-500 text-sm">Customer Support</p>
-          </div>
-        </div>
-        {/* single feature end */}
+    <div className="flex justify-center py-14">
+      <div className="w-8/12 px-2 flex flex-col sm:w-10/12 md:grid md:grid-cols-3 md:px-3 gap-6 lg:gap-8">
+        <FeatureCard img={truck} header={'Free Shipping'} text={'Order over $200'} />
+        <FeatureCard img={money} header={'Money Returns'} text={'30 days money return'} />
+        <FeatureCard img={service} header={'24/7 Support'} text={'Customer support'} />
       </div>
     </div>
   );

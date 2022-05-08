@@ -27,13 +27,13 @@ const Categories = () => {
   };
 
   return (
-    <div className="container py-10">
+    <div className="container py-10 px-10 sm:px-0">
       <div className="w-full">
         <span className="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-sky-500 bg-clip-text text-transparent">
           Shop by Categories
         </span>
       </div>
-      <div className="w-full flex py-6 divide-x-2">{renderCategories()}</div>
+      <div className="w-full flex flex-col md:flex-row gap-3 sm:gap-6 md:gap-0 py-6 md:divide-x-2">{renderCategories()}</div>
     </div>
   );
 };

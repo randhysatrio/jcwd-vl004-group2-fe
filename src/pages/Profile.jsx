@@ -192,10 +192,10 @@ const Profile = () => {
   });
 
   return (
-    <div className="w-full h-max flex flex-col items-center py-11 relative">
+    <div className="w-full min-h-screen flex flex-col items-center py-11 relative">
       <div className="w-full h-32 bg-gradient-to-b from-sky-200 to-white absolute top-0 z-0"></div>
       <div className="relative z-1 h-full flex">
-        <div className="w-[35vw] h-max px-4 mr-4 bg-white rounded-box border flex flex-col">
+        <div className="w-4/6 md:w-[43vw] lg:w-[40vw] xl:w-[32vw] h-max px-4 mr-4 bg-white rounded-box border flex flex-col">
           <div className="w-full py-1">
             <div className="w-full flex py-2">
               <span className="text-xl font-bold bg-gradient-to-r from-sky-500 to-sky-400 bg-clip-text text-transparent mr-auto">
@@ -341,7 +341,7 @@ const Profile = () => {
               </button>
             </div>
           </div>
-          <div className="w-full mt-2 mb-4 pt-3 px-1 rounded-box border border-emerald-200 relative flex flex-col">
+          <div className="w-full mt-2 mb-4 pt-3 pr-3 lg:pr-0 rounded-box border border-emerald-200 relative flex flex-col">
             <span className="text-sm font-semibold text-sky-400 bg-white px-1 absolute -top-3 left-4">Change Password:</span>
             <form onSubmit={formikPassword.handleSubmit}>
               {formikPassword.touched.current_password || formikPassword.touched.new_password || formikPassword.touched.confirm_password ? (
@@ -354,8 +354,8 @@ const Profile = () => {
                 </button>
               ) : null}
               <div className="w-full py-2 flex gap-2">
-                <div className="w-36 pt-[2px] flex justify-end">
-                  <label className="text-sm font-semibold text-sky-400">Current Password:</label>
+                <div className="w-32 lg:w-36 flex items-center justify-end">
+                  <label className="text-sm md:text-xs lg:text-sm font-semibold text-sky-400">Current Password:</label>
                 </div>
                 <div className="flex flex-col relative">
                   <div
@@ -389,8 +389,8 @@ const Profile = () => {
                 </div>
               </div>
               <div className="w-full py-2 flex gap-2">
-                <div className="w-36 pt-[2px] flex justify-end">
-                  <label className="text-sm font-semibold text-sky-400">New Password:</label>
+                <div className="w-32 lg:w-36 flex items-center justify-end">
+                  <label className="text-sm md:text-xs lg:text-sm font-semibold text-sky-400">New Password:</label>
                 </div>
                 <div className="flex flex-col relative">
                   <div
@@ -424,8 +424,8 @@ const Profile = () => {
                 </div>
               </div>
               <div className="w-full py-2 flex gap-2">
-                <div className="w-36 pt-[2px] flex justify-end">
-                  <label className="text-sm font-semibold text-sky-400">Confirm Password:</label>
+                <div className="w-32 lg:w-36 flex justify-end items-center">
+                  <label className="text-sm md:text-xs lg:text-sm font-semibold text-sky-400">Confirm Password:</label>
                 </div>
                 <div className="flex flex-col relative">
                   <div
@@ -484,9 +484,9 @@ const Profile = () => {
             </form>
           </div>
         </div>
-        <div className="w-[16vw] h-72 bg-white rounded-xl border flex flex-col">
+        <div className="w-[28vw] md:w-[20vw] xl:w-[16vw] h-72 bg-white rounded-xl border flex flex-col">
           <div className="w-full h-52 flex justify-center items-center relative">
-            <div className="w-40 h-40 rounded-full flex justify-center items-center shadow bg-blue-100">
+            <div className="w-40 h-40 md:w-36 md:h-36 lg:w-40 lg:h-40 rounded-full flex justify-center items-center shadow bg-blue-100">
               <div className="w-[90%] h-[90%] rounded-full flex justify-center items-center overflow-hidden bg-white">
                 <img
                   id="profile-picture"
@@ -518,7 +518,7 @@ const Profile = () => {
           <div className="h-[2px] w-[90%] bg-gray-100 rounded-xl mx-auto" />
           <div className="w-full h-10 flex justify-center">
             <div className="max-w-full h-full flex items-center">
-              <span className="text-2xl font-bold bg-gradient-to-r from-sky-400 to-emerald-400 bg-clip-text text-transparent">
+              <span className="text-xl md:text-lg lg:text-2xl font-bold bg-gradient-to-r from-sky-400 to-emerald-400 bg-clip-text text-transparent">
                 {userData.name}
               </span>
             </div>

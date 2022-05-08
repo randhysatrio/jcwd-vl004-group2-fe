@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import Axios from 'axios';
 import { API_URL } from '../assets/constants';
@@ -52,7 +52,7 @@ const NavbarLink = ({ children, path }) => {
 
 const Navbar = () => {
   const userGlobal = useSelector((state) => state.user);
-  const adminGlobal = useSelector((state) => state.adminReducer);
+  const adminToken = localStorage.getItem('adminToken');
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
@@ -82,42 +82,39 @@ const Navbar = () => {
 
   return (
     <nav className="bg-sky-800">
-      <div className="container flex">
+      <div className="flex px-3 xl:container">
         {/* all category */}
         <div className="px-8 py-4 bg-sky-500 flex items-center cursor-pointer relative group">
           <span className="text-white">
             <FaBars />
           </span>
-          <span className="capitalize ml-2 font-semibold text-white">All Categories</span>
+          <span className="hidden md:block capitalize ml-2 font-semibold text-white">All Categories</span>
           <div className="absolute z-30 w-max left-0 top-full bg-white rounded-b-lg overflow-hidden shadow-md divide-y opacity-0 group-hover:opacity-100 transition duration-300 invisible group-hover:visible">
             {renderCategories()}
           </div>
         </div>
 
-        <div className="flex items-center flex-grow pl-12">
-          <div className="flex items-center space-x-6">
+        <div className="hidden sm:flex items-center pl-2 md:pl-4 lg:pl-12">
+          <div className="flex items-center sm:space-x-2 md:space-x-3 lg:space-x-6">
             <NavbarLink path={'/'}>Home</NavbarLink>
-            <NavbarLink path={'/products'}>Shop</NavbarLink>
-            <NavbarLink path={'/products'}>Blog</NavbarLink>
+            <NavbarLink path={'/products/all'}>Shop</NavbarLink>
+            <NavbarLink path={'/products/all'}>Blog</NavbarLink>
             <NavbarLink path={'/'}>About Us</NavbarLink>
             <NavbarLink path={'/'}>Contact Us</NavbarLink>
           </div>
         </div>
 
-        {adminGlobal.id ? (
-          <div className="flex items-center ml-auto">
-            <NavbarLink path={'/dashboard'}>Admin</NavbarLink>
-          </div>
-        ) : userGlobal.name ? (
-          <div className="flex items-center">
-            <span className="text-md font-semibold text-white">Hello, {userGlobal.name}!</span>
-          </div>
-        ) : (
-          <div className="flex items-center gap-4 ml-auto">
-            <NavbarLink path={'/login'}>Login</NavbarLink>
-            <NavbarLink path={'/register'}>Register</NavbarLink>
-          </div>
-        )}
+        {!adminToken &&
+          (userGlobal.name ? (
+            <div className="flex items-center ml-auto">
+              <span className="text-md font-semibold text-white">Hello, {userGlobal.name}!</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-4 ml-auto">
+              <NavbarLink path={'/login'}>Login</NavbarLink>
+              <NavbarLink path={'/register'}>Register</NavbarLink>
+            </div>
+          ))}
       </div>
     </nav>
   );

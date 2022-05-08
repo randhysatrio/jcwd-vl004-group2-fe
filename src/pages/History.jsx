@@ -73,8 +73,8 @@ const History = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col items-center pt-5">
-      <div className="w-5/6 rounded-xl overflow-hidden border mb-7">
+    <div className="w-full h-full flex flex-col items-center pt-5 px-6 md:px-0">
+      <div className="w-full md:w-[70vw] xl:w-5/6 rounded-xl overflow-hidden border mb-7">
         <div className="w-full h-32 rounded-b-lg border-b bg-gradient-to-r from-white to-emerald-400 flex items-end pl-6 pb-2 text-4xl font-thin text-emerald-700">
           <span>Transaction History</span>
         </div>
@@ -121,8 +121,8 @@ const History = () => {
           </div>
         </div>
       </div>
-      <div className="w-5/6 py-2">
-        <div className="w-full flex flex-col px-2">
+      <div className="w-full md:w-[70vw] xl:w-5/6 py-2">
+        <div className="w-full flex flex-col md:px-2">
           <div className="w-full flex items-center pr-2">
             {view === 'all' && (
               <span className="font-thin text-3xl bg-gradient-to-r from-sky-500 to-sky-300 bg-clip-text text-transparent py-1 pl-1">
@@ -157,7 +157,7 @@ const History = () => {
                     : 'Select Date'}
                 </span>
               </div>
-              <div className="w-max p-3 flex flex-col rounded-lg bg-gray-300 bg-opacity-60 backdrop-blur-sm absolute z-[40] right-11 top-8 opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all shadow-lg">
+              <div className="w-max p-3 flex flex-col rounded-lg bg-gray-300 bg-opacity-60 backdrop-blur-sm absolute z-[40] right-3 md:right-11 top-8 opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all shadow-lg">
                 <DateRangePicker
                   className="rounded-lg overflow-hidden"
                   onChange={(date) => setRanges([date.selection])}
@@ -186,7 +186,7 @@ const History = () => {
           </div>
           <div className="h-[1px] w-full bg-gray-200 rounded-full" />
         </div>
-        <div className="w-full flex flex-col gap-10 pt-6 pb-20 px-8">
+        <div className="w-full flex flex-col gap-10 pt-6 pb-20 xl:px-8">
           {invoices.length ? (
             renderInvoices()
           ) : (
