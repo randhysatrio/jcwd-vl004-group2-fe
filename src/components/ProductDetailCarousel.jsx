@@ -10,7 +10,7 @@ import { BsChevronRight, BsChevronLeft } from 'react-icons/bs';
 const ProductDetailCarousel = ({ header, category, relatedProducts, navigate }) => {
   return (
     <div className="w-screen flex flex-col items-center">
-      <div className="w-2/3 h-16 flex items-center gap-2 border-b cursor-default">
+      <div className="w-2/3 h-14 flex items-center gap-2 border-b cursor-default">
         <span className="text-2xl font-bold text-slate-700">{header}</span>
         {category && <span className="text-2xl font-bold text-sky-500">{category}</span>}
       </div>

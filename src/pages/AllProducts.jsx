@@ -66,6 +66,10 @@ const AllProducts = () => {
   }, []);
 
   useEffect(() => {
+    setCurrentPage(1);
+  }, [search]);
+
+  useEffect(() => {
     const getProductQuery = async () => {
       try {
         const query = {
