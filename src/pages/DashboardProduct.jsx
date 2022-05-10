@@ -129,7 +129,7 @@ const Dashboard = () => {
             <select
               name=""
               id=""
-              onChange={(e) => setCurrentCategory(+e.target.value)}
+              onChange={(e) => setCurrentCategory(e.target.value)}
               className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl "
             >
               <option value="">Sort Category</option>
