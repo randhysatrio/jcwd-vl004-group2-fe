@@ -1,36 +1,82 @@
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-import { useSearchParams, useLocation } from 'react-router-dom';
-import { FaArrowLeft, FaArrowRight, FaSearchPlus } from 'react-icons/fa';
-import { toast } from 'react-toastify';
-import { API_URL } from '../assets/constants';
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useSearchParams, useLocation } from "react-router-dom";
+import { FaArrowLeft, FaArrowRight, FaSearchPlus } from "react-icons/fa";
+import {
+  FiCalendar,
+  FiMinus,
+  FiFilter,
+  FiMoreHorizontal,
+  FiAward,
+} from "react-icons/fi";
+import { toast } from "react-toastify";
+import { API_URL } from "../assets/constants";
+import Swal from "sweetalert2";
 
 const DashboardTransaction = () => {
+  const Swal = require("sweetalert2");
   const [transactions, setTransactions] = useState();
   const [dataDetails, setDataDetails] = useState([]);
   const [activePage, setActivePage] = useState(1);
   const [startNumber, setStartNumber] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
-  const [paymentProof, setPaymentProof] = useState('');
-  const adminToken = localStorage.getItem('adminToken');
+  const [paymentProof, setPaymentProof] = useState("");
+  const [currentSortDate, setCurrentSortDate] = useState("");
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
+  const adminToken = localStorage.getItem("adminToken");
 
   const [searchParams] = useSearchParams();
   const { search } = useLocation();
 
+  const getTransaction = async () => {
+    try {
+      if ((activePage > totalPage && search) || activePage < 1) {
+        return;
+      }
+
+      const response = await axios.post(
+        `${API_URL}/admin/transaction/get`,
+        {
+          page: activePage,
+          search: searchParams.get("keyword"),
+          sort: currentSortDate,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${adminToken}`,
+          },
+        }
+      );
+
+      if (activePage > response.data.totalPage) setActivePage(1);
+
+      setTransactions(response.data.data);
+      setTotalPage(response.data.totalPage);
+      setStartNumber(response.data.startNumber);
+      setActivePage(1);
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
+  };
+
   useEffect(() => {
     const getTransaction = async () => {
       try {
-        if ((activePage > totalPage && search) || activePage < 1) {
-          return;
-        }
+        // if ((activePage > totalPage && search) || activePage < 1) {
+        //   return;
+        // }
 
-        if (search) setActivePage(1);
+        // if (search) setActivePage(1);
 
         const response = await axios.post(
           `${API_URL}/admin/transaction/get`,
           {
             page: activePage,
-            search: searchParams.get('keyword'),
+            startDate,
+            endDate,
+            search: searchParams.get("keyword"),
+            sort: currentSortDate,
           },
           {
             headers: {
@@ -48,7 +94,7 @@ const DashboardTransaction = () => {
     };
 
     getTransaction();
-  }, [activePage, search]);
+  }, [activePage, search, currentSortDate, startDate, endDate]);
 
   const rendTotal = () => {
     let total = 0;
@@ -79,9 +125,9 @@ const DashboardTransaction = () => {
   };
 
   const toIDR = (number) => {
-    return number.toLocaleString('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
+    return number.toLocaleString("id-ID", {
+      style: "currency",
+      currency: "IDR",
       minimumFractionDigits: 0,
     });
   };
@@ -89,9 +135,53 @@ const DashboardTransaction = () => {
   const dateLocal = (dateInvoice) => {
     let dateFull = new Date(dateInvoice);
     let date = dateFull.getDate();
-    let moth = dateFull.getMonth() + 1;
+    let month = dateFull.getMonth() + 1;
     let year = dateFull.getFullYear();
-    return `${date}/${moth}/${year}`;
+    return `${month}/${date}/${year}`;
+  };
+
+  const handleApprovedClick = (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Change it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        try {
+          axios.patch(`${API_URL}/admin/transaction/approved/${id}`);
+        } catch (error) {
+          console.log(error);
+        }
+        Swal.fire("Changed!", "Status has been changed!", "success");
+        getTransaction();
+      }
+    });
+  };
+
+  const handleRejectedClick = (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Change it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        try {
+          axios.patch(`${API_URL}/admin/transaction/rejected/${id}`);
+        } catch (error) {
+          console.log(error);
+        }
+        Swal.fire("Changed!", "Status has been changed!", "success");
+        getTransaction();
+      }
+    });
   };
 
   return (
@@ -99,6 +189,42 @@ const DashboardTransaction = () => {
       <div className="flex items-center justify-between py-7 px-10">
         <div>
           <h1 className="text-3xl text-gray-700 font-bold">Transactions</h1>
+        </div>
+        <div className="flex justify-between items-center space-x-4">
+          <div className="flex gap-2 items-center mr-5">
+            <FiFilter size={24} />
+            {startDate ? <span>custom date</span> : <span>this month</span>}
+          </div>
+          <div className="flex relative items-center w-44">
+            <input
+              type="date"
+              className="input input-bordered w-full max-w-xs mt-2 pl-11"
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+            <FiCalendar size="22" className="absolute left-3 top-5" />
+          </div>
+          <FiMinus size={24} />
+          <div className="flex relative items-center w-44">
+            <input
+              type="date"
+              className="input input-bordered w-full max-w-xs mt-2 pl-11"
+              onChange={(e) => setEndDate(e.target.value)}
+            />
+            <FiCalendar size="22" className="absolute left-3 top-5" />
+          </div>
+          <div>
+            <select
+              name=""
+              id=""
+              onChange={(e) => setCurrentSortDate(e.target.value)}
+              className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl"
+            >
+              {/* updatedAt vs createdAt */}
+              <option value="">Sort by Invoice Date</option>
+              <option value="createdAt,ASC">Oldest Transaction</option>
+              <option value="createdAt,DESC">Latest Transaction</option>
+            </select>
+          </div>
         </div>
       </div>
       <div className="bg-white shadow-sm p-5">
@@ -126,7 +252,7 @@ const DashboardTransaction = () => {
                     <th>{startNumber + i + 1}</th>
                     <td>{item.user.name}</td>
                     <td>
-                      {item.address.address}, {item.address.city},{' '}
+                      {item.address.address}, {item.address.city},{" "}
                       {item.address.province}
                     </td>
                     <td>{item.deliveryoption.name}</td>
@@ -149,9 +275,9 @@ const DashboardTransaction = () => {
                     <td>
                       <div
                         className={`badge ${
-                          item.status === 'pending' && 'badge-warning'
-                        } ${item.status === 'approved' && 'badge-success'} ${
-                          item.status === 'rejected' && 'badge-error'
+                          item.status === "pending" && "badge-warning"
+                        } ${item.status === "approved" && "badge-success"} ${
+                          item.status === "rejected" && "badge-error"
                         } gap-2 `}
                       >
                         {item.status}
@@ -160,31 +286,33 @@ const DashboardTransaction = () => {
                     <td className="flex gap-3 items-center text-center ">
                       <button
                         disabled={
-                          item.status === 'approved' ||
-                          item.status === 'rejected'
+                          item.status === "approved" ||
+                          item.status === "rejected"
                         }
                         type="button"
                         className={`py-2.5 px-6 text-white ${
-                          item.status === 'approved' ||
-                          item.status === 'rejected'
-                            ? 'bg-gray-400'
-                            : 'bg-primary hover:bg-blue-400'
+                          item.status === "approved" ||
+                          item.status === "rejected"
+                            ? "bg-gray-400"
+                            : "bg-primary hover:bg-blue-400"
                         }  rounded-xl items-center`}
+                        onClick={() => handleApprovedClick(item.id)}
                       >
                         Approve
                       </button>
                       <button
                         disabled={
-                          item.status === 'approved' ||
-                          item.status === 'rejected'
+                          item.status === "approved" ||
+                          item.status === "rejected"
                         }
                         type="button"
                         className={`py-2.5 px-6 text-white ${
-                          item.status === 'approved' ||
-                          item.status === 'rejected'
-                            ? 'bg-gray-400'
-                            : 'bg-red-500 hover:bg-red-400'
+                          item.status === "approved" ||
+                          item.status === "rejected"
+                            ? "bg-gray-400"
+                            : "bg-red-500 hover:bg-red-400"
                         }  rounded-xl items-center`}
+                        onClick={() => handleRejectedClick(item.id)}
                       >
                         Reject
                       </button>
@@ -207,7 +335,7 @@ const DashboardTransaction = () => {
               <FaArrowLeft />
             </button>
             <div>
-              Page{' '}
+              Page{" "}
               <input
                 type="number"
                 className="px-2 text-center focus:outline-none w-6 bg-gray-100"
@@ -215,7 +343,7 @@ const DashboardTransaction = () => {
                 onChange={(e) =>
                   e.target.value <= totalPage && setActivePage(e.target.value)
                 }
-              />{' '}
+              />{" "}
               of {totalPage}
             </div>
             <button
