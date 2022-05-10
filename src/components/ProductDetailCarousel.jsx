@@ -8,6 +8,23 @@ import { AiFillStar, AiFillFire, AiOutlineCloseCircle, AiOutlineArrowRight, AiOu
 import { BsChevronRight, BsChevronLeft } from 'react-icons/bs';
 
 const ProductDetailCarousel = ({ header, category, relatedProducts, navigate }) => {
+  const renderStars = (score) => {
+    let stars = 0;
+    const renderedStars = [];
+
+    if (Number.isInteger(score)) {
+      stars = score;
+    } else {
+      stars = Math.floor(score);
+    }
+
+    for (let i = 0; i < stars; i++) {
+      renderedStars.push(<AiFillStar />);
+    }
+
+    return renderedStars;
+  };
+
   return (
     <div className="w-screen flex flex-col items-center">
       <div className="w-2/3 h-14 flex items-center gap-2 border-b cursor-default">
@@ -63,14 +80,12 @@ const ProductDetailCarousel = ({ header, category, relatedProducts, navigate }) 
                       </span>
                       <span className="text-sm font-semibold text-sky-600 mt-1">/{product.unit}</span>
                     </div>
-                    <div className="w-full py-[2px] flex items-center text-md text-amber-300">
-                      <AiFillStar />
-                      <AiFillStar />
-                      <AiFillStar />
-                      <AiFillStar />
-                      <AiFillStar />
-                      <span className="text-gray-600 font-semibold text-sm ml-1">(12)</span>
-                    </div>
+                    {product.totalReviews ? (
+                      <div className="w-full py-[2px] flex items-center text-md text-amber-300">
+                        {renderStars(product.avgRating)}
+                        <span className="text-gray-600 font-semibold text-sm ml-1">({product.totalReviews})</span>
+                      </div>
+                    ) : null}
                   </div>
                   <div className="w-full py-[2px] flex items-center font-semibold text-gray-700 text-sm gap-1">
                     {product.stock_in_unit ? (

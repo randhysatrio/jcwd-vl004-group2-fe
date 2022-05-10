@@ -1,6 +1,4 @@
 import { Fragment, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import Axios from 'axios';
 import { API_URL } from '../assets/constants';
 
@@ -10,20 +8,16 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { toast } from 'react-toastify';
 
-const AddReviewModal = ({ userId, productId, setTotalReviews, setAvgRating, setReviews, setCurrentPage, setMaxPage, limit }) => {
-  const navigate = useNavigate();
-  const userGlobal = useSelector((state) => state.user);
+const EditReviewModal = ({ review, setReview, setAvgRating }) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const formik = useFormik({
     initialValues: {
-      userId,
-      productId,
-      title: '',
-      content: '',
-      rating: '5',
-      is_anonymus: false,
+      title: review.title,
+      content: review.content,
+      rating: review.rating.toString(),
+      is_anonymus: review.is_anonymus,
     },
     enableReinitialize: true,
     validationSchema: Yup.object({
@@ -36,18 +30,14 @@ const AddReviewModal = ({ userId, productId, setTotalReviews, setAvgRating, setR
       try {
         setLoading(true);
 
-        const response = await Axios.post(`${API_URL}/review/create`, {
+        const response = await Axios.patch(`${API_URL}/review/edit/${review.id}`, {
           data: { ...values, rating: parseInt(values.rating) },
-          productId,
-          limit,
+          productId: review.productId,
         });
 
-        setLoading(false);
-        setTotalReviews(response.data.totalReviews);
+        setReview(response.data.review);
         setAvgRating(response.data.avgRating);
-        setCurrentPage(1);
-        setReviews(response.data.rows);
-        setMaxPage(response.data.maxPage);
+        setLoading(false);
         formik.resetForm();
 
         setOpen(false);
@@ -63,16 +53,10 @@ const AddReviewModal = ({ userId, productId, setTotalReviews, setAvgRating, setR
   return (
     <>
       <button
-        onClick={() => {
-          if (!userGlobal.id) {
-            navigate('/login');
-          } else {
-            setOpen(true);
-          }
-        }}
-        className="w-40 lg:w-full h-12 rounded-lg text-white font-bold bg-gradient-to-r from-sky-300 to-emerald-400 transition active:scale-95 hover:brightness-110"
+        onClick={() => setOpen(true)}
+        className="w-32 h-8 sm:h-9 rounded-lg font-semibold text-white bg-sky-400 active:scale-95 transition hover:brightness-110 text-sm lg:text-md"
       >
-        Add Reviews
+        Edit Review
       </button>
 
       <Transition appear show={open} as={Fragment}>
@@ -100,7 +84,7 @@ const AddReviewModal = ({ userId, productId, setTotalReviews, setAvgRating, setR
           >
             <div className="w-[480px] lg:w-[550px] rounded-xl fixed z-10 bg-gray-50 flex flex-col shadow ring ring-sky-300 ring-offset-2 ring-inset">
               <div className="p-5">
-                <span className="text-2xl font-bold text-sky-400">Write your reviews</span>
+                <span className="text-2xl font-bold text-sky-400">Edit reviews</span>
               </div>
               <form onSubmit={formik.handleSubmit}>
                 <div className="w-full flex flex-col px-5">
@@ -227,10 +211,10 @@ const AddReviewModal = ({ userId, productId, setTotalReviews, setAvgRating, setR
                       {loading ? (
                         <>
                           <AiOutlineLoading3Quarters className="animate-spin" />
-                          Posting..
+                          Updating..
                         </>
                       ) : (
-                        'Post Reviews'
+                        'Update Review'
                       )}
                     </button>
                   </div>
@@ -253,4 +237,4 @@ const AddReviewModal = ({ userId, productId, setTotalReviews, setAvgRating, setR
   );
 };
 
-export default AddReviewModal;
+export default EditReviewModal;
