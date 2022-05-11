@@ -19,7 +19,7 @@ const Header = () => {
   return (
     // header
     <header className="py-2 lg:py-4 shadow-sm bg-white">
-      <div className="px-3 lg:container flex items-center justify-around lg:justify-between">
+      <div className="px-3 xl:container flex items-center justify-around lg:justify-between">
         <h1
           onClick={() => navigate('/')}
           className="hidden md:block text-lg font-bold text-slate-600 hover:brightness-110 transition cursor-pointer"

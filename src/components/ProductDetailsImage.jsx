@@ -10,7 +10,7 @@ const ProductDetailsImage = ({ img, name }) => {
     <>
       <div
         onClick={() => setOpen(true)}
-        className="w-[80%] h-[80%] flex justify-center items-center bg-gray-100 border overflow-hidden rounded-lg cursor-zoom-in group"
+        className="h-[50%] w-[50%] md:w-[80%] md:h-[80%] flex justify-center items-center bg-gray-100 border overflow-hidden rounded-lg cursor-zoom-in group"
       >
         <img src={img} className="h-full object-contain group-hover:scale-110 transition" />
       </div>

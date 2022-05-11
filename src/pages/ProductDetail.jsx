@@ -20,11 +20,14 @@ import {
 import { BsCartPlus, BsChevronRight } from 'react-icons/bs';
 import { IoBagCheckOutline } from 'react-icons/io5';
 import { toast } from 'react-toastify';
+import ProductReview from '../components/ProductReview';
 
 const ProductDetail = () => {
   const params = useParams();
   const navigate = useNavigate();
   const [productData, setProductData] = useState({});
+  const [totalReviews, setTotalReviews] = useState(0);
+  const [avgRating, setAvgRating] = useState(0);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [quantity, setQuantity] = useState(0);
   const [qtyError, setQtyError] = useState('');
@@ -39,6 +42,8 @@ const ProductDetail = () => {
         const response = await Axios.get(`${API_URL}/product/find/${params.id}`);
 
         setProductData(response.data);
+        setTotalReviews(response.data.totalReviews);
+        setAvgRating(response.data.avgRating);
 
         if (response.data.stock_in_unit) {
           if (!response.data.stock) {
@@ -132,11 +137,28 @@ const ProductDetail = () => {
     }
   };
 
+  const renderStars = (score) => {
+    let stars = 0;
+    const renderedStars = [];
+
+    if (Number.isInteger(score)) {
+      stars = score;
+    } else {
+      stars = Math.floor(score);
+    }
+
+    for (let i = 0; i < stars; i++) {
+      renderedStars.push(<AiFillStar />);
+    }
+
+    return renderedStars;
+  };
+
   return (
     <>
       <Header />
-      <div className="h-max py-3 flex flex-col items-center">
-        <div className="w-3/4 flex gap-1 items-center text-gray-700 text-sm">
+      <div className="py-3 flex flex-col items-center">
+        <div className="w-3/4 flex gap-1 items-center text-gray-700 text-xs py-3 md:text-sm">
           <span
             onClick={() => {
               navigate('/');
@@ -157,15 +179,15 @@ const ProductDetail = () => {
           <BsChevronRight className="text-xs" />
           <span className="underline underline-offset-1">{productData.name}</span>
         </div>
-        <div className="w-3/4 h-[570px] flex">
-          <div className="w-[60%] h-full flex justify-center items-center">
+        <div className="w-3/4 md:h-[570px] flex flex-col md:flex-row md:w-11/12 xl:w-3/4">
+          <div className="w-full py-5 md:w-[60%] md:h-full md:py-0 flex justify-center items-center">
             <ProductDetailsImage img={productData.image} name={productData.name} />
           </div>
-          <div className="w-[2px] h-[85%] bg-slate-200 my-auto" />
-          <div className="w-[40%] h-full flex flex-col justify-center pl-3">
+          <div className="hidden md:block w-[2px] h-[85%] bg-slate-200 my-auto" />
+          <div className="w-full md:w-[40%] md:h-full flex flex-col md:justify-center md:pl-3">
             <div className="w-full flex flex-col">
-              <div className="w-full h-12 flex items-center ">
-                <span className="text-xl font-bold text-sky-800">{productData.name}</span>
+              <div className="w-full h-8 md:h-12 flex items-center ">
+                <span className="text-lg md:text-xl font-bold text-sky-800">{productData.name}</span>
               </div>
               <div className="w-full h-9 flex items-center">
                 <span className="text-xl leading-snug font-bold w-max bg-gradient-to-r from-emerald-600 to-sky-500 bg-clip-text text-transparent">
@@ -173,14 +195,8 @@ const ProductDetail = () => {
                 </span>
               </div>
               <div className="w-full h-7 flex items-center gap-2">
-                <div className="flex items-center gap-1 text-amber-300">
-                  <AiFillStar />
-                  <AiFillStar />
-                  <AiFillStar />
-                  <AiFillStar />
-                  <AiFillStar />
-                </div>
-                <span className="font-semibold text-slate-600">12 Review(s)</span>
+                {totalReviews ? <div className="flex items-center text-amber-300">{renderStars(avgRating)}</div> : null}
+                <span className="font-semibold text-slate-600">{totalReviews} Review(s)</span>
               </div>
             </div>
             <div className="w-full h-11 flex flex-col justify-center text-sm">
@@ -196,7 +212,7 @@ const ProductDetail = () => {
               </div>
             </div>
             <div className="w-full h-[130px] gap-2 flex items-center">
-              <div className="w-1/2 h-full flex flex-col text-sm">
+              <div className="w-1/2 h-full flex flex-col text-xs md:text-sm">
                 <div className="w-full flex items-center border-b mb-1">
                   <span className="font-bold">Details</span>
                 </div>
@@ -218,7 +234,7 @@ const ProductDetail = () => {
               <div className="w-1/2 h-full flex flex-col">
                 <div className="w-full flex items-center justify-between border-b text-sm">
                   <span className="font-bold">Stock</span>
-                  <div className="flex items-center gap-1 font-semibold">
+                  <div className="flex items-center gap-1 font-semibold text-xs xl:text-sm">
                     {productData.stock_in_unit ? (
                       productData.stock_in_unit <= 5 * productData.volume ? (
                         <>
@@ -350,6 +366,7 @@ const ProductDetail = () => {
             )}
           </div>
         </div>
+        <ProductReview productId={params.id} setTotalReviews={setTotalReviews} setAvgRating={setAvgRating} />
         <ProductDetailCarousel
           header={'More from'}
           category={productData.category?.name}

@@ -52,6 +52,23 @@ const ProductCardAll = ({ view, product }) => {
     }
   };
 
+  const renderStars = (score) => {
+    let stars = 0;
+    const renderedStars = [];
+
+    if (Number.isInteger(score)) {
+      stars = score;
+    } else {
+      stars = Math.floor(score);
+    }
+
+    for (let i = 0; i < stars; i++) {
+      renderedStars.push(<AiFillStar />);
+    }
+
+    return renderedStars;
+  };
+
   return (
     <>
       {view === 'grid' ? (
@@ -74,16 +91,12 @@ const ProductCardAll = ({ view, product }) => {
                   Rp. {product.price_sell?.toLocaleString('id')}/{product.unit}
                 </span>
               </div>
-              <div className="flex w-full items-center gap-2 text-sm">
-                <div className="flex text-amber-300 py-2">
-                  <AiFillStar />
-                  <AiFillStar />
-                  <AiFillStar />
-                  <AiFillStar />
-                  <AiFillStar />
+              {product.totalReviews ? (
+                <div className="flex w-full items-center gap-2 text-sm">
+                  <div className="flex text-amber-300 py-2">{renderStars(product.avgRating)}</div>
+                  <span className="font-semibold text-sky-900">{product.totalReviews} review(s)</span>
                 </div>
-                <span className="font-semibold text-sky-900">12 reviews</span>
-              </div>
+              ) : null}
               <div className="text-sm flex items-center font-semibold text-slate-800 gap-2">
                 {product.stock_in_unit ? (
                   product.stock_in_unit <= 5 * product.volume ? (
@@ -145,18 +158,14 @@ const ProductCardAll = ({ view, product }) => {
                 {product.name.length > 42 ? product.name.slice(0, 42) + '...' : product.name}
               </span>
               <span className="font-semibold text-slate-400">{product.category.name}</span>
-              <div className="flex w-full items-center gap-2">
-                <div className="flex text-md text-amber-300 py-2">
-                  <AiFillStar />
-                  <AiFillStar />
-                  <AiFillStar />
-                  <AiFillStar />
-                  <AiFillStar />
+              {product.totalReviews ? (
+                <div className="flex w-full items-center gap-2">
+                  <div className="flex text-md text-amber-300 py-1">{renderStars(product.avgRating)}</div>
+                  <span className="text-md font-semibold text-sky-900">{product.totalReviews} review(s)</span>
                 </div>
-                <span className="text-md font-semibold text-sky-900">12 reviews</span>
-              </div>
+              ) : null}
             </div>
-            <div className="w-full overflow-hidden leading-none text-ellipsis">
+            <div className="w-full overflow-hidden leading-none">
               <span className="text-xs">{product.description}</span>
             </div>
           </div>
