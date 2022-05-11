@@ -25,8 +25,18 @@ const Dashboard = () => {
   const { search } = useLocation();
 
   const fetchProducts = async () => {
-    const res = await axios.get(`${API_URL}/product/all`);
-    setProducts(res.data);
+    const productList = await axios.post(`${API_URL}/product/query`, {
+      category: currentCategory,
+      sort: currentSortPrice,
+      keyword: searchParams.get("keyword"),
+    });
+    const categoryList = await axios.get(`${API_URL}/category/all`);
+    setCategories(categoryList.data);
+    // nested objects
+    setProducts(productList.data.products);
+    setItemsPerPage(productList.data.products.length);
+    setMaxPage(Math.ceil(productList.data.length / 5));
+    setPage(1);
   };
 
   useEffect(() => {
@@ -173,7 +183,16 @@ const Dashboard = () => {
             <FaArrowLeft />
           </button>
           <div>
-            Page {page} of {maxPage}
+            Page
+            <input
+              type="number"
+              className="px-2 text-center focus:outline-none w-6 bg-gray-100"
+              value={page}
+              onChange={(e) =>
+                e.target.value <= maxPage && setPage(e.target.value)
+              }
+            />
+            of {maxPage}
           </div>
           <button onClick={nextPageHandler}>
             <FaArrowRight />

@@ -31,8 +31,13 @@ const Dashboard = () => {
   const { search } = useLocation();
 
   const fetchUsers = async () => {
-    const res = await axios.get(`${API_URL}/user/all`);
-    setUsers(res.data);
+    const userList = await axios.post(`${API_URL}/user/query`, {
+      active: status,
+      keyword: searchParams.get("keyword"),
+    });
+    setUsers(userList.data.users);
+    setMaxPage(Math.ceil(userList.data.length / 5));
+    setPage(1);
   };
 
   useEffect(() => {
@@ -120,30 +125,32 @@ const Dashboard = () => {
       </div>
       <div className="bg-white shadow-sm p-5">
         {/* <form action=""></form> */}
-        <table className="w-full">
-          <thead>
-            <tr className="text-sm font-medium text-gray-700 border-b border-gray-200">
-              <th className="py-4 px-4 text-center">ID</th>
-              <th className="py-4 px-4 text-center">Profile Picture</th>
-              <th className="py-4 px-4 text-center">Name</th>
-              <th className="py-4 px-4 text-center">Email</th>
-              <th className="py-4 px-4 text-center">Phone</th>
-              <th className="py-4 px-4 text-center">Status</th>
-              <th className="py-4 px-4 text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>{renderUsers()}</tbody>
-        </table>
-        <div className="mt-3 flex justify-center items-center gap-4 pt-3">
-          <button onClick={prevPageHandler}>
-            <FaArrowLeft />
-          </button>
-          <div>
-            Page {page} of {maxPage}
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="text-sm font-medium text-gray-700 border-b border-gray-200">
+                <th className="py-4 px-4 text-center">ID</th>
+                <th className="py-4 px-4 text-center">Profile Picture</th>
+                <th className="py-4 px-4 text-center">Name</th>
+                <th className="py-4 px-4 text-center">Email</th>
+                <th className="py-4 px-4 text-center">Phone</th>
+                <th className="py-4 px-4 text-center">Status</th>
+                <th className="py-4 px-4 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>{renderUsers()}</tbody>
+          </table>
+          <div className="mt-3 flex justify-center items-center gap-4 pt-3">
+            <button onClick={prevPageHandler}>
+              <FaArrowLeft />
+            </button>
+            <div>
+              Page {page} of {maxPage}
+            </div>
+            <button onClick={nextPageHandler}>
+              <FaArrowRight />
+            </button>
           </div>
-          <button onClick={nextPageHandler}>
-            <FaArrowRight />
-          </button>
         </div>
       </div>
     </div>

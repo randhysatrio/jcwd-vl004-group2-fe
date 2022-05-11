@@ -51,6 +51,8 @@ const DashboardTransaction = () => {
           }
         );
 
+        if (activePage > response.data.totalPage) setActivePage(1);
+
         setTransactions(response.data.data);
         setTotalPage(response.data.totalPage);
         setStartNumber(response.data.startNumber);
