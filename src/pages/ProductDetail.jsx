@@ -174,7 +174,7 @@ const ProductDetail = () => {
           <div className="w-full md:w-[40%] md:h-full flex flex-col md:justify-center md:pl-3">
             <div className="w-full flex flex-col">
               <div className="w-full h-8 md:h-12 flex items-center ">
-                <span className="text-lg md:text-xl font-bold text-sky-800">{productData.name}</span>
+                <span className="text-lg md:text-xl font-bold text-sky-800 line-clamp-2">{productData.name}</span>
               </div>
               <div className="w-full h-9 flex items-center">
                 <span className="text-xl leading-snug font-bold w-max bg-gradient-to-r from-emerald-600 to-sky-500 bg-clip-text text-transparent">
