@@ -11,7 +11,7 @@ const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const userGlobal = useSelector((state) => state.user);
-  const cartGlobal = useSelector((state) => state.cart);
+  const cartTotal = useSelector((state) => state.cartTotal);
   const notification = useSelector((state) => state.notification.alert);
   const adminToken = localStorage.getItem('adminToken');
   const [keyword, setKeyword] = useState('');
@@ -86,7 +86,7 @@ const Header = () => {
                   </div>
                   <div className="text-xs leading-3">Cart</div>
                   <span className="absolute -right-2 -top-1 w-5 h-5 rounded-full flex items-center justify-center bg-red-500 text-white text-xs">
-                    {cartGlobal.total_data}
+                    {cartTotal.cartTotal}
                   </span>
                 </Link>
               </div>

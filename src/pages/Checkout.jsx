@@ -1,6 +1,13 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { FiEdit, FiMapPin, FiPhone, FiPlusSquare, FiSave, FiUser, FiXSquare } from 'react-icons/fi';
+import {
+  FiEdit,
+  FiMapPin,
+  FiPhone,
+  FiSave,
+  FiUser,
+  FiXSquare,
+} from 'react-icons/fi';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -34,18 +41,21 @@ function Checkout() {
 
   const payments = [
     {
+      id: 1,
       type: 'transfer',
       bankName: 'Bank Mandiri',
       name: 'admin heizen berg',
       noAccount: '89823437470723',
     },
     {
+      id: 2,
       type: 'transfer',
       bankName: 'BNI',
       name: 'admin heizen berg',
       noAccount: '340890220723',
     },
     {
+      id: 3,
       type: 'transfer',
       bankName: 'BCA',
       name: 'admin heizen berg',
@@ -70,10 +80,6 @@ function Checkout() {
 
       setAddressList(response.data.rows);
 
-      // let selectedAddress = response.data.rows.filter((item) => {
-      //   return item.is_default === true;
-      // });
-
       setAddress(
         response.data.rows.find((item) => {
           return item.is_default === true;
@@ -92,19 +98,6 @@ function Checkout() {
       toast.error(error.response.data.message);
     }
   };
-
-  // const getPhone = async () => {
-  //   try {
-  //     const response = await axios.get(`${API_URL}/checkout/phone/${userGlobal.id}`, {
-  //       headers: {
-  //         Authorization: `Bearer ${userToken}`,
-  //       },
-  //     });
-  //     setPhone(response.data.data);
-  //   } catch (error) {
-  //     toast.error(error.response.data.message);
-  //   }
-  // };
 
   useEffect(() => {
     // get data user
@@ -127,68 +120,6 @@ function Checkout() {
       navigate('/', { replace: true });
     }
   }, [userGlobal]);
-
-  const handCheckout = async () => {
-    try {
-      setIsLoading(true);
-      const dataCheckout = {
-        userId: userGlobal.id,
-        addressId: address.id,
-        deliveryoptionId: parseInt(delivery),
-        phoneNumber: phone,
-        notes,
-        orderItems,
-      };
-
-      if (!delivery) {
-        setIsLoading(false);
-        return toast.error('Please select delivery option');
-      } else if (!paymentMethod) {
-        setIsLoading(false);
-        return toast.error('Please select payment method option');
-      }
-
-      // create checkout
-      const response = await axios.post(
-        `${API_URL}/checkout/add`,
-        {
-          dataCheckout,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-          },
-        }
-      );
-
-      if (response) {
-        let paymentData = paymentMethod;
-        paymentData.bill = subtotal + costDelivery;
-        paymentData.invoice = response.data.invoice;
-
-        localStorage.removeItem('checkout-data');
-        localStorage.setItem('payment-data', JSON.stringify(paymentData));
-
-        // update new cart
-        const cartData = await axios.get(`${API_URL}/cart/get/${userGlobal.id}`, {
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-          },
-        });
-
-        dispatch({ type: 'CART_LIST', payload: cartData.data });
-        dispatch({ type: 'ALERT_NEW', payload: 'history' });
-
-        setIsLoading(false);
-        toast.success(response.data.message);
-        return navigate('/payment', { replace: true });
-      }
-      setIsLoading(false);
-    } catch (error) {
-      setIsLoading(false);
-      toast.error(error.response.data.message);
-    }
-  };
 
   const handEditPhone = async (phone_number) => {
     try {
@@ -221,34 +152,72 @@ function Checkout() {
     }
   };
 
-  // const handSetAddress = async (id) => {
-  //   try {
-  //     setIsLoading(true);
-  //     const response = await axios.patch(
-  //       `${API_URL}/checkout/select-address`,
-  //       { id, lastId: address.id },
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${userToken}`,
-  //         },
-  //       }
-  //     );
-
-  //     getAddress();
-  //     setIsLoading(false);
-  //     toast.success(response.data.message);
-  //   } catch (error) {
-  //     setIsLoading(false);
-  //     toast.error(error.response.data.message);
-  //   }
-  // };
-
   const toIDR = (number) => {
     return number.toLocaleString('id-ID', {
       style: 'currency',
       currency: 'IDR',
       minimumFractionDigits: 0,
     });
+  };
+
+  const handCheckout = async () => {
+    try {
+      setIsLoading(true);
+      const dataCheckout = {
+        userId: userGlobal.id,
+        addressId: address.id,
+        deliveryoptionId: parseInt(delivery),
+        phoneNumber: phone,
+        notes,
+        orderItems,
+      };
+
+      // check delivery and payment
+      if (!delivery) {
+        setIsLoading(false);
+        return toast.error('Please select delivery option');
+      } else if (!paymentMethod) {
+        setIsLoading(false);
+        return toast.error('Please select payment method option');
+      }
+
+      // create checkout
+      const response = await axios.post(
+        `${API_URL}/checkout/add`,
+        {
+          dataCheckout,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
+
+      if (response) {
+        let paymentData = paymentMethod;
+        paymentData.bill = subtotal + costDelivery;
+        paymentData.invoice = response.data.invoice;
+
+        localStorage.removeItem('checkout-data');
+        localStorage.setItem('payment-data', JSON.stringify(paymentData));
+
+        // update new cart
+        dispatch({
+          type: 'CART_TOTAL',
+          payload: response.data.cartTotal,
+        });
+        dispatch({ type: 'ALERT_NEW', payload: 'history' });
+
+        setIsLoading(false);
+        toast.success(response.data.message);
+        return navigate('/payment', { replace: true });
+      }
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+      toast.error(error.response.data.message);
+    }
   };
 
   return (
@@ -281,36 +250,73 @@ function Checkout() {
                         className="input input-bordered input-sm w-36 max-w-xs mr-4"
                         onChange={(e) => setPhone(e.target.value)}
                       ></input>
-                      <FiSave size={24} color="#0EA5E9" className="hover:cursor-pointer" onClick={() => handEditPhone(phone)} />
-                      <FiXSquare size={24} color="red" className="hover:cursor-pointer" onClick={() => setEditPhone(!editPhone)} />
+                      <FiSave
+                        size={24}
+                        color="#0EA5E9"
+                        className="hover:cursor-pointer"
+                        onClick={() => handEditPhone(phone)}
+                      />
+                      <FiXSquare
+                        size={24}
+                        color="red"
+                        className="hover:cursor-pointer"
+                        onClick={() => {
+                          setEditPhone(!editPhone);
+                          setPhone(userGlobal?.phone_number);
+                        }}
+                      />
                     </>
                   ) : (
                     <>
                       <span className="w-36">{phone ? phone : '-'}</span>
-                      <FiEdit size={24} color="#0EA5E9" className="hover:cursor-pointer" onClick={() => setEditPhone(!editPhone)} />
+                      <FiEdit
+                        size={24}
+                        color="#0EA5E9"
+                        className="hover:cursor-pointer"
+                        onClick={() => setEditPhone(!editPhone)}
+                      />
                     </>
                   )}
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 flex-wrap">
                   <FiMapPin size={20} />
                   {address ? (
                     <span>
-                      {address.address}, {address.city}, {address.province}, {address.country}, {address.postalcode}
+                      {address.address}, {address.city}, {address.province},{' '}
+                      {address.country}, {address.postalcode}
                     </span>
                   ) : (
-                    <a href="#my-modal-4" className="text-primary border-primary border-b font-semibold">
+                    <a
+                      href="#modal-add-address"
+                      className="text-primary border-primary border-b font-semibold"
+                    >
                       Add Address
                     </a>
                   )}
                 </div>
               </div>
               {address && (
-                <a href="#my-modal-2" className="btn btn-sm">
-                  Change Address
-                </a>
+                <div className="flex gap-3">
+                  <label
+                    htmlFor="modal-add-address"
+                    href="#modal-add-address"
+                    className="btn btn-sm"
+                  >
+                    Add Address
+                  </label>
+
+                  <label
+                    htmlFor="modal-change-address"
+                    href="#modal-change-address"
+                    className="btn btn-sm"
+                  >
+                    Change Address
+                  </label>
+                </div>
               )}
             </div>
             <div className="divider" />
+
             {/* delivery option */}
             <div className="form-control w-full max-w-xs">
               <select
@@ -335,6 +341,7 @@ function Checkout() {
               </select>
             </div>
           </div>
+
           {/* List order items */}
           <div className="py-4 min-h-48">
             <div className="flex justify-between">
@@ -351,7 +358,8 @@ function Checkout() {
           <div className="flex flex-col gap-2">
             <div className="flex justify-between">
               <span>
-                Subtotal ({orderItems.length} {orderItems.length > 1 ? 'items' : 'item'})
+                Subtotal ({orderItems.length}{' '}
+                {orderItems.length > 1 ? 'items' : 'item'})
               </span>
               <span>{toIDR(subtotal)}</span>
             </div>
@@ -362,20 +370,35 @@ function Checkout() {
             <div className="divider"></div>
             <div className="flex justify-between">
               <span className="font-bold text-lg">TOTAL</span>
-              <span className="font-bold text-lg">{toIDR(subtotal + costDelivery)}</span>
+              <span className="font-bold text-lg">
+                {toIDR(subtotal + costDelivery)}
+              </span>
             </div>
           </div>
-          <a href="#my-modal-3" className="h-20 bg-gray-200 rounded-md flex justify-center items-center hover:cursor-pointer">
+          <label
+            htmlFor="modal-payment"
+            className="h-20 bg-gray-200 rounded-md flex justify-center items-center hover:cursor-pointer"
+          >
             {paymentMethod ? (
               <span className="font-semibold text-lg">
                 {paymentMethod.bankName} - {paymentMethod.type}
               </span>
             ) : (
-              <span className="font-semibold text-lg">Select payment method</span>
+              <span className="font-semibold text-lg">
+                Select payment method
+              </span>
             )}
-          </a>
-          <textarea className="textarea my-4 h-14 bg-gray-100" placeholder="Write your note" onChange={(e) => setNotes(e.target.value)} />
-          <button disabled={isLoading} className="btn btn-block btn-primary" onClick={handCheckout}>
+          </label>
+          <textarea
+            className="textarea my-4 h-14 bg-gray-100"
+            placeholder="Write your note"
+            onChange={(e) => setNotes(e.target.value)}
+          />
+          <button
+            disabled={isLoading}
+            className="btn btn-block btn-primary"
+            onClick={handCheckout}
+          >
             PLACE ORDER
           </button>
         </div>
@@ -384,36 +407,47 @@ function Checkout() {
       {/* add address modal */}
       <CheckoutAddAddress onClick={getAddress} />
 
-      {/* addres modal */}
-      <div className="modal" id="my-modal-2">
+      {/* change addres modal */}
+      <input
+        type="checkbox"
+        id="modal-change-address"
+        className="modal-toggle"
+      />
+      <div className="modal" id="modal-change-address">
         <div className="modal-box">
           <div className="modal-action">
-            <a href="#" className="btn btn-sm btn-circle absolute right-2 top-2">
+            <label
+              htmlFor="modal-change-address"
+              className="btn btn-sm btn-circle absolute right-2 top-2"
+            >
               ✕
-            </a>
+            </label>
           </div>
           <h3 className="text-lg font-bold mb-3">Select Your Address</h3>
-          <a href="#my-modal-4" className="btn w-full bg-gray-300 text-gray-700 font-semibold border-0 hover:bg-gray-400 flex gap-3">
-            Add Address <FiPlusSquare size={24} />
-          </a>
           <div className=" flex flex-col gap-1 ">
             {addressList.map((item) => {
               return (
                 <div
                   key={item.id}
-                  className={`flex justify-between items-center border-b py-4 ${address === item ? 'text-primary font-semibold' : null}`}
+                  className={`flex justify-between items-center border-b py-4 ${
+                    address === item ? 'text-primary font-semibold' : null
+                  }`}
                 >
                   <div className="w-4/5">
                     <span>
-                      {item.address}, {item.city}, {item.province}, {item.country}, {item.postalcode}
+                      {item.address}, {item.city}, {item.province},{' '}
+                      {item.country}, {item.postalcode}
                     </span>
                   </div>
                   <div className="modal-action">
-                    {address !== item && (
-                      <a href="#" className="btn btn-sm btn-primary" onClick={() => setAddress(item)}>
-                        Select
-                      </a>
-                    )}
+                    <label
+                      disabled={address === item}
+                      htmlFor="modal-change-address"
+                      className="btn btn-sm btn-primary"
+                      onClick={() => setAddress(item)}
+                    >
+                      Select
+                    </label>
                   </div>
                 </div>
               );
@@ -423,12 +457,16 @@ function Checkout() {
       </div>
 
       {/* payment method modal */}
-      <div className="modal" id="my-modal-3">
+      <input type="checkbox" id="modal-payment" className="modal-toggle" />
+      <div className="modal" id="modal-payment">
         <div className="modal-box">
           <div className="modal-action">
-            <a href="#" className="btn btn-sm btn-circle absolute right-2 top-2">
+            <label
+              htmlFor="modal-payment"
+              className="btn btn-sm btn-circle absolute right-2 top-2"
+            >
               ✕
-            </a>
+            </label>
           </div>
           <h3 className="text-lg font-bold mb-3">Select Payment Method</h3>
           {payments.map((item) => {
@@ -450,9 +488,14 @@ function Checkout() {
                     </div>
                   </div>
                   <div className="modal-action">
-                    <a href="#" className="btn btn-sm btn-primary" onClick={() => setPaymentMethod(item)}>
+                    <label
+                      disabled={paymentMethod?.id === item.id}
+                      htmlFor="modal-payment"
+                      className="btn btn-sm btn-primary"
+                      onClick={() => setPaymentMethod(item)}
+                    >
                       Select
-                    </a>
+                    </label>
                   </div>
                 </div>
               </div>
