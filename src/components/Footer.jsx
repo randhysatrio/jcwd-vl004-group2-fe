@@ -7,8 +7,8 @@ const Footer = () => {
 
   return (
     <div className="w-full bg-slate-900 text-gray-300 mt-10 px-2">
-      <div className="max-w-[1240px] mx-auto flex gap-7 border-b-2 border-gray-600 py-8">
-        <div className="min-w-[8rem]">
+      <div className="max-w-full flex gap-7 border-b-2 border-gray-600 py-8">
+        <div className="min-w-[8rem] lg:pl-10">
           <h6 className="font-bold uppercase pt-2">Products</h6>
           <ul>
             <li onClick={() => navigate('/products?category=1')} className="py-1 hover:brightness-110 transition cursor-pointer">
@@ -54,7 +54,7 @@ const Footer = () => {
         </div>
       </div>
 
-      <div className="flex flex-col max-w-[1240px] px-2 py-4 mx-auto justify-between sm:flex-row text-center text-gray-500">
+      <div className="flex flex-col max-w-full px-2 py-4 mx-auto justify-between sm:flex-row text-center text-gray-500">
         <p className="py-4">2022 Heizen Berg Co. All rights reserved</p>
         <div className="flex justify-between sm:w-[300px] pt-4 text-2xl">
           <FaFacebook className="hover:brightness-150 transition cursor-pointer" />

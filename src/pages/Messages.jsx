@@ -20,6 +20,11 @@ const Messages = () => {
   const limit = 8;
 
   useEffect(() => {
+    dispatch({
+      type: 'ALERT_CLEAR',
+      payload: 'alert',
+    });
+
     const fetchMessages = async () => {
       try {
         const response = await Axios.post(`${API_URL}/message/user/${userGlobal.id}`, {

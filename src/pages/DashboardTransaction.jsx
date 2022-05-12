@@ -1,64 +1,60 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { useSearchParams, useLocation } from "react-router-dom";
-import { FaArrowLeft, FaArrowRight, FaSearchPlus } from "react-icons/fa";
-import {
-  FiCalendar,
-  FiMinus,
-  FiFilter,
-  FiMoreHorizontal,
-  FiAward,
-} from "react-icons/fi";
-import { toast } from "react-toastify";
-import { API_URL } from "../assets/constants";
-import Swal from "sweetalert2";
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { useSearchParams, useLocation } from 'react-router-dom';
+import { FaArrowLeft, FaArrowRight, FaSearchPlus } from 'react-icons/fa';
+import { FiCalendar, FiMinus, FiFilter } from 'react-icons/fi';
+import { toast } from 'react-toastify';
+import { API_URL } from '../assets/constants';
+import { useSelector } from 'react-redux';
+import { startOfMonth, endOfMonth, format } from 'date-fns';
 
 const DashboardTransaction = () => {
-  const Swal = require("sweetalert2");
+  const Swal = require('sweetalert2');
   const [transactions, setTransactions] = useState();
   const [dataDetails, setDataDetails] = useState([]);
   const [activePage, setActivePage] = useState(1);
   const [startNumber, setStartNumber] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
-  const [paymentProof, setPaymentProof] = useState("");
-  const [currentSortDate, setCurrentSortDate] = useState("");
-  const [startDate, setStartDate] = useState();
-  const [endDate, setEndDate] = useState();
-  const adminToken = localStorage.getItem("adminToken");
+  const [paymentProof, setPaymentProof] = useState('');
+  const [currentSortDate, setCurrentSortDate] = useState('');
+  const [startDate, setStartDate] = useState(format(startOfMonth(Date.now()), 'yyyy-MM-dd'));
+  const [endDate, setEndDate] = useState(format(endOfMonth(Date.now()), 'yyyy-MM-dd'));
+  const adminToken = localStorage.getItem('adminToken');
 
+  const socket = useSelector((state) => state.socket.instance);
   const [searchParams] = useSearchParams();
   const { search } = useLocation();
 
-  const getTransaction = async () => {
-    try {
-      if ((activePage > totalPage && search) || activePage < 1) {
-        return;
-      }
+  // const getTransaction = async () => {
+  //   try {
+  //     if ((activePage > totalPage && search) || activePage < 1) {
+  //       return;
+  //     }
 
-      const response = await axios.post(
-        `${API_URL}/admin/transaction/get`,
-        {
-          page: activePage,
-          search: searchParams.get("keyword"),
-          sort: currentSortDate,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${adminToken}`,
-          },
-        }
-      );
+  //     const response = await axios.post(
+  //       `${API_URL}/admin/transaction/get`,
+  //       {
+  //         page: activePage,
+  //         search: searchParams.get('keyword'),
+  //         sort: currentSortDate,
+  //       },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${adminToken}`,
+  //         },
+  //       }
+  //     );
 
-      if (activePage > response.data.totalPage) setActivePage(1);
+  //     if (activePage > response.data.totalPage) setActivePage(1);
 
-      setTransactions(response.data.data);
-      setTotalPage(response.data.totalPage);
-      setStartNumber(response.data.startNumber);
-      setActivePage(1);
-    } catch (error) {
-      toast.error(error.response.data.message);
-    }
-  };
+  //     setTransactions(response.data.data);
+  //     setTotalPage(response.data.totalPage);
+  //     setStartNumber(response.data.startNumber);
+  //     setActivePage(1);
+  //   } catch (error) {
+  //     toast.error(error.response.data.message);
+  //   }
+  // };
 
   useEffect(() => {
     const getTransaction = async () => {
@@ -73,7 +69,7 @@ const DashboardTransaction = () => {
             page: activePage,
             startDate,
             endDate,
-            search: searchParams.get("keyword"),
+            search: searchParams.get('keyword'),
             sort: currentSortDate,
           },
           {
@@ -127,9 +123,9 @@ const DashboardTransaction = () => {
   };
 
   const toIDR = (number) => {
-    return number.toLocaleString("id-ID", {
-      style: "currency",
-      currency: "IDR",
+    return number.toLocaleString('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
       minimumFractionDigits: 0,
     });
   };
@@ -144,44 +140,83 @@ const DashboardTransaction = () => {
 
   const handleApprovedClick = (id) => {
     Swal.fire({
-      title: "Are you sure?",
+      title: 'Are you sure?',
       text: "You won't be able to revert this!",
-      icon: "warning",
+      icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, Change it!",
-    }).then((result) => {
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, Change it!',
+    }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          axios.patch(`${API_URL}/admin/transaction/approved/${id}`);
+          const response = await axios.patch(
+            `${API_URL}/admin/transaction/approved/${id}`,
+            {
+              page: activePage,
+              startDate,
+              endDate,
+              search: searchParams.get('keyword'),
+              sort: currentSortDate,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${adminToken}`,
+              },
+            }
+          );
+
+          Swal.fire('Changed!', 'Status has been changed!', 'success');
+          socket?.emit('userNotif', response.data.userId);
+
+          setTransactions(response.data.data);
+          setTotalPage(response.data.totalPage);
+          setStartNumber(response.data.startNumber);
+          setActivePage(1);
         } catch (error) {
           console.log(error);
         }
-        Swal.fire("Changed!", "Status has been changed!", "success");
-        getTransaction();
       }
     });
   };
 
   const handleRejectedClick = (id) => {
     Swal.fire({
-      title: "Are you sure?",
+      title: 'Are you sure?',
       text: "You won't be able to revert this!",
-      icon: "warning",
+      icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, Change it!",
-    }).then((result) => {
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, Change it!',
+    }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          axios.patch(`${API_URL}/admin/transaction/rejected/${id}`);
+          const response = await axios.patch(
+            `${API_URL}/admin/transaction/rejected/${id}`,
+            {
+              page: activePage,
+              startDate,
+              endDate,
+              search: searchParams.get('keyword'),
+              sort: currentSortDate,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${adminToken}`,
+              },
+            }
+          );
+          Swal.fire('Changed!', 'Status has been changed!', 'success');
+          socket?.emit('userNotif', response.data.userId);
+
+          setTransactions(response.data.data);
+          setTotalPage(response.data.totalPage);
+          setStartNumber(response.data.startNumber);
+          setActivePage(1);
         } catch (error) {
           console.log(error);
         }
-        Swal.fire("Changed!", "Status has been changed!", "success");
-        getTransaction();
       }
     });
   };
@@ -195,12 +230,17 @@ const DashboardTransaction = () => {
         <div className="flex justify-between items-center space-x-4">
           <div className="flex gap-2 items-center mr-5">
             <FiFilter size={24} />
-            {startDate ? <span>custom date</span> : <span>this month</span>}
+            {startDate === format(startOfMonth(Date.now()), 'yyyy-MM-dd') && endDate === format(endOfMonth(Date.now()), 'yyyy-MM-dd') ? (
+              <span>this month</span>
+            ) : (
+              <span>custom date</span>
+            )}
           </div>
           <div className="flex relative items-center w-44">
             <input
               type="date"
               className="input input-bordered w-full max-w-xs mt-2 pl-11"
+              value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
             />
             <FiCalendar size="22" className="absolute left-3 top-5" />
@@ -209,6 +249,7 @@ const DashboardTransaction = () => {
           <div className="flex relative items-center w-44">
             <input
               type="date"
+              value={endDate}
               className="input input-bordered w-full max-w-xs mt-2 pl-11"
               onChange={(e) => setEndDate(e.target.value)}
             />
@@ -239,9 +280,7 @@ const DashboardTransaction = () => {
                 <th className="bg-white border-b border-gray-200">Address</th>
                 <th className="bg-white border-b border-gray-200">Delivery</th>
                 <th className="bg-white border-b border-gray-200">Notes</th>
-                <th className="bg-white border-b border-gray-200">
-                  Invoice Date
-                </th>
+                <th className="bg-white border-b border-gray-200">Invoice Date</th>
                 <th className="bg-white border-b border-gray-200">Details</th>
                 <th className="bg-white border-b border-gray-200">Status</th>
                 <th className="bg-white border-b border-gray-200">Actions</th>
@@ -249,13 +288,13 @@ const DashboardTransaction = () => {
             </thead>
             <tbody>
               {transactions?.map((item, i) => {
+                console.log(item);
                 return (
                   <tr key={item.id}>
                     <th>{startNumber + i + 1}</th>
                     <td>{item.user.name}</td>
                     <td>
-                      {item.address.address}, {item.address.city},{" "}
-                      {item.address.province}
+                      {item.address.address}, {item.address.city}, {item.address.province}
                     </td>
                     <td>{item.deliveryoption.name}</td>
                     <td>{item.notes}</td>
@@ -276,43 +315,27 @@ const DashboardTransaction = () => {
                     </td>
                     <td>
                       <div
-                        className={`badge ${
-                          item.status === "pending" && "badge-warning"
-                        } ${item.status === "approved" && "badge-success"} ${
-                          item.status === "rejected" && "badge-error"
-                        } gap-2 `}
+                        className={`badge ${item.status === 'pending' && 'badge-warning'} ${
+                          item.status === 'approved' && 'badge-success'
+                        } ${item.status === 'rejected' && 'badge-error'} gap-2 `}
                       >
                         {item.status}
                       </div>
                     </td>
                     <td className="flex gap-3 items-center text-center ">
                       <button
-                        disabled={
-                          item.status === "approved" ||
-                          item.status === "rejected"
-                        }
+                        disabled={item.status !== 'pending'}
                         type="button"
-                        className={`py-2.5 px-6 text-white ${
-                          item.status === "approved" ||
-                          item.status === "rejected"
-                            ? "bg-gray-400"
-                            : "bg-primary hover:bg-blue-400"
-                        }  rounded-xl items-center`}
+                        className="py-2.5 px-6 text-white disabled:bg-gray-400 bg-primary hover:bg-blue-400' rounded-xl items-center"
                         onClick={() => handleApprovedClick(item.id)}
                       >
                         Approve
                       </button>
                       <button
-                        disabled={
-                          item.status === "approved" ||
-                          item.status === "rejected"
-                        }
+                        disabled={item.status !== 'pending'}
                         type="button"
                         className={`py-2.5 px-6 text-white ${
-                          item.status === "approved" ||
-                          item.status === "rejected"
-                            ? "bg-gray-400"
-                            : "bg-red-500 hover:bg-red-400"
+                          item.status === 'approved' || item.status === 'rejected' ? 'bg-gray-400' : 'bg-red-500 hover:bg-red-400'
                         }  rounded-xl items-center`}
                         onClick={() => handleRejectedClick(item.id)}
                       >
@@ -326,38 +349,26 @@ const DashboardTransaction = () => {
           </table>
           <div className="mt-3 flex justify-center items-center gap-4 border-t pt-3">
             <button
-              className={
-                activePage === 1
-                  ? `hover:cursor-not-allowed`
-                  : `hover:cursor-pointer`
-              }
+              className={activePage === 1 ? `hover:cursor-not-allowed` : `hover:cursor-pointer`}
               disabled={activePage === 1}
               onClick={() => activePage > 1 && setActivePage(activePage - 1)}
             >
               <FaArrowLeft />
             </button>
             <div>
-              Page{" "}
+              Page{' '}
               <input
                 type="number"
                 className="px-2 text-center focus:outline-none w-6 bg-gray-100"
                 value={activePage}
-                onChange={(e) =>
-                  e.target.value <= totalPage && setActivePage(e.target.value)
-                }
-              />{" "}
+                onChange={(e) => e.target.value <= totalPage && setActivePage(e.target.value)}
+              />{' '}
               of {totalPage}
             </div>
             <button
-              className={
-                activePage === totalPage
-                  ? `hover:cursor-not-allowed`
-                  : `hover:cursor-pointer`
-              }
+              className={activePage === totalPage ? `hover:cursor-not-allowed` : `hover:cursor-pointer`}
               disabled={activePage === totalPage}
-              onClick={() =>
-                activePage < totalPage && setActivePage(activePage + 1)
-              }
+              onClick={() => activePage < totalPage && setActivePage(activePage + 1)}
             >
               <FaArrowRight />
             </button>
@@ -369,37 +380,23 @@ const DashboardTransaction = () => {
         <div className="modal">
           <div className="modal-box min-w-9/12 overflow-auto">
             <div className="modal-action">
-              <label
-                htmlFor="detail-modal"
-                className="btn btn-sm btn-circle absolute right-2 top-2"
-              >
+              <label htmlFor="detail-modal" className="btn btn-sm btn-circle absolute right-2 top-2">
                 ✕
               </label>
             </div>
             <div className="flex justify-between my-3 items-center">
               <h3 className="text-lg font-bold mb-3">Detail Transaction</h3>
-              <div className="font-semibold text-lg text-red-400 flex justify-end bg-red-50 py-2 px-3 rounded-md">
-                {rendTotal()}
-              </div>
+              <div className="font-semibold text-lg text-red-400 flex justify-end bg-red-50 py-2 px-3 rounded-md">{rendTotal()}</div>
             </div>
             {paymentProof ? (
               <div className="flex flex-col justify-center py-4">
-                <span className="font-semibold mb-4 w-28 border-b-2 border-primary">
-                  Payment Proof
-                </span>
-                <img
-                  src={`${API_URL}/public/${paymentProof}`}
-                  alt="proof of payment"
-                />
+                <span className="font-semibold mb-4 w-28 border-b-2 border-primary">Payment Proof</span>
+                <img src={`${API_URL}/public/${paymentProof}`} alt="proof of payment" />
               </div>
             ) : (
-              <div className="font-semibold mb-4 text-center bg-gray-100 p-6 roundedn-md">
-                Payment proof not available
-              </div>
+              <div className="font-semibold mb-4 text-center bg-gray-100 p-6 roundedn-md">Payment proof not available</div>
             )}
-            <span className="font-semibold mb-4 pt-9 w-28 border-b-2 border-primary">
-              Order Items
-            </span>
+            <span className="font-semibold mb-4 pt-9 w-28 border-b-2 border-primary">Order Items</span>
             {rendDetail()}
           </div>
         </div>

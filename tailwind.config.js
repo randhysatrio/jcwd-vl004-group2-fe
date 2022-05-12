@@ -20,7 +20,7 @@ module.exports = {
       visibility: ['group-hover'],
     },
   },
-  plugins: [require('daisyui')],
+  plugins: [require('daisyui'), require('@tailwindcss/line-clamp')],
   daisyui: {
     themes: [
       {

@@ -30,6 +30,11 @@ const History = () => {
   const [selectedDates, setSelectedDates] = useState({});
 
   useEffect(() => {
+    dispatch({
+      type: 'ALERT_CLEAR',
+      payload: 'history',
+    });
+
     const fetchInvoices = async () => {
       try {
         if (!currentPage) {

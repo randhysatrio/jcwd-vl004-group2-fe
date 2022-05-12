@@ -21,7 +21,7 @@ const HistoryItem = ({ item, index }) => {
           <span className="font-semibold">{index + 1}.</span>
         </div>
         <div className="h-full w-[12%] flex justify-center items-center">
-          <div className="h-16 w-16 rounded-md border flex items-center justify-center bg-white">
+          <div className="h-12 w-12 md:h-16 md:w-16 rounded-md border flex items-center justify-center bg-white">
             <img src={`${item.product.image}`} className="h-full object-contain" />
           </div>
         </div>
@@ -138,8 +138,8 @@ const HistoryCard = ({ invoice, userId }) => {
           <div className="w-full h-32 bg-gray-100 rounded-b-lg px-2 pb-2">
             <div className="w-full h-full flex justify-between">
               <div className="w-[65%] md:w-[60%] h-full">
-                <div className="w-[98%] h-full rounded-lg bg-white brightness-105 relative z-[20] overflow-hidden">
-                  <div className="py-[6px] flex gap-6">
+                <div className="w-[98%] h-full rounded-lg flex flex-col bg-white brightness-105 relative z-[20] overflow-hidden">
+                  <div className="w-full py-[6px] flex gap-6">
                     <span className="h-[6px] w-20 skew-x-[24deg] bg-red-400"></span>
                     <span className="h-[6px] w-20 skew-x-[24deg] bg-blue-400"></span>
                     <span className="h-[6px] w-20 skew-x-[24deg] bg-red-400"></span>
@@ -147,26 +147,22 @@ const HistoryCard = ({ invoice, userId }) => {
                     <span className="h-[6px] w-20 skew-x-[24deg] bg-red-400"></span>
                     <span className="h-[6px] w-20 skew-x-[24deg] bg-blue-400"></span>
                   </div>
-                  <div className="w-full h-full flex px-1 md:px-3">
-                    <div className="flex p-2 border-r">
-                      <div className="w-36 md:w-28 lg:w-32 xl:w-48 h-full flex flex-col text-xs xl:text-sm">
-                        <span className="font-semibold mb-1">
-                          {invoice.address.address.length > 47 ? invoice.address.address.slice(0, 47) + '...' : invoice.address.address}
-                        </span>
+                  <div className="w-full h-full flex px-1 md:px-2">
+                    <div className="w-[65%] h-full flex p-1 border-r">
+                      <div className="w-[60%] lg:w-[65%] h-full flex flex-col text-xs xl:text-sm">
+                        <span className="font-semibold mb-1 line-clamp-2">{invoice.address.address}</span>
                         <span>{invoice.user.phone_number}</span>
                       </div>
-                      <div className="w-20 xl:w-24 h-full flex flex-col text-xs xl:text-sm">
+                      <div className="w-[40%] lg:w-[35%] lg:pl-[2px] h-full flex flex-col text-xs xl:text-sm">
                         <span>{invoice.address.city}</span>
-                        <span className="uppercase">
-                          {invoice.address.province.length > 15 ? invoice.address.province.slice(0, 15) + '...' : invoice.address.province}
-                        </span>
+                        <span className="uppercase line-clamp-1">{invoice.address.province}</span>
                         <span className="uppercase">{invoice.address.country}</span>
                         <span>{invoice.address.postalcode}</span>
                       </div>
                     </div>
-                    <div className="h-full w-full p-2 flex flex-col text-xs">
+                    <div className="h-full w-[35%] p-2 flex flex-col text-xs">
                       <span className="font-bold">Notes:</span>
-                      <span>{invoice.notes.length > 106 ? invoice.notes.slice(0, 106) + '...' : invoice.notes}</span>
+                      <span className="line-clamp-3">{invoice.notes}</span>
                     </div>
                   </div>
                 </div>
@@ -177,25 +173,22 @@ const HistoryCard = ({ invoice, userId }) => {
                   <div className="w-full border-b text-sm font-bold flex justify-end bg-gradient-to-r from-sky-400 to-emerald-500 bg-clip-text text-transparent">
                     <span>Summary:</span>
                   </div>
-                  <div className="w-full flex justify-between py-[1px] text-sm xl:text-base">
-                    <span className="font-bold">Total:</span>
-                    <span className="font-semibold">Rp. {parseInt(invoice.total).toLocaleString('id')}</span>
-                  </div>
-                  <div className="w-full flex items-center text-sm">
-                    <span className="font-bold mr-auto">Shipping:</span>
-                    <span className="text-[11px] mr-1 font-semibold">({invoice.deliveryoption.name})</span>
-                    <span className="font-semibold">Rp. {invoice.deliveryoption.cost.toLocaleString('id')}</span>
-                  </div>
-                  <div className="w-full flex items-center border-b py-[1px] text-sm xl:text-base">
-                    <span className="font-bold mr-auto">Tax:</span>
-                    <span className="text-xs mr-1 font-semibold">(5%)</span>
-                    <span className="font-semibold">Rp. {(parseInt(invoice.total) * 0.05).toLocaleString('id')}</span>
-                  </div>
-                  <div className="w-full flex items-center py-[2px] text-sm xl:text-base">
-                    <span className="font-bold mr-auto">Grand Total:</span>
-                    <span className="font-semibold">
-                      Rp. {(parseInt(invoice.total) + invoice.deliveryoption.cost + parseInt(invoice.total) * 0.05).toLocaleString('id')}
-                    </span>
+                  <div className="w-full my-auto flex flex-col gap-1">
+                    <div className="w-full flex justify-between items-center text-[11px] sm:text-sm xl:text-base">
+                      <span className="font-bold">Total:</span>
+                      <span className="font-semibold">Rp. {parseInt(invoice.total).toLocaleString('id')}</span>
+                    </div>
+                    <div className="w-full flex items-center text-[11px] sm:text-sm xl:text-base">
+                      <span className="font-bold mr-auto">Shipping:</span>
+                      <span className="text-[10px] md:text-xs mr-1 font-semibold">({invoice.deliveryoption.name})</span>
+                      <span className="font-semibold">Rp. {invoice.deliveryoption.cost.toLocaleString('id')}</span>
+                    </div>
+                    <div className="w-full flex justify-between items-center text-[11px] sm:text-sm lg:text-md xl:text-lg">
+                      <span className="font-bold">Grand Total:</span>
+                      <span className="font-semibold">
+                        Rp. {(parseInt(invoice.total) + invoice.deliveryoption.cost).toLocaleString('id')}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>

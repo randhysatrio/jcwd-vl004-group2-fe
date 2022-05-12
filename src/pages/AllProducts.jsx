@@ -75,6 +75,7 @@ const AllProducts = () => {
         const query = {
           limit: productPerPage,
           category: val,
+          fromAllProducts: true,
         };
 
         if (searchParams.get('keyword')) {

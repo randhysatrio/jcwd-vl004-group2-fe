@@ -54,11 +54,11 @@ const ProductReview = ({ productId, setTotalReviews, setAvgRating }) => {
   };
 
   return (
-    <div id="product-review" className="w-screen py-3 flex flex-col items-center">
-      <div className="w-2/3 h-14 flex items-center border-b">
-        <span className="font-bold text-2xl text-sky-400">Product Reviews</span>
+    <div id="product-review" className="w-full py-3 flex flex-col items-center">
+      <div className="w-10/12 sm:w-11/12 lg:w-10/12 xl:w-2/3 h-14 flex items-center border-b">
+        <span className="font-bold text-xl md:text-2xl text-sky-400">Product Reviews</span>
       </div>
-      <div className="w-2/3 flex flex-col lg:flex-row">
+      <div className="w-10/12 sm:w-11/12 lg:w-10/12 xl:w-2/3 flex flex-col lg:flex-row">
         <div className="w-full xl:w-[80%] flex flex-col items-center gap-4 lg:gap-5 py-3 sm:px-2 xl:px-5">
           {reviews?.length ? (
             renderReviews()

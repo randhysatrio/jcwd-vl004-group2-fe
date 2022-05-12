@@ -20,6 +20,7 @@ function Home() {
       try {
         const response = await Axios.post(`${API_URL}/product/query`, {
           limit: 10,
+          fromHome: true,
         });
 
         setNewArrivals(response.data.products);

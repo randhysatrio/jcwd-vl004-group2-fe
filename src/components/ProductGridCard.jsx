@@ -6,6 +6,23 @@ import { AiFillStar, AiFillFire, AiOutlineCheckCircle, AiOutlineCloseCircle } fr
 const ProductGridCard = ({ product, newarrival, bestseller }) => {
   const navigate = useNavigate();
 
+  const renderStars = (score) => {
+    let stars = 0;
+    const renderedStars = [];
+
+    if (Number.isInteger(score)) {
+      stars = score;
+    } else {
+      stars = Math.floor(score);
+    }
+
+    for (let i = 0; i < stars; i++) {
+      renderedStars.push(<AiFillStar />);
+    }
+
+    return renderedStars;
+  };
+
   return (
     <div className="h-[340px] w-56 flex flex-col justify-center items-center rounded-lg overflow-hidden border relative shadow-md group">
       <div className="absolute z-2 inset-0 bg-gray-600 bg-opacity-0 group-hover:bg-opacity-30 group-hover:backdrop-blur-sm transition-all"></div>
@@ -20,8 +37,8 @@ const ProductGridCard = ({ product, newarrival, bestseller }) => {
       </div>
       <div className="w-full h-1/2 bg-gray-50">
         <div className="pt-1 px-3 flex items-center">
-          <span className="text-lg leading-snug font-semibold text-sky-900 cursor-pointer w-full max-h-14">
-            {product.name.length > 36 ? product.name.slice(0, 36) + '...' : product.name}
+          <span className="text-lg leading-snug font-semibold text-sky-900 cursor-pointer w-full max-h-14 line-clamp-2">
+            {product.name}
           </span>
         </div>
         <div className="w-full flex items-end pl-3">
@@ -30,16 +47,12 @@ const ProductGridCard = ({ product, newarrival, bestseller }) => {
           </span>
           <span className="text-md font-semibold text-sky-500">/{product.unit}</span>
         </div>
-        <div className="w-full py-[2px] px-3 flex items-center gap-1 text-sm">
-          <div className="flex text-amber-300">
-            <AiFillStar />
-            <AiFillStar />
-            <AiFillStar />
-            <AiFillStar />
-            <AiFillStar />
+        {product.totalReviews ? (
+          <div className="w-full py-[2px] px-3 flex items-center gap-1 text-sm">
+            <div className="flex text-amber-300">{renderStars(product.avgRating)}</div>
+            <span className="font-semibold text-slate-700">({product.totalReviews})</span>
           </div>
-          <span className="font-semibold text-slate-700">(12)</span>
-        </div>
+        ) : null}
         <div className="px-3 mb-[2px] flex gap-1 items-center text-sm font-semibold">
           {product.stock_in_unit ? (
             product.stock_in_unit <= 5 * product.volume ? (

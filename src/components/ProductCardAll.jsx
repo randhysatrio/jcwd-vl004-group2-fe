@@ -82,9 +82,7 @@ const ProductCardAll = ({ view, product }) => {
             <div onClick={() => navigate(`/product/${product.id}`)} className="w-full h-[80%] flex flex-col">
               <span className="text-sm font-light text-slate-400">{product.category.name}</span>
               <div className="w-full h-12 flex items-center break-words overflow-hidden">
-                <span className="text-base text-slate-800 font-semibold hover:text-sky-500 transition">
-                  {product.name.length > 40 ? product.name.slice(0, 40) + '...' : product.name}
-                </span>
+                <span className="text-base text-slate-800 font-semibold hover:text-sky-500 transition line-clamp-1">{product.name}</span>
               </div>
               <div className="w-full flex items-center">
                 <span className="text-lg font-bold w-max bg-gradient-to-r from-emerald-500 to-emerald-700 bg-clip-text text-transparent">
@@ -154,9 +152,7 @@ const ProductCardAll = ({ view, product }) => {
           </div>
           <div onClick={() => navigate(`/product/${product.id}`)} className="w-[45%] h-full flex flex-col pt-4">
             <div className="w-full flex flex-col gap-1 mb-2">
-              <span className="text-xl font-semibold text-zinc-800 hover:text-sky-500 transition">
-                {product.name.length > 42 ? product.name.slice(0, 42) + '...' : product.name}
-              </span>
+              <span className="text-xl font-semibold text-zinc-800 hover:text-sky-500 transition line-clamp-1">{product.name}</span>
               <span className="font-semibold text-slate-400">{product.category.name}</span>
               {product.totalReviews ? (
                 <div className="flex w-full items-center gap-2">
