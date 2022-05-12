@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import { FaArrowLeft, FaArrowRight, FaSearchPlus } from 'react-icons/fa';
 import { FiCalendar, FiMinus, FiFilter } from 'react-icons/fi';
@@ -21,7 +21,10 @@ const DashboardTransaction = () => {
   const [endDate, setEndDate] = useState(format(endOfMonth(Date.now()), 'yyyy-MM-dd'));
   const adminToken = localStorage.getItem('adminToken');
 
-  const socket = useSelector((state) => state.socket.instance);
+  const socket = useCallback(
+    useSelector((state) => state.socket.instance),
+    []
+  );
   const [searchParams] = useSearchParams();
   const { search } = useLocation();
 
@@ -167,12 +170,12 @@ const DashboardTransaction = () => {
           );
 
           Swal.fire('Changed!', 'Status has been changed!', 'success');
-          socket?.emit('userNotif', response.data.userId);
 
           setTransactions(response.data.data);
           setTotalPage(response.data.totalPage);
           setStartNumber(response.data.startNumber);
           setActivePage(1);
+          socket?.emit('userNotif', response.data.userId);
         } catch (error) {
           console.log(error);
         }
@@ -208,12 +211,12 @@ const DashboardTransaction = () => {
             }
           );
           Swal.fire('Changed!', 'Status has been changed!', 'success');
-          socket?.emit('userNotif', response.data.userId);
 
           setTransactions(response.data.data);
           setTotalPage(response.data.totalPage);
           setStartNumber(response.data.startNumber);
           setActivePage(1);
+          socket?.emit('userNotif', response.data.userId);
         } catch (error) {
           console.log(error);
         }

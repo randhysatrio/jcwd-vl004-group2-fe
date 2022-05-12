@@ -7,7 +7,7 @@ import { API_URL } from '../assets/constants';
 import BuyAgainModal from '../components/BuyAgainModal';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import { BsCheckAll } from 'react-icons/bs';
-import { FaRegCheckCircle } from 'react-icons/fa';
+import { FaFileInvoiceDollar, FaRegCheckCircle } from 'react-icons/fa';
 import { format } from 'date-fns';
 import { toast } from 'react-toastify';
 
@@ -196,9 +196,24 @@ const HistoryCard = ({ invoice, userId }) => {
           </div>
         </div>
       </div>
-      <div className="w-full pb-2 px-3 flex justify-end gap-4 relative">
+      <div className="w-full pb-2 px-3 flex gap-4 relative items-center">
+        {invoice.invoice_path && (
+          <a href={`${API_URL}/history/invoice/download?path=${invoice.invoice_path}`} target="_blank">
+            <button className="h-9 w-36 xl:w-40 rounded-lg bg-gradient-to-r from-sky-500 to-sky-400 text-white font-bold cursor-pointer hover:brightness-110 active:scale-95 transition flex items-center justify-center gap-2 text-xs lg:text-sm">
+              <FaFileInvoiceDollar />
+              Download Invoice
+            </button>
+          </a>
+        )}
+        <a
+          href={`${API_URL}/history/invoice/view/${invoice.id}`}
+          target="_blank"
+          className="h-9 font-semibold text-gray-700 hover:text-sky-500 active:scale-95 transition cursor-pointer px-3 rounded-lg ring-1 ring-gray-300 hover:ring-sky-300 flex items-center justify-center mr-auto text-xs lg:text-sm"
+        >
+          Invoice
+        </a>
         {received ? (
-          <div className="flex items-center gap-1 text-sm xl:text-base">
+          <div className="flex items-center gap-1 text-xs lg:text-base">
             <BsCheckAll className="text-sky-500" />
             <span className="text-gray-400">I have received this</span>
           </div>
