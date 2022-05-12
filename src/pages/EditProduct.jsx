@@ -92,7 +92,7 @@ const EditProduct = () => {
       <div className="flex items-center justify-between py-7 px-10">
         <h1 className="text-3xl text-gray-700 font-bold">Edit Product</h1>
       </div>
-      <div className="shadow-sm p-3">
+      <div className="shadow-sm p-3 px-10">
         {/* <form> */}
         <div className="grid grid-cols-6 gap-4 justify-items-star">
           <div>

@@ -13,6 +13,7 @@ import AdminPagination from '../components/AdminPagination';
 const Dashboard = () => {
   const Swal = require('sweetalert2');
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   const [users, setUsers] = useState([]);
   const [query, setQuery] = useState('');
@@ -26,6 +27,7 @@ const Dashboard = () => {
   const [page, setPage] = useState(1);
   const [maxPage, setMaxPage] = useState(0);
   const [status, setStatus] = useState();
+  const [userNotFound, setUserNotFound] = useState(false);
 
   const [searchParams] = useSearchParams();
   const { search } = useLocation();
@@ -46,9 +48,13 @@ const Dashboard = () => {
         active: status,
         keyword: searchParams.get('keyword'),
       });
-      setUsers(userList.data.users);
-      setMaxPage(Math.ceil(userList.data.length / 5));
-      setPage(1);
+      if (userList.data.length) {
+        setUsers(userList.data.users);
+        setMaxPage(Math.ceil(userList.data.length / 5));
+        setPage(1);
+      } else {
+        setUserNotFound(true);
+      }
     };
     fetchUsers();
   }, [search, status]);
@@ -105,6 +111,26 @@ const Dashboard = () => {
     });
   };
 
+  const renderAlert = () => {
+    Swal.fire({
+      text: "User Not Found!",
+      icon: "question",
+      confirmButtonColor: "#3085d6",
+      confirmButtonText: "Okay",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        try {
+          setUserNotFound(false);
+          // go back to current url i intended to delete all the params in the url
+          navigate(pathname);
+        } catch (error) {
+          console.log(error);
+        }
+        fetchUsers();
+      }
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="flex items-center justify-between py-7 px-10">
@@ -138,7 +164,9 @@ const Dashboard = () => {
                 <th className="py-4 px-4 text-center">Actions</th>
               </tr>
             </thead>
-            <tbody>{renderUsers()}</tbody>
+            <tbody>
+              {userNotFound ? <>{renderAlert()}</> : <>{renderUsers()}</>}
+            </tbody>
           </table>
           <div className="mt-3 flex justify-center items-center gap-4 pt-3">
             <button onClick={prevPageHandler}>
