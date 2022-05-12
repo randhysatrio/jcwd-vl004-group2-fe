@@ -1,17 +1,71 @@
 import axios from 'axios';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useDispatch } from 'react-redux';
 import { FiMinus, FiPlus, FiTrash2 } from 'react-icons/fi';
-import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
+import { debounce } from 'throttle-debounce';
 import { API_URL } from '../assets/constants';
 
-function CartCard({ item, onClick }) {
-  const [isLoading, setIsLoading] = useState(false);
-  const userGlobal = useSelector((state) => state.user);
-  const cartGlobal = useSelector((state) => state.cart);
+function CartCard({ item, setCart, page, handCheck, isLoading, setIsLoading }) {
   const dispatch = useDispatch();
   const userToken = localStorage.getItem('userToken');
+  const [quantity, setQuantity] = useState(item.quantity);
+
+  const changeQty = useCallback(
+    debounce(1000, async (quantity) => {
+      try {
+        setIsLoading(true);
+
+        // check is number? / quantity < 1
+        if (isNaN(quantity)) {
+          setQuantity(item.product.volume);
+          setIsLoading(false);
+          return;
+        }
+
+        // Compare quantity with stock
+        if (item.product.stock_in_unit < quantity) {
+          setQuantity(item.product.stock_in_unit);
+          setIsLoading(false);
+          return;
+        } else if (quantity < 1) {
+          setQuantity(1);
+          setIsLoading(false);
+          return;
+        }
+
+        // Update quantity cart
+        const response = await axios.patch(
+          `${API_URL}/cart/update`,
+          {
+            id: item.id,
+            quantity,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${userToken}`,
+            },
+            params: {
+              page,
+            },
+          }
+        );
+
+        // Get new cart data
+        setCart(response.data);
+        setIsLoading(false);
+      } catch (error) {
+        setIsLoading(false);
+        toast.error(error.response.data.message);
+      }
+    }),
+    []
+  );
+
+  useEffect(() => {
+    changeQty(quantity);
+  }, [quantity]);
 
   const deleteItem = async () => {
     try {
@@ -33,119 +87,20 @@ function CartCard({ item, onClick }) {
             headers: {
               Authorization: `Bearer ${userToken}`,
             },
-          }
-        );
-
-        const cartData = await axios.get(
-          `${API_URL}/cart/get/${userGlobal.id}?page=${cartGlobal.active_page}`,
-          {
-            headers: {
-              Authorization: `Bearer ${userToken}`,
+            params: {
+              page,
             },
           }
         );
 
-        dispatch({ type: 'CART_LIST', payload: cartData.data });
+        setCart(response.data);
+        dispatch({
+          type: 'CART_TOTAL',
+          payload: response.data.cartTotal,
+        });
         setIsLoading(false);
         Swal.fire(response.data.message);
       }
-    } catch (error) {
-      setIsLoading(false);
-      toast.error(error.response.data.message);
-    }
-  };
-
-  const changeQty = async (type, custQty) => {
-    try {
-      setIsLoading(true);
-      // set quantity
-      let quantity;
-      if (type === 'plus') {
-        quantity = item.quantity + item.product.volume;
-      } else if (type === 'min') {
-        quantity = item.quantity - item.product.volume;
-      } else if (type === 'custom') {
-        quantity = parseInt(custQty);
-      }
-
-      // check is number?
-      if (isNaN(quantity)) {
-        document.getElementById(`qty-${item.id}`).value = item.product.volume;
-        return toast.error('please input number');
-      }
-
-      // Compare quantity with stock
-      if (item.product.stock_in_unit < quantity) {
-        document.getElementById(`qty-${item.id}`).value =
-          item.product.stock_in_unit;
-        return toast.error(
-          `Stock not enought, we just have ${item.product.stock_in_unit} ${item.product.unit}`
-        );
-      } else if (quantity < item.product.volume) {
-        toast.error(`Quantity can not less than ${item.product.volume}`);
-        quantity = item.product.volume;
-      }
-
-      // Update quantity cart
-      await axios.patch(
-        `${API_URL}/cart/update`,
-        {
-          id: item.id,
-          quantity,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-          },
-        }
-      );
-
-      // Get new cart data
-      const cartData = await axios.get(
-        `${API_URL}/cart/get/${userGlobal.id}?page=${cartGlobal.active_page}`,
-        {
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-          },
-        }
-      );
-
-      dispatch({ type: 'CART_LIST', payload: cartData.data });
-      setIsLoading(false);
-      document.getElementById(`qty-${item.id}`).value = quantity;
-    } catch (error) {
-      setIsLoading(false);
-      toast.error(error.response.data.message);
-    }
-  };
-
-  const handCheck = async (item) => {
-    try {
-      setIsLoading(true);
-      const { id, isChecked } = item;
-
-      await axios.patch(
-        `${API_URL}/cart/checked`,
-        {
-          id,
-          isChecked: !isChecked,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-          },
-        }
-      );
-
-      const cartData = await axios.get(
-        `${API_URL}/cart/get/${userGlobal.id}?page=${cartGlobal.active_page}`,
-        {
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-          },
-        }
-      );
-      dispatch({ type: 'CART_LIST', payload: cartData.data });
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
@@ -167,7 +122,7 @@ function CartCard({ item, onClick }) {
         <input
           id={`checked-${item.id}`}
           type="checkbox"
-          onChange={() => handCheck(item)}
+          onChange={handCheck}
           checked={item.isChecked}
           className="checkbox"
         />
@@ -180,6 +135,7 @@ function CartCard({ item, onClick }) {
               <span className="text-red-400 font-bold">
                 {toIDR(item.product.price_sell)}
               </span>
+              <span> / {item.product.unit}</span>
             </div>
             <div>
               <span>appearence : </span>
@@ -193,29 +149,39 @@ function CartCard({ item, onClick }) {
         <div className="flex justify-center items-center">
           <button
             className={`border border-primary w-10 h-10 flex justify-center items-center text-primary bg-sky-50 hover:bg-sky-100 ${
-              item.quantity <= item.product.volume
-                ? 'hover:cursor-not-allowed'
-                : null
+              item.quantity <= 1 ? 'hover:cursor-not-allowed' : null
             }`}
-            onClick={() => changeQty('min')}
-            disabled={item.quantity <= item.product.volume || isLoading}
+            onClick={() => setQuantity(item.quantity - item.product.volume)}
+            disabled={item.quantity <= 1 || isLoading}
           >
             <FiMinus />
           </button>
           <input
             id={`qty-${item.id}`}
-            defaultValue={item.quantity}
+            value={quantity}
             type="text"
             className="w-20 h-10 m-0 focus:outline-none border-y border-primary text-center"
             onChange={(e) =>
-              setTimeout(() => changeQty('custom', e.target.value), 2000)
+              !e.target.value
+                ? setQuantity(null)
+                : setQuantity(parseInt(e.target.value))
             }
             disabled={isLoading}
           />
           <button
-            className="border border-primary w-10 h-10 flex justify-center items-center text-primary bg-sky-50 hover:bg-sky-100"
-            onClick={() => changeQty('plus')}
-            disabled={isLoading}
+            className={`border border-primary w-10 h-10 flex justify-center items-center text-primary bg-sky-50 hover:bg-sky-100 ${
+              item.quantity === item.product.stock_in_unit
+                ? 'hover:cursor-not-allowed'
+                : null
+            }`}
+            onClick={() =>
+              setQuantity(
+                item.quantity === 1
+                  ? item.product.volume
+                  : item.quantity + item.product.volume
+              )
+            }
+            disabled={item.quantity === item.product.stock_in_unit || isLoading}
           >
             <FiPlus />
           </button>

@@ -33,19 +33,20 @@ const DashboardReport = () => {
           return;
         }
 
-        if (search) setActivePage(1);
-
-        const response = await axios.post(`${API_URL}/admin/report/get`, null, {
-          params: {
-            page: activePage,
+        const response = await axios.post(
+          `${API_URL}/admin/report/get`,
+          {
             startDate,
             endDate,
             search: searchParams.get('keyword'),
+            page: activePage,
           },
-          headers: {
-            Authorization: `Bearer ${adminToken}`,
-          },
-        });
+          {
+            headers: {
+              Authorization: `Bearer ${adminToken}`,
+            },
+          }
+        );
 
         setReport(response.data.data);
         setMostSold(response.data.mostSold);
@@ -64,6 +65,10 @@ const DashboardReport = () => {
 
     getTransaction();
   }, [activePage, search, startDate, endDate]);
+
+  useEffect(() => {
+    setActivePage(1);
+  }, [search, startDate]);
 
   const toIDR = (number) => {
     number = parseInt(number);
@@ -88,6 +93,7 @@ const DashboardReport = () => {
           <div className="flex relative items-center w-44">
             <input
               type="date"
+              placeholder="DD-YYYY-MM"
               className="input input-bordered w-full max-w-xs mt-2 pl-11"
               onChange={(e) => setStartDate(e.target.value)}
             />
@@ -230,16 +236,16 @@ const DashboardReport = () => {
           </div>
           <div className="flex flex-col items-center gap-3 w-full">
             {/* data */}
-            <div className="stats shadow w-11/12">
+            <div className="stats shadow w-11/12 overflow-x-hidden">
               <div className="stat">
                 <div className="stat-title text-xs">Capital</div>
-                <div className="stat-value text-2xl">
+                <div className="stat-value text-xl">
                   {statistic ? toIDR(statistic.capital) : 0}
                 </div>
               </div>
               <div className="stat">
                 <div className="stat-title text-xs">Profit</div>
-                <div className="stat-value text-2xl text-primary">
+                <div className="stat-value text-xl text-primary">
                   {statistic ? toIDR(statistic.profit) : 0}
                 </div>
               </div>
@@ -273,7 +279,9 @@ const DashboardReport = () => {
                     return (
                       <li
                         key={i}
-                        className="py-3 border-b border-gray-200 flex justify-between px-2 gap-1"
+                        className={`py-3 ${
+                          i === 2 ? null : 'border-b border-gray-200'
+                        } flex justify-between px-2 gap-1`}
                       >
                         <span>{item.name}</span>
                         <span className="font-bold text-lg text-pink-400 w-20 text-right">

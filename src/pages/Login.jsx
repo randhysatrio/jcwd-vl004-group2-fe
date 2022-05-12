@@ -71,6 +71,8 @@ const Login = () => {
           payload: io(SOCKET_URL),
         });
 
+        dispatch({ type: 'CART_TOTAL', payload: response.data.cartTotal });
+
         navigate(-1, { replace: true });
       }
     },

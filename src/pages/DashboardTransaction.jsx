@@ -63,11 +63,9 @@ const DashboardTransaction = () => {
   useEffect(() => {
     const getTransaction = async () => {
       try {
-        // if ((activePage > totalPage && search) || activePage < 1) {
-        //   return;
-        // }
-
-        // if (search) setActivePage(1);
+        if ((activePage > totalPage && search) || activePage < 1) {
+          return;
+        }
 
         const response = await axios.post(
           `${API_URL}/admin/transaction/get`,
@@ -95,6 +93,10 @@ const DashboardTransaction = () => {
 
     getTransaction();
   }, [activePage, search, currentSortDate, startDate, endDate]);
+
+  useEffect(() => {
+    setActivePage(1);
+  }, [search]);
 
   const rendTotal = () => {
     let total = 0;

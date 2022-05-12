@@ -93,13 +93,7 @@ function App() {
           payload: io(SOCKET_URL),
         });
 
-        const cartData = await Axios.get(`${API_URL}/cart/get/${response.data.user.id}`, {
-          headers: {
-            Authorization: `Bearer ${response.data.token}`,
-          },
-        });
-
-        dispatch({ type: 'CART_LIST', payload: cartData.data });
+        dispatch({ type: 'CART_TOTAL', payload: response.data.cartTotal });
       }
     };
 
@@ -112,7 +106,10 @@ function App() {
 
       socket?.on('newUserNotif', (totalNotif) => {
         dispatch({ type: 'ALERT_NEW', payload: 'alert' });
-        toast.info(`You have ${totalNotif} new notification(s)`, { position: 'top-center', theme: 'colored' });
+        toast.info(`You have ${totalNotif} new notification(s)`, {
+          position: 'top-center',
+          theme: 'colored',
+        });
       });
     }
   }, [socket]);
@@ -140,7 +137,10 @@ function App() {
         <Route path="/payment" element={<Payment />} />
         <Route path="/admin/login" element={<LoginAdmin />} />
         <Route path="/admin/reset" element={<ResetAdmin />} />
-        <Route path="/admin/change-password/:token" element={<ChangePassAdmin />} />
+        <Route
+          path="/admin/change-password/:token"
+          element={<ChangePassAdmin />}
+        />
         <Route path="/dashboard" element={<Dashboard />}>
           <Route index element={<HomeAdmin />} />
           <Route path="user" element={<DashboardUser />} />

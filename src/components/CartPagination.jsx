@@ -1,54 +1,35 @@
-import axios from 'axios';
 import { useState } from 'react';
 import {
+  FiChevronLeft,
   FiChevronRight,
   FiMoreHorizontal,
-  FiChevronLeft,
 } from 'react-icons/fi';
-import { useDispatch, useSelector } from 'react-redux';
-import { API_URL } from '../assets/constants';
 
-function CartPagination() {
+function CartPagination({
+  cart,
+  switchPage,
+  nextPage,
+  prevPage,
+  switchPageInput,
+}) {
   const [changePage, setChangePage] = useState(0);
 
-  const userToken = localStorage.getItem('userToken');
-  // redux
-  const dispatch = useDispatch();
-  const cartGlobal = useSelector((state) => state.cart);
-  const userGlobal = useSelector((state) => state.user);
-
-  const handleChangePage = async (page) => {
-    try {
-      const cartData = await axios.get(
-        `${API_URL}/cart/get/${userGlobal.id}?page=${page}`,
-        {
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-          },
-        }
-      );
-      dispatch({ type: 'CART_LIST', payload: cartData.data });
-    } catch (error) {
-      alert(error);
-    }
-  };
-
   const rendPagination = () => {
-    if (cartGlobal.cartList?.length) {
-      let hiddenFirst = cartGlobal.active_page > 4;
-      let hiddenLast = cartGlobal.active_page < cartGlobal.total_page - 4;
-      let minBtn = cartGlobal.total_page <= 10;
+    if (cart?.cartList?.length) {
+      let hiddenFirst = cart?.active_page > 4;
+      let hiddenLast = cart?.active_page < cart?.total_page - 4;
+      let minBtn = cart?.total_page <= 10;
 
       // set number pagination
       let button = [];
 
       if (minBtn) {
-        for (let i = 1; i <= cartGlobal.total_page; i++) {
-          if (i === cartGlobal.active_page) {
+        for (let i = 1; i <= cart?.total_page; i++) {
+          if (i === cart?.active_page) {
             button.push(<button className="btn btn-active">{i}</button>);
           } else {
             button.push(
-              <button className="btn" onClick={() => handleChangePage(i)}>
+              <button className="btn" onClick={switchPage}>
                 {i}
               </button>
             );
@@ -56,27 +37,27 @@ function CartPagination() {
         }
       } else if (hiddenFirst && hiddenLast) {
         button.push(
-          <button className="btn btn-active">{cartGlobal.active_page}</button>
+          <button className="btn btn-active">{cart?.active_page}</button>
         );
       } else if (hiddenLast) {
-        for (let i = 1; i <= cartGlobal.active_page; i++) {
-          if (i === cartGlobal.active_page) {
+        for (let i = 1; i <= cart?.active_page; i++) {
+          if (i === cart?.active_page) {
             button.push(<button className="btn btn-active">{i}</button>);
           } else {
             button.push(
-              <button className="btn" onClick={() => handleChangePage(i)}>
+              <button className="btn" onClick={switchPage}>
                 {i}
               </button>
             );
           }
         }
       } else if (hiddenFirst) {
-        for (let i = cartGlobal.active_page; i <= cartGlobal.total_page; i++) {
-          if (i === cartGlobal.active_page) {
+        for (let i = cart?.active_page; i <= cart?.total_page; i++) {
+          if (i === cart?.active_page) {
             button.push(<button className="btn btn-active">{i}</button>);
           } else {
             button.push(
-              <button className="btn" onClick={() => handleChangePage(i)}>
+              <button className="btn" onClick={switchPage}>
                 {i}
               </button>
             );
@@ -88,11 +69,8 @@ function CartPagination() {
       return (
         <>
           {/* prev button*/}
-          {cartGlobal.active_page > 1 && (
-            <div
-              className="btn "
-              onClick={() => handleChangePage(cartGlobal.active_page - 1)}
-            >
+          {cart?.active_page > 1 && (
+            <div className="btn " onClick={prevPage}>
               <FiChevronLeft size={20} />
             </div>
           )}
@@ -100,7 +78,7 @@ function CartPagination() {
           {hiddenFirst ? (
             <>
               {/* first number */}
-              <button className="btn" onClick={() => handleChangePage(1)}>
+              <button className="btn" onClick={switchPage}>
                 1
               </button>
               {/* more btn */}
@@ -123,10 +101,9 @@ function CartPagination() {
                           }
                         />
                         <button
+                          value={changePage}
                           className="btn btn-sm"
-                          onClick={() => {
-                            handleChangePage(changePage);
-                          }}
+                          onClick={switchPageInput}
                         >
                           Go
                         </button>
@@ -164,10 +141,9 @@ function CartPagination() {
                           }
                         />
                         <button
+                          value={changePage}
                           className="btn btn-sm"
-                          onClick={() => {
-                            handleChangePage(changePage);
-                          }}
+                          onClick={switchPageInput}
                         >
                           Go
                         </button>
@@ -179,22 +155,19 @@ function CartPagination() {
               {/* last btn */}
               <button
                 className={
-                  cartGlobal.active_page === cartGlobal.total_page
+                  cart?.active_page === cart?.total_page
                     ? 'btn btn-active'
                     : 'btn'
                 }
-                onClick={() => handleChangePage(cartGlobal.total_page)}
+                onClick={switchPage}
               >
-                {cartGlobal.total_page}
+                {cart?.total_page}
               </button>
             </>
           ) : null}
           {/* next button */}
-          {cartGlobal.active_page < cartGlobal.total_page && (
-            <button
-              className="btn"
-              onClick={() => handleChangePage(cartGlobal.active_page + 1)}
-            >
+          {cart?.active_page < cart?.total_page && (
+            <button className="btn" onClick={nextPage}>
               <FiChevronRight size={20} />
             </button>
           )}
@@ -205,7 +178,7 @@ function CartPagination() {
 
   return (
     <div>
-      {cartGlobal.total_page > 1 && (
+      {cart?.total_page > 1 && (
         <div className="btn-group">{rendPagination()}</div>
       )}
     </div>
