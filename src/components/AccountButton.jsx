@@ -64,10 +64,10 @@ const AccountButton = ({ children }) => {
           leaveFrom="transform scale-100 opacity-100"
           leaveTo="transform scale-95 opacity-0"
         >
-          <Menu.Items as="div" className="rounded-lg absolute z-10 top-12 right-5 overflow-hidden focus:outline-none shadow-lg">
-            <MenuLink icon={<AiOutlineUser />} to="/user">
-              Profile
-            </MenuLink>
+          <Menu.Items
+            as="div"
+            className="rounded-lg absolute z-10 top-[5%] md:top-[6%] lg:top-[8%] 2xl:top-[10%] md:right-[8%] lg:right-[6%] 2xl:right-[12%] overflow-hidden focus:outline-none shadow-lg"
+          >
             <div className="w-full sm:hidden flex flex-col">
               <MenuLink icon={<FaShoppingBag />} to="/cart">
                 Cart
@@ -76,6 +76,9 @@ const AccountButton = ({ children }) => {
                 Notification
               </MenuLink>
             </div>
+            <MenuLink icon={<AiOutlineUser />} to="/user">
+              Profile
+            </MenuLink>
             <MenuLink icon={<FiLogOut />} logout>
               Logout
             </MenuLink>

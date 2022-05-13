@@ -26,12 +26,12 @@ const ProductDetailCarousel = ({ header, category, relatedProducts, navigate }) 
   };
 
   return (
-    <div className="w-screen flex flex-col items-center">
-      <div className="w-2/3 h-14 flex items-center gap-2 border-b cursor-default">
-        <span className="text-2xl font-bold text-slate-700">{header}</span>
-        {category && <span className="text-2xl font-bold text-sky-500">{category}</span>}
+    <div className="w-10/12 sm:w-11/12 lg:w-10/12 xl:w-2/3 flex flex-col items-center">
+      <div className="w-full py-2 flex items-center gap-2 border-b cursor-default text-xl md:text-2xl font-bold">
+        <span className=" text-slate-700">{header}</span>
+        {category && <span className="text-sky-500">{category}</span>}
       </div>
-      <div className="relative w-[70%]">
+      <div className="relative w-full">
         <button className="absolute z-20 top-44 -right-2 h-7 w-7 rounded-full bg-white ring-1 ring-blue-400 ring-offset-2 ring-inset cursor-pointer text-sm font-bold text-blue-400 transition-all flex justify-center items-center hover:-right-4 active:scale-95 hover:bg-sky-50 nextSlide">
           <BsChevronRight />
         </button>
@@ -40,8 +40,8 @@ const ProductDetailCarousel = ({ header, category, relatedProducts, navigate }) 
         </button>
 
         <Swiper
-          slidesPerView={4}
-          spaceBetween={5}
+          slidesPerView={2}
+          spaceBetween={20}
           pagination={{
             clickable: true,
             dynamicBullets: true,
@@ -52,7 +52,21 @@ const ProductDetailCarousel = ({ header, category, relatedProducts, navigate }) 
             disabledClass: 'text-gray-400 bg-gray-200 ring-gray-300 invisible',
           }}
           modules={[Pagination, Navigation]}
-          className="h-[370px] w-full"
+          breakpoints={{
+            640: {
+              slidesPerView: 3,
+              spaceBetween: 10,
+            },
+            768: {
+              slidesPerView: 4,
+              spaceBetween: 5,
+            },
+            1024: {
+              slidesPerView: 4,
+              spaceBetween: 10,
+            },
+          }}
+          className="h-[370px]"
         >
           {relatedProducts.map((product) => (
             <SwiperSlide key={product.id} className="flex items-center justify-center">
@@ -60,17 +74,17 @@ const ProductDetailCarousel = ({ header, category, relatedProducts, navigate }) 
                 onClick={() => {
                   navigate(`/product/${product.id}`);
                 }}
-                className="h-[330px] w-[220px] rounded-xl border border-slate-300 bg-white cursor-pointer shadow transition"
+                className="h-[89%] w-[220px] sm:w-full md:w-[97%] rounded-xl border border-slate-300 bg-white cursor-pointer shadow transition"
               >
                 <div className="w-full h-1/2 flex items-center justify-center">
-                  <div className="h-[140px] w-[140px] flex justify-center items-center border border-zinc-300 bg-white overflow-hidden rounded-lg">
+                  <div className="h-[140px] w-[140px] md:h-[120px] md:w-[120px] lg:h-[140px] lg:w-[140px] flex justify-center items-center border border-zinc-300 bg-white overflow-hidden rounded-lg">
                     <img src={product.image} className="h-full object-contain" />
                   </div>
                 </div>
                 <div className="w-full h-1/2 px-2">
                   <div className="w-full flex items-center">
-                    <span className="max-h-12 w-full text-slate-700 font-semibold hover:text-sky-500 transition cursor-pointer">
-                      {product.name.length > 32 ? product.name.slice(0, 32) + '...' : product.name}
+                    <span className="max-h-12 w-full text-slate-700 font-semibold hover:text-sky-500 transition cursor-pointer line-clamp-2">
+                      {product.name}
                     </span>
                   </div>
                   <div className="w-full flex flex-col">
@@ -118,7 +132,7 @@ const ProductDetailCarousel = ({ header, category, relatedProducts, navigate }) 
           <SwiperSlide className="flex justify-center items-center">
             <div
               onClick={() => navigate(`/products/${category}`)}
-              className="h-[330px] w-[220px] rounded-xl flex flex-col justify-center border bg-gradient-to-b from-sky-200 to-white cursor-pointer shadow relative"
+              className="h-[330px] w-[220px] sm:w-[200px] rounded-xl flex flex-col justify-center border bg-gradient-to-b from-sky-200 to-white cursor-pointer shadow relative"
             >
               <div className="w-full flex flex-col gap-1 px-6 text-xl font-bold absolute z-10">
                 <span className="text-sky-700">See</span>

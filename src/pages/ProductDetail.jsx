@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Axios from 'axios';
 import { API_URL } from '../assets/constants';
 
@@ -25,6 +25,7 @@ import ProductReview from '../components/ProductReview';
 const ProductDetail = () => {
   const params = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [productData, setProductData] = useState({});
   const [totalReviews, setTotalReviews] = useState(0);
   const [avgRating, setAvgRating] = useState(0);
@@ -39,17 +40,21 @@ const ProductDetail = () => {
   useEffect(() => {
     const fetchProductData = async () => {
       try {
-        const response = await Axios.get(`${API_URL}/product/find/${params.id}`);
+        const response = await Axios.post(`${API_URL}/product/find/${params.id}`, {
+          withRelated: true,
+          limit: 8,
+        });
 
-        setProductData(response.data);
-        setTotalReviews(response.data.totalReviews);
-        setAvgRating(response.data.avgRating);
+        setProductData(response.data.product);
+        setRelatedProducts(response.data.relatedProducts);
+        setTotalReviews(response.data.product.totalReviews);
+        setAvgRating(response.data.product.avgRating);
 
-        if (response.data.stock_in_unit) {
-          if (!response.data.stock) {
-            setQuantity(response.data.stock_in_unit);
+        if (response.data.product.stock_in_unit) {
+          if (!response.data.product.stock) {
+            setQuantity(response.data.product.stock_in_unit);
           } else {
-            setQuantity(response.data.volume);
+            setQuantity(response.data.product.volume);
           }
         }
       } catch (err) {
@@ -60,23 +65,6 @@ const ProductDetail = () => {
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [params.id]);
-
-  useEffect(() => {
-    const fetchRelatedProducts = async () => {
-      try {
-        const response = await Axios.post(`${API_URL}/product/query`, {
-          category: productData.category?.name,
-          limit: 8,
-          offset: 0,
-          exclude: productData?.id,
-        });
-        setRelatedProducts(response.data.products);
-      } catch (err) {
-        toast.error('Unable to fetch product carousel!', { position: 'bottom-left', theme: 'colored' });
-      }
-    };
-    fetchRelatedProducts();
-  }, [productData]);
 
   useEffect(() => {
     if (!quantity && productData.stock_in_unit) {
@@ -108,7 +96,9 @@ const ProductDetail = () => {
         } else {
           setCartLoading(false);
 
-          toast.success(response.data, { position: 'bottom-left', theme: 'colored' });
+          toast.success(response.data.message, { position: 'bottom-left', theme: 'colored' });
+
+          dispatch({ type: 'CART_TOTAL', payload: response.data.cartTotal });
 
           if (!productData.stock) {
             setQuantity(productData.stock_in_unit);
@@ -187,7 +177,7 @@ const ProductDetail = () => {
           <div className="w-full md:w-[40%] md:h-full flex flex-col md:justify-center md:pl-3">
             <div className="w-full flex flex-col">
               <div className="w-full h-8 md:h-12 flex items-center ">
-                <span className="text-lg md:text-xl font-bold text-sky-800">{productData.name}</span>
+                <span className="text-lg md:text-xl font-bold text-sky-800 line-clamp-2">{productData.name}</span>
               </div>
               <div className="w-full h-9 flex items-center">
                 <span className="text-xl leading-snug font-bold w-max bg-gradient-to-r from-emerald-600 to-sky-500 bg-clip-text text-transparent">
