@@ -66,7 +66,7 @@ const AccountButton = ({ children }) => {
         >
           <Menu.Items
             as="div"
-            className="rounded-lg absolute z-10 top-12 right-14 sm:right-16 lg:top-14 lg:right-10 xl:right-20 overflow-hidden focus:outline-none shadow-lg"
+            className="rounded-lg absolute z-10 top-[5%] md:top-[6%] lg:top-[8%] 2xl:top-[10%] md:right-[8%] lg:right-[6%] 2xl:right-[12%] overflow-hidden focus:outline-none shadow-lg"
           >
             <div className="w-full sm:hidden flex flex-col">
               <MenuLink icon={<FaShoppingBag />} to="/cart">

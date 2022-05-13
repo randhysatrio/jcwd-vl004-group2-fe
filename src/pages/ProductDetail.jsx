@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Axios from 'axios';
 import { API_URL } from '../assets/constants';
 
@@ -25,6 +25,7 @@ import ProductReview from '../components/ProductReview';
 const ProductDetail = () => {
   const params = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [productData, setProductData] = useState({});
   const [totalReviews, setTotalReviews] = useState(0);
   const [avgRating, setAvgRating] = useState(0);
@@ -95,7 +96,9 @@ const ProductDetail = () => {
         } else {
           setCartLoading(false);
 
-          toast.success(response.data, { position: 'bottom-left', theme: 'colored' });
+          toast.success(response.data.message, { position: 'bottom-left', theme: 'colored' });
+
+          dispatch({ type: 'CART_TOTAL', payload: response.data.cartTotal });
 
           if (!productData.stock) {
             setQuantity(productData.stock_in_unit);

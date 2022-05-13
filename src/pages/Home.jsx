@@ -39,7 +39,7 @@ function Home() {
       <Logos />
       <Features />
       <Categories />
-      <ProductGrid header={'New Arrivals'} productList={newArrivals} newarrivalBadge navigateBtn={'/products'} />
+      <ProductGrid header={'New Arrivals'} productList={newArrivals} newarrivalBadge navigateTo={'/products/all'} />
       <Footer />
     </>
   );

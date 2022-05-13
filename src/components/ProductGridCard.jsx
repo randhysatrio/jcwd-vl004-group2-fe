@@ -24,7 +24,7 @@ const ProductGridCard = ({ product, newarrival, bestseller }) => {
   };
 
   return (
-    <div className="h-[340px] w-56 flex flex-col justify-center items-center rounded-lg overflow-hidden border relative shadow-md group">
+    <div className="h-[340px] w-60 md:w-56 flex flex-col justify-center items-center rounded-lg overflow-hidden border relative shadow-md group">
       <div className="absolute z-2 inset-0 bg-gray-600 bg-opacity-0 group-hover:bg-opacity-30 group-hover:backdrop-blur-sm transition-all"></div>
       <div
         onClick={() => navigate(`/product/${product.id}`)}
