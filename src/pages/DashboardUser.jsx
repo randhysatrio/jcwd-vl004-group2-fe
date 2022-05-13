@@ -73,7 +73,10 @@ const Dashboard = () => {
       pagination.push(i);
     }
     return pagination.map((value) => {
-      return <AdminPagination key={value} pagination={value} setPage={setPage} />;
+      return (
+        // <AdminPagination key={value} pagination={value} setPage={setPage} />
+        <option key={value}>{value}</option>
+      );
     });
   };
 
@@ -173,7 +176,17 @@ const Dashboard = () => {
               <FaArrowLeft />
             </button>
             <div>
-              Page {page} of {maxPage}
+              Page{" "}
+              {/* eventhough the type is number the value of the option still could be a string make sure add +e.target.value */}
+              <select
+                type="number"
+                className="bg-gray-100"
+                value={page}
+                onChange={(e) => setPage(+e.target.value)}
+              >
+                {renderPages()}
+              </select>{" "}
+              of {maxPage}
             </div>
             <button onClick={nextPageHandler}>
               <FaArrowRight />

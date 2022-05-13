@@ -18,6 +18,7 @@ const DashboardTransaction = () => {
   const [startNumber, setStartNumber] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [currentSortDate, setCurrentSortDate] = useState('');
+  const [paymentProof, setPaymentProof] = useState("");
   const [startDate, setStartDate] = useState(format(startOfMonth(Date.now()), 'yyyy-MM-dd'));
   const [endDate, setEndDate] = useState(format(endOfMonth(Date.now()), 'yyyy-MM-dd'));
   const adminToken = localStorage.getItem('adminToken');
@@ -25,6 +26,8 @@ const DashboardTransaction = () => {
   const { search } = useLocation();
 
   const socket = useSelector((state) => state.socket.instance);
+
+  console.log(transactions);
 
   useEffect(() => {
     dispatch({ type: 'ALERT_CLEAR', payload: 'history' });

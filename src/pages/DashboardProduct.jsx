@@ -3,12 +3,9 @@ import { AiOutlineClose } from "react-icons/ai";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import axios from "axios";
-import ProductTable from "../components/ProductTable";
-import Pagination from "../components/Pagination";
 import Swal from "sweetalert2";
 import CategoryList from "../components/CategoryList";
 import { API_URL } from "../assets/constants";
-import AdminPagination from "../components/AdminPagination";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -21,6 +18,7 @@ const Dashboard = () => {
   const [page, setPage] = useState(1);
   const [maxPage, setMaxPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(0);
+  const [pagination, setPagination] = useState(0);
 
   const [searchParams] = useSearchParams();
   const { search } = useLocation();
@@ -67,14 +65,60 @@ const Dashboard = () => {
   const renderProducts = () => {
     const beginningIndex = (page - 1) * 5;
     const currentData = products.slice(beginningIndex, beginningIndex + 5);
-    return currentData.map((value) => {
+    return currentData.map((product, i) => {
       return (
-        <ProductTable
-          key={value.id}
-          product={value}
-          handleEditClick={handleEditClick}
-          handleDeleteClick={handleDeleteClick}
-        />
+        <tr className="text-sm border-b border-gray-200" key={product.id}>
+          <th>{beginningIndex + i + 1}</th>
+          <td className="justify-center items-center text-center p-4">
+            <img
+              src={`${API_URL}/${product.image}`}
+              className="w-40 aspect-[3/2] rounded-lg object-cover object-top border border-gray-200"
+            />
+          </td>
+          <td className="justify-center items-center text-center p-4">
+            {product.name}
+          </td>
+          <td className="justify-center items-center text-center p-4">
+            Rp. {product.price_buy?.toLocaleString("id")}
+          </td>
+          <td className="justify-center items-center text-center p-4">
+            Rp. {product?.price_sell.toLocaleString("id")}
+          </td>
+          <td className="justify-center items-center text-center p-4">
+            {product.stock?.toLocaleString("id")}
+          </td>
+          <td className="justify-center items-center text-center p-4">
+            {product.unit}
+          </td>
+          <td className="justify-center items-center text-center p-4">
+            {product.volume?.toLocaleString("id")}
+          </td>
+          <td className="justify-center items-center text-center p-4">
+            {product.stock_in_unit?.toLocaleString("id")}
+          </td>
+          <td className="justify-center items-center text-center p-4">
+            {product.appearance}
+          </td>
+          <td className="justify-center items-center text-center p-4">
+            {product.category?.name}
+          </td>
+          <td className="justify-center items-center text-center p-4">
+            <button
+              type="button"
+              className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl items-center mr-3"
+              onClick={(event) => handleEditClick(event, product)}
+            >
+              Edit
+            </button>
+            <button
+              type="button"
+              className="py-2.5 px-6 text-white bg-red-500 hover:bg-red-400 rounded-xl items-center"
+              onClick={() => handleDeleteClick(product.id)}
+            >
+              Delete
+            </button>
+          </td>
+        </tr>
       );
     });
   };
@@ -86,7 +130,8 @@ const Dashboard = () => {
     }
     return pagination.map((value) => {
       return (
-        <AdminPagination key={value} pagination={value} setPage={setPage} />
+        // <AdminPagination key={value} pagination={value} setPage={setPage} />
+        <option key={value}>{value}</option>
       );
     });
   };
@@ -201,7 +246,7 @@ const Dashboard = () => {
         <table className="w-full">
           <thead>
             <tr className="text-sm font-medium text-gray-700 border-b border-gray-200">
-              <th className="py-4 px-4 text-center">ID</th>
+              <th className="py-4 px-4 text-center">No</th>
               <th className="py-4 px-4 text-center">Image</th>
               <th className="py-4 px-4 text-center">Name</th>
               <th className="py-4 px-4 text-center">Price Buy</th>
@@ -225,14 +270,14 @@ const Dashboard = () => {
           </button>
           <div>
             Page{" "}
-            <input
+            <select
               type="number"
-              className="px-2 text-center focus:outline-none w-6 bg-gray-100"
+              className="bg-gray-100"
               value={page}
-              onChange={(e) =>
-                e.target.value <= maxPage && setPage(e.target.value)
-              }
-            />{" "}
+              onChange={(e) => setPage(+e.target.value)}
+            >
+              {renderPages()}
+            </select>{" "}
             of {maxPage}
           </div>
           <button onClick={nextPageHandler}>
