@@ -33,6 +33,7 @@ import Profile from './pages/Profile';
 import History from './pages/History';
 import Address from './pages/Address';
 import Messages from './pages/Messages';
+import NotFound from './pages/NotFound';
 
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -137,10 +138,7 @@ function App() {
         <Route path="/payment" element={<Payment />} />
         <Route path="/admin/login" element={<LoginAdmin />} />
         <Route path="/admin/reset" element={<ResetAdmin />} />
-        <Route
-          path="/admin/change-password/:token"
-          element={<ChangePassAdmin />}
-        />
+        <Route path="/admin/change-password/:token" element={<ChangePassAdmin />} />
         <Route path="/dashboard" element={<Dashboard />}>
           <Route index element={<HomeAdmin />} />
           <Route path="user" element={<DashboardUser />} />
@@ -152,6 +150,7 @@ function App() {
           <Route path="notification" element={<MessagesAdmin />} />
           <Route path="report" element={<DashboardReport />} />
         </Route>
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <ToastContainer />
     </BrowserRouter>

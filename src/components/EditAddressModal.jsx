@@ -10,7 +10,7 @@ import { AiOutlineClose, AiOutlineInfoCircle } from 'react-icons/ai';
 import { Dialog, Transition } from '@headlessui/react';
 import { toast } from 'react-toastify';
 
-const EditAddressModal = ({ openEdit, setOpenEdit, address, setAddresses, currentPage, setMaxPage }) => {
+const EditAddressModal = ({ openEdit, setOpenEdit, address, setAddress }) => {
   const formik = useFormik({
     initialValues: {
       address: address.address,
@@ -18,7 +18,6 @@ const EditAddressModal = ({ openEdit, setOpenEdit, address, setAddresses, curren
       province: address.province,
       country: address.country,
       postalcode: address.postalcode,
-      is_default: address.is_default,
     },
     enableReinitialize: true,
     validationSchema: Yup.object({
@@ -27,22 +26,19 @@ const EditAddressModal = ({ openEdit, setOpenEdit, address, setAddresses, curren
       province: Yup.string().required('This field is required'),
       country: Yup.string().required('This field is required'),
       postalcode: Yup.string().length(5, 'Invalid postal code').required('This field is required'),
-      is_default: Yup.boolean(),
     }),
     onSubmit: async (values) => {
       try {
         const response = await Axios.patch(
           `${API_URL}/address/edit/${address.id}`,
-          { values: { ...values, postalcode: parseInt(values.postalcode) }, userId: address.userId, limit: 10, currentPage },
+          { values: { ...values, postalcode: parseInt(values.postalcode) } },
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('userToken')}`,
             },
           }
         );
-
-        setAddresses(response.data.rows);
-        setMaxPage(Math.ceil(response.data.count / 10) || 1);
+        setAddress({ ...address, ...values });
         toast.success(response.data.message, { position: 'bottom-left', theme: 'colored' });
 
         setOpenEdit(false);
@@ -223,20 +219,6 @@ const EditAddressModal = ({ openEdit, setOpenEdit, address, setAddresses, curren
                     {formik.touched.country && formik.errors.country ? (
                       <span className="pl-4 text-xs text-rose-400">{formik.errors.country}</span>
                     ) : null}
-                  </div>
-                  <div className="w-full pt-1 pb-5 flex justify-center items-center gap-2">
-                    <input
-                      id="is_default"
-                      type="checkbox"
-                      checked={formik.values.is_default}
-                      value={formik.values.is_default}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      className="accent-emerald-400 rounded-lg"
-                    />
-                    <label htmlFor="is_default" className="text-sky-500 font-bold cursor-pointer">
-                      Set as Default
-                    </label>
                   </div>
                   <div className="flex justify-center">
                     <button

@@ -81,8 +81,8 @@ const ProductCardAll = ({ view, product }) => {
           <div className="w-full h-3/5 flex flex-col pb-2 px-2">
             <div onClick={() => navigate(`/product/${product.id}`)} className="w-full h-[80%] flex flex-col">
               <span className="text-sm font-light text-slate-400">{product.category.name}</span>
-              <div className="w-full h-12 flex items-center break-words overflow-hidden">
-                <span className="text-base text-slate-800 font-semibold hover:text-sky-500 transition line-clamp-1">{product.name}</span>
+              <div className="w-full flex items-center">
+                <span className="text-base text-slate-800 font-semibold hover:text-sky-500 transition line-clamp-2">{product.name}</span>
               </div>
               <div className="w-full flex items-center">
                 <span className="text-lg font-bold w-max bg-gradient-to-r from-emerald-500 to-emerald-700 bg-clip-text text-transparent">

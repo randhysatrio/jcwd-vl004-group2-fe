@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import Axios from 'axios';
 import { API_URL } from '../assets/constants';
 
@@ -10,7 +10,18 @@ import { Dialog } from '@headlessui/react';
 import { toast } from 'react-toastify';
 import EditAddressModal from './EditAddressModal';
 
-const AddressEditButton = ({ id, setOpenDelete, setOpenEdit, setAddresses, currentPage, setMaxPage, is_default }) => {
+const AddressMenuButton = ({
+  id,
+  setOpenDelete,
+  setOpenEdit,
+  setAddresses,
+  currentPage,
+  setCurrentPage,
+  setMaxPage,
+  limit,
+  is_default,
+  setTotalAddress,
+}) => {
   return (
     <Menu as="div" className="relative">
       <Menu.Button className="h-6 w-6 rounded-full focus:outline-none hover:bg-gray-200 flex justify-center items-center text-sky-400 transition">
@@ -34,10 +45,10 @@ const AddressEditButton = ({ id, setOpenDelete, setOpenEdit, setAddresses, curre
                   onClick={async () => {
                     try {
                       const response = await Axios.patch(
-                        `${API_URL}/address/update/${id}`,
+                        `${API_URL}/address/default/${id}`,
                         {
-                          limit: 10,
-                          currentPage: currentPage,
+                          limit,
+                          currentPage,
                         },
                         {
                           headers: {
@@ -47,7 +58,10 @@ const AddressEditButton = ({ id, setOpenDelete, setOpenEdit, setAddresses, curre
                       );
 
                       setAddresses(response.data.rows);
-                      setMaxPage(Math.ceil(response.data.count / 10) || 1);
+                      setMaxPage(response.data.maxPage);
+                      setTotalAddress(response.data.count);
+                      setCurrentPage(1);
+
                       toast.success('Changed this address as your default!', { position: 'bottom-left', theme: 'colored' });
                     } catch (err) {
                       toast.error('Unable to update default address!', { position: 'bottom-left', theme: 'colored' });
@@ -104,7 +118,7 @@ const AddressEditButton = ({ id, setOpenDelete, setOpenEdit, setAddresses, curre
   );
 };
 
-const DeleteAddressModal = ({ id, setAddresses, openDelete, setOpenDelete, currentPage, setMaxPage }) => {
+const DeleteAddressModal = ({ id, setAddresses, openDelete, setOpenDelete, currentPage, setMaxPage, limit, setTotalAddress }) => {
   return (
     <>
       <Transition appear show={openDelete}>
@@ -147,8 +161,8 @@ const DeleteAddressModal = ({ id, setAddresses, openDelete, setOpenDelete, curre
                       const response = await Axios.post(
                         `${API_URL}/address/delete/${id}`,
                         {
-                          limit: 10,
-                          currentPage: currentPage,
+                          limit,
+                          currentPage,
                         },
                         {
                           headers: {
@@ -158,9 +172,10 @@ const DeleteAddressModal = ({ id, setAddresses, openDelete, setOpenDelete, curre
                       );
 
                       setAddresses(response.data.rows);
-                      setMaxPage(Math.ceil(response.data.count / 10) || 1);
-                      toast.success(response.data.message, { theme: 'colored', position: 'bottom-left' });
+                      setMaxPage(response.data.maxPage);
+                      setTotalAddress(response.data.count);
 
+                      toast.success(response.data.message, { theme: 'colored', position: 'bottom-left' });
                       setOpenDelete(false);
                     } catch (error) {
                       toast.error('Unable to delete address!', { theme: 'colored', position: 'bottom-left' });
@@ -179,9 +194,14 @@ const DeleteAddressModal = ({ id, setAddresses, openDelete, setOpenDelete, curre
   );
 };
 
-const AddressCard = ({ address, setAddresses, currentPage, setMaxPage }) => {
+const AddressCard = ({ addressData, setAddresses, currentPage, setCurrentPage, setMaxPage, limit, setTotalAddress, totalAddress }) => {
+  const [address, setAddress] = useState(addressData);
   const [openDelete, setOpenDelete] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
+
+  useEffect(() => {
+    setAddress(addressData);
+  }, [addressData]);
 
   return (
     <div
@@ -225,17 +245,21 @@ const AddressCard = ({ address, setAddresses, currentPage, setMaxPage }) => {
           <span className="text-slate-700 font-semibold">{address.postalcode}</span>
         </div>
         <div className="absolute top-0 -right-3">
-          <AddressEditButton
+          <AddressMenuButton
             id={address.id}
             setOpenDelete={setOpenDelete}
             setOpenEdit={setOpenEdit}
             setAddresses={setAddresses}
             is_default={address.is_default}
             currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
             setMaxPage={setMaxPage}
+            limit={limit}
+            setTotalAddress={setTotalAddress}
+            totalAddress={totalAddress}
           />
         </div>
-        <div className="absolute invisible">
+        <div className="hidden">
           <DeleteAddressModal
             id={address.id}
             openDelete={openDelete}
@@ -243,15 +267,11 @@ const AddressCard = ({ address, setAddresses, currentPage, setMaxPage }) => {
             setAddresses={setAddresses}
             currentPage={currentPage}
             setMaxPage={setMaxPage}
+            limit={limit}
+            setTotalAddress={setTotalAddress}
+            totalAddress={totalAddress}
           />
-          <EditAddressModal
-            openEdit={openEdit}
-            setOpenEdit={setOpenEdit}
-            address={address}
-            setAddresses={setAddresses}
-            currentPage={currentPage}
-            setMaxPage={setMaxPage}
-          />
+          <EditAddressModal openEdit={openEdit} setOpenEdit={setOpenEdit} address={address} setAddress={setAddress} />
         </div>
       </div>
     </div>

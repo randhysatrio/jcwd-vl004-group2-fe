@@ -11,7 +11,7 @@ import { MdOutlineAddLocationAlt } from 'react-icons/md';
 import { Dialog, Transition } from '@headlessui/react';
 import { toast } from 'react-toastify';
 
-const NewAddressModal = ({ setAddresses, setMaxPage }) => {
+const NewAddressModal = ({ setAddresses, setMaxPage, setCurrentPage, currentPage, limit, setTotalAddress, totalAddress }) => {
   const [open, setOpen] = useState(false);
 
   const formik = useFormik({
@@ -21,7 +21,7 @@ const NewAddressModal = ({ setAddresses, setMaxPage }) => {
       province: '',
       country: '',
       postalcode: '',
-      is_default: false,
+      is_default: true,
     },
     validationSchema: Yup.object({
       address: Yup.string().required('This field is required'),
@@ -35,7 +35,7 @@ const NewAddressModal = ({ setAddresses, setMaxPage }) => {
       try {
         const response = await Axios.post(
           `${API_URL}/address/add`,
-          { ...values, postalcode: parseInt(values.postalcode) },
+          { data: { ...values, postalcode: parseInt(values.postalcode) }, limit, currentPage },
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('userToken')}`,
@@ -44,11 +44,16 @@ const NewAddressModal = ({ setAddresses, setMaxPage }) => {
         );
 
         setAddresses(response.data.rows);
-        setMaxPage(Math.ceil(response.data.count / 10) || 1);
-        resetForm();
-        toast.success(response.data.message, { position: 'bottom-left', theme: 'colored' });
+        setMaxPage(response.data.maxPage);
+        setTotalAddress(response.data.count);
+
+        if (values.is_default) {
+          setCurrentPage(1);
+        }
 
         setOpen(false);
+        resetForm();
+        toast.success(response.data.message, { position: 'bottom-left', theme: 'colored' });
       } catch (error) {
         toast.error('Unable to add address!', { position: 'bottom-left', theme: 'colored' });
       }
@@ -174,7 +179,7 @@ const NewAddressModal = ({ setAddresses, setMaxPage }) => {
                             }  placeholder:text-slate-300 transition`}
                           />
                           {formik.touched.postalcode && formik.errors.postalcode ? (
-                            <AiOutlineInfoCircle className="absolute top-[10px] right-3 text-rose-300" />
+                            <AiOutlineInfoCircle className="absolute top-[10px] right-2 text-rose-300" />
                           ) : null}
                         </div>
                       </div>
@@ -239,8 +244,8 @@ const NewAddressModal = ({ setAddresses, setMaxPage }) => {
                     <input
                       id="is_default"
                       type="checkbox"
+                      disabled={totalAddress < 1}
                       checked={formik.values.is_default}
-                      value={formik.values.is_default}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       className="accent-emerald-400 rounded-lg"

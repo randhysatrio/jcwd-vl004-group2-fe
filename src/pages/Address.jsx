@@ -2,16 +2,18 @@ import { useState, useEffect } from 'react';
 import Axios from 'axios';
 import { API_URL } from '../assets/constants';
 
-import { FaMapMarkerAlt } from 'react-icons/fa';
-import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import AddressCard from '../components/AddressCard';
 import NewAddressModal from '../components/NewAddressModal';
+import { FaMapMarkerAlt } from 'react-icons/fa';
+import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 
 const Address = () => {
   const [addresses, setAddresses] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [maxPage, setMaxPage] = useState(1);
+  const [totalAddress, setTotalAddress] = useState(0);
+  const limit = 6;
 
   useEffect(() => {
     const fetchAddresses = async () => {
@@ -21,7 +23,7 @@ const Address = () => {
         const response = await Axios.post(
           `${API_URL}/address/find`,
           {
-            limit: 10,
+            limit,
             currentPage,
           },
           {
@@ -32,7 +34,10 @@ const Address = () => {
         );
 
         setAddresses(response.data.rows);
-        setMaxPage(Math.ceil(response.data.count / 10) || 1);
+        setMaxPage(response.data.maxPage);
+        setTotalAddress(response.data.count);
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } catch (err) {
         toast.error('Unable to fetch addresses!');
       }
@@ -40,9 +45,25 @@ const Address = () => {
     fetchAddresses();
   }, [currentPage]);
 
+  useEffect(() => {
+    if (totalAddress <= limit * currentPage - limit) {
+      setCurrentPage(currentPage - 1 || 1);
+    }
+  }, [totalAddress]);
+
   const renderAddresses = () => {
     return addresses.map((address) => (
-      <AddressCard key={address.id} address={address} setAddresses={setAddresses} currentPage={currentPage} setMaxPage={setMaxPage} />
+      <AddressCard
+        key={address.id}
+        addressData={address}
+        setAddresses={setAddresses}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        setMaxPage={setMaxPage}
+        limit={limit}
+        totalAddress={totalAddress}
+        setTotalAddress={setTotalAddress}
+      />
     ));
   };
 
@@ -55,7 +76,15 @@ const Address = () => {
               <FaMapMarkerAlt className="text-emerald-300" />
               <span className="font-semibold bg-gradient-to-r from-emerald-300 to-sky-400 bg-clip-text text-transparent">My Addresses</span>
             </div>
-            <NewAddressModal setAddresses={setAddresses} setMaxPage={setMaxPage} />
+            <NewAddressModal
+              setAddresses={setAddresses}
+              setMaxPage={setMaxPage}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+              limit={limit}
+              totalAddress={totalAddress}
+              setTotalAddress={setTotalAddress}
+            />
           </div>
           <div className="w-full h-[1px] my-2 bg-gray-200" />
         </div>
@@ -68,7 +97,7 @@ const Address = () => {
             </div>
           )}
         </div>
-        {addresses.length > 10 ? (
+        {totalAddress > limit ? (
           <div className="flex items-center justify-center gap-3 mt-5">
             <button
               onClick={() => {

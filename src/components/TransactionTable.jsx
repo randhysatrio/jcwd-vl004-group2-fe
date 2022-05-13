@@ -118,7 +118,7 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
         </td>
         <td>{item.deliveryoption.name}</td>
         <td>{item.notes}</td>
-        <td>{format(new Date(item.createdAt), 'ee/MM/yyyy')}</td>
+        <td>{format(new Date(item.createdAt), 'dd/MM/yyyy')}</td>
         <td>
           <label
             htmlFor={`detail-modal-${item.id}`}

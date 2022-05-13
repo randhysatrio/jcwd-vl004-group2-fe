@@ -98,9 +98,9 @@ const Navbar = () => {
           <div className="flex items-center sm:space-x-2 md:space-x-3 lg:space-x-6">
             <NavbarLink path={'/'}>Home</NavbarLink>
             <NavbarLink path={'/products/all'}>Shop</NavbarLink>
-            <NavbarLink path={'/products/all'}>Blog</NavbarLink>
-            <NavbarLink path={'/'}>About Us</NavbarLink>
-            <NavbarLink path={'/'}>Contact Us</NavbarLink>
+            <NavbarLink path={'/blog'}>Blog</NavbarLink>
+            <NavbarLink path={'/about'}>About Us</NavbarLink>
+            <NavbarLink path={'/contact'}>Contact Us</NavbarLink>
           </div>
         </div>
 
