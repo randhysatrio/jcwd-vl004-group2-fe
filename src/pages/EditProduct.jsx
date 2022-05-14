@@ -17,10 +17,11 @@ const EditProduct = () => {
   const [priceBuy, setPriceBuy] = useState("");
   const [priceSell, setPriceSell] = useState("");
   const [newStock, setNewStock] = useState("");
+  const [unit, setUnit] = useState("");
   const [newUnit, setNewUnit] = useState("");
   const [newVolume, setNewVolume] = useState("");
   const [stockInUnit, setStockInUnit] = useState("");
-  const [newAppearance, setAppearance] = useState("");
+  const [newAppearance, setNewAppearance] = useState("");
 
   const { id } = useParams();
 
@@ -29,10 +30,13 @@ const EditProduct = () => {
     setImage(res.data.product.image);
     setProducts(res.data.product);
     setCategory(res.data.product.categoryId);
+    setUnit(res.data.product.unit);
+    setNewAppearance(res.data.product.appearance);
   };
 
   console.log(category);
-  console.log(newUnit);
+  console.log(unit);
+  console.log(newAppearance);
 
   const fetchCategories = async () => {
     const res = await axios.get(`${API_URL}/category/all`);
@@ -55,7 +59,7 @@ const EditProduct = () => {
   const price_buy = useRef();
   const price_sell = useRef();
   const stock = useRef();
-  const unit = useRef();
+  // const unit = useRef();
   const volume = useRef();
   const description = useRef();
   const appearance = useRef();
@@ -72,7 +76,7 @@ const EditProduct = () => {
       unit: newUnit,
       volume: volume.current.value,
       description: description.current.value,
-      appearance: appearance.current.value,
+      appearance: newAppearance,
       categoryId: parseInt(categoryId.current.value),
     };
 
@@ -141,7 +145,7 @@ const EditProduct = () => {
               <input
                 type="file"
                 name="image"
-                // required
+                required
                 onChange={onBtAddFile}
                 accept="image/*"
               />
@@ -194,9 +198,10 @@ const EditProduct = () => {
                   id="ml"
                   className="mr-3"
                   value="ml"
-                  onChange={(e) => setNewUnit(e.target.value)}
+                  checked={unit === "ml" ? "checked" : ""}
+                  onChange={(e) => setUnit(e.target.value)}
+                  onClick={() => setUnit("ml")}
                   required
-                  ref={unit}
                 />
                 <label for="ml">ml</label>
               </div>
@@ -207,9 +212,10 @@ const EditProduct = () => {
                   id="g"
                   className="mr-3"
                   value="g"
-                  onChange={(e) => setNewUnit(e.target.value)}
+                  checked={unit === "g" ? "checked" : ""}
+                  onChange={(e) => setUnit(e.target.value)}
+                  onClick={() => setUnit("g")}
                   required
-                  ref={unit}
                 />
                 <label for="g">g</label>
               </div>
@@ -243,15 +249,49 @@ const EditProduct = () => {
             <div className="col-start-1">
               <label className="">Appearance:</label>
             </div>
-            <div>
-              <input
-                type="text"
-                name="appearance"
-                className="input input-bordered w-full h-8 max-w-xs pr-10 focus:outline-none focus:bg-white"
-                required
-                defaultValue={products.appearance}
-                ref={appearance}
-              />
+            <div className="flex justify-between">
+              <div>
+                <input
+                  type="radio"
+                  name="appearance"
+                  id="Crystal"
+                  className="mr-3"
+                  value="Crystal"
+                  checked={newAppearance === "Crystal" ? "checked" : ""}
+                  onChange={(e) => setNewAppearance(e.target.value)}
+                  onClick={() => setNewAppearance("Crystal")}
+                  required
+                />
+                <label for="Crystal">Crystal</label>
+              </div>
+              <div>
+                <input
+                  type="radio"
+                  name="appearance"
+                  id="Powder"
+                  className="mr-3"
+                  value="Powder"
+                  checked={newAppearance === "Powder" ? "checked" : ""}
+                  onChange={(e) => setNewAppearance(e.target.value)}
+                  onClick={() => setNewAppearance("Powder")}
+                  required
+                />
+                <label for="Powder">Powder</label>
+              </div>
+              <div>
+                <input
+                  type="radio"
+                  name="appearance"
+                  id="Liquid"
+                  className="mr-3"
+                  value="Liquid"
+                  checked={newAppearance === "Liquid" ? "checked" : ""}
+                  onChange={(e) => setNewAppearance(e.target.value)}
+                  onClick={() => setNewAppearance("Liquid")}
+                  required
+                />
+                <label for="Liquid">Liquid</label>
+              </div>
             </div>
             <div className="col-start-1">
               <label className="">Category:</label>

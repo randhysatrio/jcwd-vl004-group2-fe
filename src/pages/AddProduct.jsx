@@ -195,7 +195,7 @@ const AddProduct = () => {
             <div className="col-start-1">
               <label className="">Unit:</label>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-around">
               <div>
                 <input
                   type="radio"
@@ -250,15 +250,43 @@ const AddProduct = () => {
             <div className="col-start-1">
               <label className="">Appearance:</label>
             </div>
-            <div>
-              <input
-                type="text"
-                name="appearance"
-                className="input input-bordered w-full h-8 max-w-xs pr-10 focus:outline-none focus:bg-white"
-                placeholder="What does it look like?"
-                required
-                onChange={handleAddFormChange}
-              />
+            <div className="flex justify-between">
+              <div>
+                <input
+                  type="radio"
+                  name="appearance"
+                  id="Crystal"
+                  className="mr-3"
+                  value="Crystal"
+                  onChange={handleAddFormChange}
+                  required
+                />
+                <label for="Crystal">Crystal</label>
+              </div>
+              <div>
+                <input
+                  type="radio"
+                  name="appearance"
+                  id="Powder"
+                  className="mr-3"
+                  value="Powder"
+                  onChange={handleAddFormChange}
+                  required
+                />
+                <label for="Powder">Powder</label>
+              </div>
+              <div>
+                <input
+                  type="radio"
+                  name="appearance"
+                  id="Liquid"
+                  className="mr-3"
+                  value="Liquid"
+                  onChange={handleAddFormChange}
+                  required
+                />
+                <label for="Liquid">Liquid</label>
+              </div>
             </div>
             <div className="col-start-1">
               <label className="">Category:</label>
