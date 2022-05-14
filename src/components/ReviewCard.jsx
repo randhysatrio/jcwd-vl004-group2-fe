@@ -36,7 +36,7 @@ const ReviewCard = ({ data, userId, setTotalReviews, setAvgRating, setReviews, s
     }
 
     for (let i = 0; i < stars; i++) {
-      renderedStars.push(<AiFillStar />);
+      renderedStars.push(<AiFillStar key={i} />);
     }
 
     return renderedStars;

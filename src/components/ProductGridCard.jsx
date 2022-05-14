@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '../assets/constants';
 
 import { FaSearch } from 'react-icons/fa';
 import { AiFillStar, AiFillFire, AiOutlineCheckCircle, AiOutlineCloseCircle } from 'react-icons/ai';
@@ -33,7 +34,7 @@ const ProductGridCard = ({ product, newarrival, bestseller }) => {
         <FaSearch className="hover:brightness-125 transition" />
       </div>
       <div className="w-full h-1/2 flex justify-center items-center bg-white border-b">
-        <img src={product.image} className="h-full object-contain" />
+        <img src={`${API_URL}/${product.image}`} className="h-full object-contain" />
       </div>
       <div className="w-full h-1/2 bg-gray-50">
         <div className="pt-1 px-3 flex items-center">

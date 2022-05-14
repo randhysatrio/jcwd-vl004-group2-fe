@@ -1,11 +1,12 @@
+import { API_URL } from '../assets/constants';
+
+import { AiFillStar, AiFillFire, AiOutlineCloseCircle, AiOutlineArrowRight, AiOutlineCheckCircle } from 'react-icons/ai';
+import { BsChevronRight, BsChevronLeft } from 'react-icons/bs';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Navigation } from 'swiper';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
-
-import { AiFillStar, AiFillFire, AiOutlineCloseCircle, AiOutlineArrowRight, AiOutlineCheckCircle } from 'react-icons/ai';
-import { BsChevronRight, BsChevronLeft } from 'react-icons/bs';
 
 const ProductDetailCarousel = ({ header, category, relatedProducts, navigate }) => {
   const renderStars = (score) => {
@@ -19,7 +20,7 @@ const ProductDetailCarousel = ({ header, category, relatedProducts, navigate }) 
     }
 
     for (let i = 0; i < stars; i++) {
-      renderedStars.push(<AiFillStar />);
+      renderedStars.push(<AiFillStar key={i} />);
     }
 
     return renderedStars;
@@ -78,7 +79,7 @@ const ProductDetailCarousel = ({ header, category, relatedProducts, navigate }) 
               >
                 <div className="w-full h-1/2 flex items-center justify-center">
                   <div className="h-[140px] w-[140px] md:h-[120px] md:w-[120px] lg:h-[140px] lg:w-[140px] flex justify-center items-center border border-zinc-300 bg-white overflow-hidden rounded-lg">
-                    <img src={product.image} className="h-full object-contain" />
+                    <img src={`${API_URL}/${product.image}`} className="h-full object-contain" />
                   </div>
                 </div>
                 <div className="w-full h-1/2 px-2">

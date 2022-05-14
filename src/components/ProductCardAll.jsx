@@ -63,7 +63,7 @@ const ProductCardAll = ({ view, product }) => {
     }
 
     for (let i = 0; i < stars; i++) {
-      renderedStars.push(<AiFillStar />);
+      renderedStars.push(<AiFillStar key={i} />);
     }
 
     return renderedStars;
@@ -75,7 +75,7 @@ const ProductCardAll = ({ view, product }) => {
         <div className="w-[232px] h-[360px] m-2 border hover:bg-zinc-100 rounded-md flex flex-col cursor-pointer">
           <div onClick={() => navigate(`/product/${product.id}`)} className="w-full h-2/5 flex justify-center items-center">
             <div className="w-32 h-32 flex justify-center items-center rounded-lg border border-slate-300 overflow-hidden bg-white">
-              <img src={product.image} className="w-full hover:scale-105 object-contain transition" />
+              <img src={`${API_URL}/${product.image}`} className="w-full hover:scale-105 object-contain transition" />
             </div>
           </div>
           <div className="w-full h-3/5 flex flex-col pb-2 px-2">
@@ -147,7 +147,7 @@ const ProductCardAll = ({ view, product }) => {
         <div className="w-full h-60 flex border-b mb-1 border-slate-300 cursor-pointer">
           <div onClick={() => navigate(`/product/${product.id}`)} className="w-[30%] h-full flex justify-center items-center p-4">
             <div className="w-52 h-52 bg-white border rounded-lg overflow-hidden flex shadow justify-center items-center cursor-pointer">
-              <img src={product.image} className="w-full object-contain hover:scale-110 transition" />
+              <img src={`${API_URL}/${product.image}`} alt={product.name} className="w-full object-contain hover:scale-110 transition" />
             </div>
           </div>
           <div onClick={() => navigate(`/product/${product.id}`)} className="w-[45%] h-full flex flex-col pt-4">

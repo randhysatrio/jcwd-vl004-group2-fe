@@ -81,17 +81,14 @@ function CartCard({ item, setCart, page, handCheck, isLoading, setIsLoading }) {
       });
 
       if (result.isConfirmed) {
-        const response = await axios.delete(
-          `${API_URL}/cart/delete/${item.id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${userToken}`,
-            },
-            params: {
-              page,
-            },
-          }
-        );
+        const response = await axios.delete(`${API_URL}/cart/delete/${item.id}`, {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+          params: {
+            page,
+          },
+        });
 
         setCart(response.data);
         dispatch({
@@ -119,22 +116,14 @@ function CartCard({ item, setCart, page, handCheck, isLoading, setIsLoading }) {
   return (
     <div className="grid grid-cols-12 grid-flow-col border-gray-300 border rounded-md py-2 px-3">
       <div className="col-span-7">
-        <input
-          id={`checked-${item.id}`}
-          type="checkbox"
-          onChange={handCheck}
-          checked={item.isChecked}
-          className="checkbox"
-        />
+        <input id={`checked-${item.id}`} type="checkbox" onChange={handCheck} checked={item.isChecked} className="checkbox" />
         <div className="flex p-1">
-          <img src={item.product.image} className="h-36" alt="cart product" />
+          <img src={`${API_URL}/${item.product.image}`} className="h-36" alt="cart product" />
           <div className="flex flex-col justify-center pl-4">
             <span className="font-bold text-lg pb-2">{item.product.name}</span>
             <div>
               <span>price : </span>
-              <span className="text-red-400 font-bold">
-                {toIDR(item.product.price_sell)}
-              </span>
+              <span className="text-red-400 font-bold">{toIDR(item.product.price_sell)}</span>
               <span> / {item.product.unit}</span>
             </div>
             <div>
@@ -161,26 +150,14 @@ function CartCard({ item, setCart, page, handCheck, isLoading, setIsLoading }) {
             value={quantity}
             type="text"
             className="w-20 h-10 m-0 focus:outline-none border-y border-primary text-center"
-            onChange={(e) =>
-              !e.target.value
-                ? setQuantity(null)
-                : setQuantity(parseInt(e.target.value))
-            }
+            onChange={(e) => (!e.target.value ? setQuantity(null) : setQuantity(parseInt(e.target.value)))}
             disabled={isLoading}
           />
           <button
             className={`border border-primary w-10 h-10 flex justify-center items-center text-primary bg-sky-50 hover:bg-sky-100 ${
-              item.quantity === item.product.stock_in_unit
-                ? 'hover:cursor-not-allowed'
-                : null
+              item.quantity === item.product.stock_in_unit ? 'hover:cursor-not-allowed' : null
             }`}
-            onClick={() =>
-              setQuantity(
-                item.quantity === 1
-                  ? item.product.volume
-                  : item.quantity + item.product.volume
-              )
-            }
+            onClick={() => setQuantity(item.quantity === 1 ? item.product.volume : item.quantity + item.product.volume)}
             disabled={item.quantity === item.product.stock_in_unit || isLoading}
           >
             <FiPlus />
@@ -190,16 +167,9 @@ function CartCard({ item, setCart, page, handCheck, isLoading, setIsLoading }) {
       <div className="col-span-2 flex justify-around items-center">
         <div className="flex flex-col justify-center flex-wrap items-center">
           <span>Total Price</span>
-          <span className="text-red-400 font-bold text-lg">
-            {toIDR(item.quantity * item.product.price_sell)}
-          </span>
+          <span className="text-red-400 font-bold text-lg">{toIDR(item.quantity * item.product.price_sell)}</span>
         </div>
-        <FiTrash2
-          size={24}
-          className="hover:cursor-pointer"
-          onClick={deleteItem}
-          disabled={isLoading}
-        />
+        <FiTrash2 size={24} className="hover:cursor-pointer" onClick={deleteItem} disabled={isLoading} />
       </div>
     </div>
   );

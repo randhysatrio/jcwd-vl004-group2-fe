@@ -145,7 +145,7 @@ function App() {
           <Route path="admin" element={<DashboardAdmin />} />
           <Route path="product" element={<DashboardProduct />} />
           <Route path="product/addproduct" element={<AddProduct />} />
-          <Route path="product/editproduct" element={<EditProduct />} />
+          <Route path="product/editproduct/:id" element={<EditProduct />} />
           <Route path="transaction" element={<DashboardTransaction />} />
           <Route path="notification" element={<MessagesAdmin />} />
           <Route path="report" element={<DashboardReport />} />

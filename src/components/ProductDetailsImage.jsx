@@ -1,5 +1,6 @@
 import { useState, Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
+import { API_URL } from '../assets/constants';
 
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 
@@ -12,7 +13,7 @@ const ProductDetailsImage = ({ img, name }) => {
         onClick={() => setOpen(true)}
         className="h-[50%] w-[50%] md:w-[80%] md:h-[80%] flex justify-center items-center bg-gray-100 border overflow-hidden rounded-lg cursor-zoom-in group"
       >
-        <img src={img} className="h-full object-contain group-hover:scale-110 transition" />
+        <img src={`${API_URL}/${img}`} className="h-full object-contain group-hover:scale-110 transition" />
       </div>
 
       <Transition as={Fragment} appear show={open}>
@@ -50,7 +51,7 @@ const ProductDetailsImage = ({ img, name }) => {
                 <AiOutlineCloseCircle className="text-2xl group-active:scale-90 transition" />
               </button>
               <div className="h-[540px] w-max rounded-md border overflow-hidden">
-                <img src={img} className="h-full w-full object-contain" />
+                <img src={`${API_URL}/${img}`} className="h-full w-full object-contain" />
               </div>
               <div className="w-full py-3 flex justify-center items-center">
                 <span className="text-lg font-bold text-slate-700">{name}</span>
