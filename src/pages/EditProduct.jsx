@@ -259,13 +259,13 @@ const EditProduct = () => {
             {/* <DropdownCategories /> */}
             <select
               name="categoryId"
-              ref={categoryId}
-              // defaultValue={products.categoryId}
-              value={category}
+              required
+              defaultChecked={products.categoryId}
               onChange={(e) => setCategory(e.target.value)}
             >
-              {categories.map((item) => (
-                <option value={item.id} key={item?.id}>
+              <option value="">Choose a category</option>
+              {categories.map((item, index) => (
+                <option ref={categoryId} value={item.id} key={index}>
                   {item.name}
                 </option>
               ))}
@@ -279,7 +279,8 @@ const EditProduct = () => {
               className="mt-8 py-2.5 px-6 text-white bg-red-500 hover:bg-red-400 transition rounded-xl items-center"
               onClick={() => navigate(-1)}
             >
-              <a href="http://localhost:3000/dashboard/product">Cancel</a>
+              {/* <a href="http://localhost:3000/dashboard/product">Cancel</a> */}
+              Cancel
             </div>
           </div>
         </form>

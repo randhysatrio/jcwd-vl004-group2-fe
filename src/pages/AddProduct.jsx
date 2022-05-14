@@ -264,7 +264,7 @@ const AddProduct = () => {
               <label className="">Category:</label>
             </div>
             {/* <DropdownCategories /> */}
-            <select name="categoryId" id="">
+            <select name="categoryId" id="" required>
               <option value="">Choose a category</option>
               {categories.map((item, index) => (
                 <option ref={categoryId} value={item.id} key={index}>
