@@ -170,7 +170,7 @@ const AddProduct = () => {
                   type="number"
                   name="price_buy"
                   className="input input-bordered w-full h-8 max-w-xs pr-10 focus:outline-none focus:bg-white"
-                  placeholder="0.000.000"
+                  placeholder="000"
                   required
                   onChange={handleAddFormChange}
                 />
@@ -187,7 +187,7 @@ const AddProduct = () => {
                   name="price_sell"
                   className="input input-bordered w-full h-8 max-w-xs pr-10 focus:outline-none focus:bg-white"
                   required
-                  placeholder="0.000.000"
+                  placeholder="000"
                   onChange={handleAddFormChange}
                 />
               </div>
@@ -218,7 +218,7 @@ const AddProduct = () => {
                   required
                   onChange={handleAddFormChange}
                 />
-                <label for="unit">g</label>
+                <label for="g">g</label>
               </div>
             </div>
             <div className="col-start-1">
@@ -264,10 +264,10 @@ const AddProduct = () => {
               <label className="">Category:</label>
             </div>
             {/* <DropdownCategories /> */}
-            <select name="categoryId" id="" required>
+            <select name="categoryId" id="" required ref={categoryId}>
               <option value="">Choose a category</option>
               {categories.map((item, index) => (
-                <option ref={categoryId} value={item.id} key={index}>
+                <option value={item.id} key={index}>
                   {item.name}
                 </option>
               ))}
@@ -277,12 +277,13 @@ const AddProduct = () => {
             <button className="mt-8 py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl items-center mr-3">
               Add Product
             </button>
-            <button
-              className="mt-8 py-2.5 px-6 text-white bg-red-500 hover:bg-red-400 transition rounded-xl items-center"
+            <div
+              className="mt-8 py-2.5 px-6 text-white bg-red-500 cursor-pointer hover:bg-red-400 transition rounded-xl items-center"
               onClick={() => navigate(-1)}
             >
-              <a href="http://localhost:3000/dashboard/product">Cancel</a>
-            </button>
+              {/* <a href="http://localhost:3000/dashboard/product">Cancel</a> */}
+              Cancel
+            </div>
           </div>
         </form>
       </div>

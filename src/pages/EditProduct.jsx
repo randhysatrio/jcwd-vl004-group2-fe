@@ -31,6 +31,9 @@ const EditProduct = () => {
     setCategory(res.data.product.categoryId);
   };
 
+  console.log(category);
+  console.log(newUnit);
+
   const fetchCategories = async () => {
     const res = await axios.get(`${API_URL}/category/all`);
     setCategories(res.data);
@@ -66,7 +69,7 @@ const EditProduct = () => {
       price_buy: parseInt(price_buy.current.value),
       price_sell: parseInt(price_sell.current.value),
       stock: parseInt(stock.current.value),
-      unit: unit.current.value,
+      unit: newUnit,
       volume: volume.current.value,
       description: description.current.value,
       appearance: appearance.current.value,
@@ -188,15 +191,14 @@ const EditProduct = () => {
                 <input
                   type="radio"
                   name="unit"
+                  id="ml"
                   className="mr-3"
                   value="ml"
+                  onChange={(e) => setNewUnit(e.target.value)}
                   required
-                  defaultValue={products.unit}
                   ref={unit}
                 />
-                <label required for="ml">
-                  ml
-                </label>
+                <label for="ml">ml</label>
               </div>
               <div>
                 <input
@@ -205,13 +207,11 @@ const EditProduct = () => {
                   id="g"
                   className="mr-3"
                   value="g"
+                  onChange={(e) => setNewUnit(e.target.value)}
                   required
-                  defaultValue={products.unit}
                   ref={unit}
                 />
-                <label required for="unit">
-                  g
-                </label>
+                <label for="g">g</label>
               </div>
             </div>
             <div className="col-start-1">
@@ -260,12 +260,13 @@ const EditProduct = () => {
             <select
               name="categoryId"
               required
-              defaultChecked={products.categoryId}
+              ref={categoryId}
+              value={category}
               onChange={(e) => setCategory(e.target.value)}
             >
               <option value="">Choose a category</option>
               {categories.map((item, index) => (
-                <option ref={categoryId} value={item.id} key={index}>
+                <option value={item.id} key={index}>
                   {item.name}
                 </option>
               ))}
@@ -276,7 +277,7 @@ const EditProduct = () => {
               Edit Product
             </button>
             <div
-              className="mt-8 py-2.5 px-6 text-white bg-red-500 hover:bg-red-400 transition rounded-xl items-center"
+              className="mt-8 py-2.5 px-6 text-white bg-red-500 cursor-pointer hover:bg-red-400 transition rounded-xl items-center"
               onClick={() => navigate(-1)}
             >
               {/* <a href="http://localhost:3000/dashboard/product">Cancel</a> */}
