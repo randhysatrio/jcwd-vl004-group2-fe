@@ -30,7 +30,7 @@ const DashboardTransaction = () => {
   useEffect(() => {
     const getTransaction = async () => {
       try {
-        if ((activePage > totalPage && search) || activePage < 1) {
+        if (activePage > totalPage || activePage < 1) {
           return;
         }
 
@@ -140,7 +140,7 @@ const DashboardTransaction = () => {
             <button
               className={activePage === 1 ? `hover:cursor-not-allowed` : `hover:cursor-pointer`}
               disabled={activePage === 1}
-              onClick={() => activePage > 1 && setActivePage(activePage - 1)}
+              onClick={() => setActivePage(activePage - 1)}
             >
               <FaArrowLeft />
             </button>
@@ -157,7 +157,7 @@ const DashboardTransaction = () => {
             <button
               className={activePage === totalPage ? `hover:cursor-not-allowed` : `hover:cursor-pointer`}
               disabled={activePage === totalPage}
-              onClick={() => activePage < totalPage && setActivePage(activePage + 1)}
+              onClick={() => setActivePage(activePage + 1)}
             >
               <FaArrowRight />
             </button>

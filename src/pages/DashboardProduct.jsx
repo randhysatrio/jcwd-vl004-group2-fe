@@ -1,21 +1,21 @@
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import { AiOutlineClose } from "react-icons/ai";
-import { useState, useEffect, useRef } from "react";
-import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
-import axios from "axios";
-import ProductTable from "../components/ProductTable";
-import Pagination from "../components/Pagination";
-import Swal from "sweetalert2";
-import CategoryList from "../components/CategoryList";
-import { API_URL } from "../assets/constants";
-import AdminPagination from "../components/AdminPagination";
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { AiOutlineClose } from 'react-icons/ai';
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
+import axios from 'axios';
+import ProductTable from '../components/ProductTable';
+import Pagination from '../components/Pagination';
+import Swal from 'sweetalert2';
+import CategoryList from '../components/CategoryList';
+import { API_URL } from '../assets/constants';
+import AdminPagination from '../components/AdminPagination';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [currentCategory, setCurrentCategory] = useState("");
-  const [currentSortPrice, setCurrentSortPrice] = useState("");
+  const [currentCategory, setCurrentCategory] = useState('');
+  const [currentSortPrice, setCurrentSortPrice] = useState('');
   // const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [maxPage, setMaxPage] = useState(0);
@@ -34,7 +34,7 @@ const Dashboard = () => {
       const productList = await axios.post(`${API_URL}/product/query`, {
         category: currentCategory,
         sort: currentSortPrice,
-        keyword: searchParams.get("keyword"),
+        keyword: searchParams.get('keyword'),
       });
       const categoryList = await axios.get(`${API_URL}/category/all`);
       setCategories(categoryList.data);
@@ -52,14 +52,7 @@ const Dashboard = () => {
     const beginningIndex = (page - 1) * 5;
     const currentData = products.slice(beginningIndex, beginningIndex + 5);
     return currentData.map((value) => {
-      return (
-        <ProductTable
-          key={value.id}
-          product={value}
-          handleEditClick={handleEditClick}
-          handleDeleteClick={handleDeleteClick}
-        />
-      );
+      return <ProductTable key={value.id} product={value} handleEditClick={handleEditClick} handleDeleteClick={handleDeleteClick} />;
     });
   };
 
@@ -69,15 +62,12 @@ const Dashboard = () => {
       pagination.push(i);
     }
     return pagination.map((value) => {
-      return (
-        <AdminPagination key={value} pagination={value} setPage={setPage} />
-      );
+      return <AdminPagination key={value} pagination={value} setPage={setPage} />;
     });
   };
 
-  const handleEditClick = async (event, value) => {
-    const id = value.id;
-    navigate(`editproduct/?${id}`);
+  const handleEditClick = (id) => {
+    navigate(`editproduct/${id}`);
   };
 
   const handleAddProduct = async (event, value) => {
@@ -86,22 +76,22 @@ const Dashboard = () => {
 
   const handleDeleteClick = (id) => {
     Swal.fire({
-      title: "Are you sure?",
+      title: 'Are you sure?',
       text: "You won't be able to revert this!",
-      icon: "warning",
+      icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+    }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          axios.delete(`${API_URL}/product/delete/${id}`);
+          await axios.delete(`${API_URL}/product/delete/${id}`);
+          Swal.fire('Deleted!', 'Your file has been deleted.', 'success');
+          fetchProducts();
         } catch (error) {
           console.log(error);
         }
-        Swal.fire("Deleted!", "Your file has been deleted.", "success");
-        fetchProducts();
       }
     });
   };
@@ -150,10 +140,7 @@ const Dashboard = () => {
               <option value="price_sell,DESC">Highest Price</option>
             </select>
           </div>
-          <button
-            className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl"
-            onClick={handleAddProduct}
-          >
+          <button className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl" onClick={handleAddProduct}>
             Add a Product
           </button>
         </div>

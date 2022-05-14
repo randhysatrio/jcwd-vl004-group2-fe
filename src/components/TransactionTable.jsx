@@ -84,7 +84,7 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
     return item.invoiceitems.map((item) => {
       return (
         <div key={item.id} className="flex gap-3 border-b mb-2 py-2">
-          <img src={item.product.image} className="h-24" alt="cart product" />
+          <img src={`${API_URL}/${item.product.image}`} className="h-24" alt="cart product" />
           <div className="flex flex-col py-1">
             <h2 className="text-sm font-semibold mb-2">{item.product.name}</h2>
             <div className="flex gap-4">
@@ -118,7 +118,7 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
         </td>
         <td>{item.deliveryoption.name}</td>
         <td>{item.notes}</td>
-        <td>{format(new Date(item.createdAt), 'ee/MM/yyyy')}</td>
+        <td>{format(new Date(item.createdAt), 'dd/MM/yyyy')}</td>
         <td>
           <label
             htmlFor={`detail-modal-${item.id}`}

@@ -63,18 +63,16 @@ const MessagesModal = ({ message, currentPage, limit, setMessages, setMaxPage, s
             <span
               className={`text-md md:text-sm lg:text-lg ${
                 isRead ? 'font-semibold text-gray-400' : 'font-bold'
-              } text-zinc-700 hover:text-sky-400 hover:text-opacity-70 transition`}
+              } text-zinc-700 hover:text-sky-400 hover:text-opacity-70 transition line-clamp-1`}
             >
-              {message.header?.length > 35 ? message.header.slice(0, 35) + '...' : message.header}
+              {message.header}
             </span>
-            <span className="text-xs lg:text-sm text-gray-500 text-opacity-70">
-              {message.content?.length > 43 ? message.content?.replace('|', ' ').slice(0, 43) + '..' : message.content?.replace('|', ' ')}
-            </span>
+            <span className="text-xs lg:text-sm text-gray-500 text-opacity-70 line-clamp-1">{message.content?.replace('|', ' ')}</span>
           </div>
-          <div className="h-full w-[28%] flex flex-col justify-center">
+          <div className="h-full w-[28%] flex flex-col justify-center pr-2">
             <span className="text-sm text-gray-500 text-opacity-70 leading-none">From:</span>
-            <span className="text-sm md:text-xs lg:text-base font-bold text-gray-600">
-              {message.to === 'user' ? 'Heizen Berg Admin Te..' : `ID#${message.userId} (${message.user?.name})`}
+            <span className="text-sm md:text-xs lg:text-base font-bold text-gray-600 line-clamp-1">
+              {message.to === 'user' ? 'Heizen Berg Admin Team' : `ID #${message.userId} (${message.user?.name})`}
             </span>
           </div>
           <div className="w-[17%] h-full flex flex-col justify-center">
@@ -148,8 +146,8 @@ const MessagesModal = ({ message, currentPage, limit, setMessages, setMaxPage, s
                   <div className="flex items-center justify-between">
                     <div className="flex items-center text-sm">
                       <IoIosSend className="text-emerald-300" />:
-                      <span className="text-gray-800 font-semibold mr-auto">
-                        {message.to === 'user' ? 'Heizen Berg Co.' : `ID#${message.userId} (${message.user?.name})`}
+                      <span className="text-gray-800 font-semibold ml-1">
+                        {message.to === 'user' ? 'Heizen Berg Admin Team' : `ID #${message.userId} (${message.user?.name})`}
                       </span>
                     </div>
                     <span className="text-sm text-gray-600 font-semibold mt-auto">{format(new Date(message.createdAt), 'PPPp')}</span>

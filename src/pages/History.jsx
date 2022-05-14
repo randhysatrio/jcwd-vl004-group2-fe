@@ -18,7 +18,7 @@ const History = () => {
   const [invoices, setInvoices] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [maxPage, setMaxPage] = useState(0);
-
+  const [totalData, setTotalData] = useState(0);
   const [view, setView] = useState('all');
   const [ranges, setRanges] = useState([
     {
@@ -28,6 +28,7 @@ const History = () => {
     },
   ]);
   const [selectedDates, setSelectedDates] = useState({});
+  const limit = 7;
 
   useEffect(() => {
     dispatch({
@@ -42,8 +43,8 @@ const History = () => {
         }
 
         const query = {
-          limit: 10,
-          page: currentPage,
+          limit,
+          currentPage,
         };
 
         if (view !== 'all') {
@@ -61,7 +62,10 @@ const History = () => {
         });
 
         setInvoices(response.data.invoices);
-        setMaxPage(Math.ceil(response.data.count / 10) || 1);
+        setMaxPage(response.data.maxPage);
+        setTotalData(response.data.count);
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } catch (err) {
         toast.error('Unable to fetch Invoices!');
       }
@@ -86,7 +90,10 @@ const History = () => {
         <div className="h-10 bg-gradient-to-r bg-gray-50 flex justify-end items-center gap-4 px-8">
           <div className="relative">
             <div
-              onClick={() => setView('all')}
+              onClick={() => {
+                setCurrentPage(1);
+                setView('all');
+              }}
               className={`font-semibold before:absolute before:top-[24px] before:left-[50%] before:h-[2px] before:bg-emerald-500  before:transition-all after:absolute after:top-[24px] after:right-[50%] after:h-[2px] after:bg-emerald-500 after:transition-all cursor-pointer ${
                 view === 'all' ? 'before:w-[50%] after:w-[50%] text-sky-500' : 'before:w-0 after:w-0 text-emerald-600'
               }`}
@@ -96,7 +103,10 @@ const History = () => {
           </div>
           <div className="relative">
             <div
-              onClick={() => setView('approved')}
+              onClick={() => {
+                setCurrentPage(1);
+                setView('approved');
+              }}
               className={`font-semibold  before:absolute before:top-[24px] before:left-[50%] before:h-[2px] before:bg-emerald-500  before:transition-all after:absolute after:top-[24px] after:right-[50%] after:h-[2px] after:bg-emerald-500 after:transition-all cursor-pointer ${
                 view === 'approved' ? 'before:w-[50%] after:w-[50%] text-sky-500' : 'before:w-0 after:w-0 text-emerald-600'
               }`}
@@ -106,7 +116,10 @@ const History = () => {
           </div>
           <div className="relative">
             <div
-              onClick={() => setView('pending')}
+              onClick={() => {
+                setView('pending');
+                setCurrentPage(1);
+              }}
               className={`font-semibold  before:absolute before:top-[24px] before:left-[50%] before:h-[2px] before:bg-emerald-500  before:transition-all after:absolute after:top-[24px] after:right-[50%] after:h-[2px] after:bg-emerald-500 after:transition-all cursor-pointer ${
                 view === 'pending' ? 'before:w-[50%] after:w-[50%] text-sky-500' : 'before:w-0 after:w-0 text-emerald-600'
               }`}
@@ -116,7 +129,10 @@ const History = () => {
           </div>
           <div className="relative">
             <div
-              onClick={() => setView('rejected')}
+              onClick={() => {
+                setCurrentPage(1);
+                setView('rejected');
+              }}
               className={`font-semibold  before:absolute before:top-[24px] before:left-[50%] before:h-[2px] before:bg-emerald-500  before:transition-all after:absolute after:top-[24px] after:right-[50%] after:h-[2px] after:bg-emerald-500 after:transition-all cursor-pointer ${
                 view === 'rejected' ? 'before:w-[50%] after:w-[50%] text-sky-500' : 'before:w-0 after:w-0 text-emerald-600'
               }`}
@@ -201,7 +217,7 @@ const History = () => {
               </span>
             </div>
           )}
-          {invoices.length > 10 ? (
+          {totalData > limit ? (
             <div className="h-10 w-full px-3 flex items-center justify-end">
               <div className="flex items-center gap-2">
                 <button

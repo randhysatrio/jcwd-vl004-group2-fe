@@ -4,7 +4,7 @@ import service from '../assets/images/service-hours.svg';
 
 const FeatureCard = ({ header, text, img }) => {
   return (
-    <div className="border border-primary rounded-lg px-6 py-4 md:px-10 lg:px-10 lg:py-10 xl:px-14 flex justify-center items-center gap-5">
+    <div className="border border-primary rounded-lg px-6 py-4 md:px-10 lg:px-12 lg:py-10 xl:px-14 flex justify-center items-center gap-5">
       <img src={img} className="w-12 h-12 object-contain" />
       <div>
         <h4 className="font-medium capitalize text-lg">{header}</h4>

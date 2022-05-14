@@ -17,7 +17,7 @@ const Messages = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [maxPage, setMaxPage] = useState(0);
   const [totalMsg, setTotalMsg] = useState(0);
-  const limit = 8;
+  const limit = 7;
 
   useEffect(() => {
     dispatch({
@@ -56,6 +56,12 @@ const Messages = () => {
       }
     };
   }, [userGlobal, currentPage, keyword]);
+
+  useEffect(() => {
+    if (totalMsg <= currentPage * limit - limit) {
+      setCurrentPage(currentPage - 1 || 1);
+    }
+  }, [totalMsg]);
 
   const renderMessages = () => {
     return messages?.map((message) => (
@@ -130,32 +136,42 @@ const Messages = () => {
             <SearchBar />
           </div>
         </div>
-        <div className="w-full flex flex-col items-center py-7 gap-6 mb-auto">{renderMessages()}</div>
-        <div className="w-full h-10 flex justify-end items-center gap-2 border-t px-5">
-          <span className="text-sm text-gray-400 italic">
-            Showing {currentPage * limit - limit + 1} to {currentPage * limit - limit + messages.length} from {totalMsg}
-          </span>
-          <div className="flex items-center gap-1">
-            <button
-              disabled={currentPage === 1}
-              onClick={() => {
-                setCurrentPage(currentPage - 1);
-              }}
-              className="hover:text-sky-500 disabled:text-gray-300 active:scale-95 disabled:active:scale-100 transition"
-            >
-              <FiChevronLeft />
-            </button>
-            <button
-              disabled={currentPage === maxPage}
-              onClick={() => {
-                setCurrentPage(currentPage + 1);
-              }}
-              className="hover:text-sky-500 disabled:text-gray-300 active:scale-95 disabled:active:scale-100 transition"
-            >
-              <FiChevronRight />
-            </button>
-          </div>
+        <div className="w-full flex flex-col items-center py-7 gap-6 mb-auto">
+          {messages.length ? (
+            renderMessages()
+          ) : (
+            <div className="w-full h-[400px] flex justify-center items-center">
+              <span className="text-2xl md:text-3xl lg:text-4xl font-thin text-gray-700">You don't have any notifications</span>
+            </div>
+          )}
         </div>
+        {messages.length ? (
+          <div className="w-full h-10 flex justify-end items-center gap-2 border-t px-5">
+            <span className="text-sm text-gray-400 italic">
+              Showing {currentPage * limit - limit + 1} to {currentPage * limit - limit + messages.length} from {totalMsg}
+            </span>
+            <div className="flex items-center gap-1">
+              <button
+                disabled={currentPage === 1}
+                onClick={() => {
+                  setCurrentPage(currentPage - 1);
+                }}
+                className="hover:text-sky-500 disabled:text-gray-300 active:scale-95 disabled:active:scale-100 transition"
+              >
+                <FiChevronLeft />
+              </button>
+              <button
+                disabled={currentPage === maxPage}
+                onClick={() => {
+                  setCurrentPage(currentPage + 1);
+                }}
+                className="hover:text-sky-500 disabled:text-gray-300 active:scale-95 disabled:active:scale-100 transition"
+              >
+                <FiChevronRight />
+              </button>
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   );
