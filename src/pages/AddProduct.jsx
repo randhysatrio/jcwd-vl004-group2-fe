@@ -10,9 +10,9 @@ import {
 } from "react-icons/fa";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
-
 import { useNavigate } from "react-router-dom";
 import { API_URL } from "../assets/constants";
+import "../assets/styles/Currency.css";
 
 const AddProduct = () => {
   // useState([]) is different from useState({})
@@ -67,6 +67,7 @@ const AddProduct = () => {
   };
 
   const handleAddFormSubmit = async (event) => {
+    event.preventDefault();
     const formData = new FormData();
     const newProduct = {
       name: addFormData.name,
@@ -81,7 +82,9 @@ const AddProduct = () => {
     };
     formData.append("productData", JSON.stringify(newProduct));
     formData.append("image", images);
+
     console.log(newProduct);
+
     try {
       await axios.post(`${API_URL}/product/add`, formData);
       navigate("/dashboard/product");
@@ -108,148 +111,180 @@ const AddProduct = () => {
 
   return (
     <div className="w-full min-h-screen bg-gray-100">
-      <h1 className="text-3xl text-gray-700 font-bold py-3">Add a Product</h1>
-      <div>
-        <div className="grid grid-cols-6 gap-4 justify-items-star">
-          <div>
-            {/* form always submit */}
-            <label className="mr-3">Name:</label>
-          </div>
-          <div className="col-start-2 col-span-3">
-            <textarea
-              type="text"
-              name="name"
-              className="h-32 w-5/6"
-              required
-              onChange={handleAddFormChange}
-            />
-          </div>
-          <div className="col-start-1">
-            <label className="">Description:</label>
-          </div>
-          <div className="col-start-2 col-span-3">
-            <textarea
-              type="text"
-              name="description"
-              className="h-32 w-5/6"
-              required
-              onChange={handleAddFormChange}
-            />
-          </div>
-          <div className="col-start-1">
-            <label className="">Image:</label>
-          </div>
-          <div className="col-start-2 col-span-3">
-            <input
-              type="file"
-              name="image"
-              required
-              onChange={onBtAddFile}
-              accept="image/*"
-            />
-          </div>
-          <div className="col-start-2">
-            <img id="imgpreview" />
-          </div>
-          <div className="col-start-1">
-            <label className="mr-3">Price Buy:</label>
-          </div>
-          <div className="col-start-2 col-span-3">
-            <input
-              type="number"
-              name="price_buy"
-              className=""
-              required
-              onChange={handleAddFormChange}
-            />
-          </div>
-          <div className="col-start-1">
-            <label className="">Price Sell:</label>
-          </div>
-          <div className="col-start-2 col-span-3">
-            <input
-              type="number"
-              name="price_sell"
-              className=""
-              required
-              onChange={handleAddFormChange}
-            />
-          </div>
-          <div className="col-start-1">
-            <label className="">Unit:</label>
-          </div>
-          <div>
-            <input
-              type="text"
-              name="unit"
-              className=""
-              required
-              onChange={handleAddFormChange}
-            />
-          </div>
-          <div className="col-start-1">
-            <label className="">Volume:</label>
-          </div>
-          <div>
-            <input
-              type="number"
-              name="volume"
-              className=""
-              required
-              onChange={handleAddFormChange}
-            />
-          </div>
-          <div className="col-start-1">
-            <label className="">Stock:</label>
-          </div>
-          <div>
-            <input
-              type="number"
-              name="stock"
-              className=""
-              required
-              onChange={handleAddFormChange}
-            />
-          </div>
-          <div className="col-start-1">
-            <label className="">Appearance:</label>
-          </div>
-          <div>
-            <input
-              type="text"
-              name="appearance"
-              className=""
-              required
-              onChange={handleAddFormChange}
-            />
-          </div>
-          <div className="col-start-1">
-            <label className="">Category:</label>
-          </div>
-          {/* <DropdownCategories /> */}
-          <select name="categoryId" id="">
-            <option value="">Choose a category</option>
-            {categories.map((item, index) => (
-              <option ref={categoryId} value={item.id} key={index}>
-                {item.name}
-              </option>
-            ))}
-          </select>
+      <div className="flex items-center justify-between py-7 px-10">
+        <div>
+          <h1 className="text-3xl text-gray-700 font-bold">Add a Product</h1>
         </div>
-        <div className="flex">
-          <button
-            className="mt-8 py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl items-center mr-3"
-            onClick={handleAddFormSubmit}
-          >
-            Add Product
-          </button>
-          <button
-            className="mt-8 py-2.5 px-6 text-white bg-red-500 hover:bg-red-400 transition rounded-xl items-center"
-            onClick={() => navigate(-1)}
-          >
-            Cancel
-          </button>
-        </div>
+      </div>
+      <div className="bg-white shadow-sm p-8 px-10">
+        <form onSubmit={handleAddFormSubmit}>
+          <div className="grid grid-cols-6 gap-4 justify-items-star">
+            <div>
+              <label className="mr-3">Name:</label>
+            </div>
+            <div className="col-start-2 col-span-3">
+              <textarea
+                type="text"
+                name="name"
+                className="h-16 input input-bordered w-full max-w-xs pr-10 focus:outline-none focus:bg-white"
+                required
+                placeholder="Product Name"
+                onChange={handleAddFormChange}
+              />
+            </div>
+            <div className="col-start-1">
+              <label className="">Description:</label>
+            </div>
+            <div className="col-start-2 col-span-3">
+              <textarea
+                type="text"
+                name="description"
+                className="h-32 w-5/6 input input-bordered max-w-xs pr-10 focus:outline-none focus:bg-white"
+                required
+                placeholder="What makes this product valuable?"
+                onChange={handleAddFormChange}
+              />
+            </div>
+            <div className="col-start-1">
+              <label className="">Image:</label>
+            </div>
+            <div className="col-start-2 col-span-3">
+              <input
+                type="file"
+                name="image"
+                required
+                onChange={onBtAddFile}
+                accept="image/*"
+              />
+            </div>
+            <div className="col-start-2">
+              <img id="imgpreview" />
+            </div>
+            <div className="col-start-1">
+              <label className="mr-3">Price Buy:</label>
+            </div>
+            <div className="col-start-2 col-span-3">
+              <div className="flex">
+                <span class="currencyinput">Rp</span>
+                <input
+                  type="number"
+                  name="price_buy"
+                  className="input input-bordered w-full h-8 max-w-xs pr-10 focus:outline-none focus:bg-white"
+                  placeholder="0.000.000"
+                  required
+                  onChange={handleAddFormChange}
+                />
+              </div>
+            </div>
+            <div className="col-start-1">
+              <label className="">Price Sell:</label>
+            </div>
+            <div className="col-start-2 col-span-3">
+              <div className="flex">
+                <span class="currencyinput">Rp</span>
+                <input
+                  type="number"
+                  name="price_sell"
+                  className="input input-bordered w-full h-8 max-w-xs pr-10 focus:outline-none focus:bg-white"
+                  required
+                  placeholder="0.000.000"
+                  onChange={handleAddFormChange}
+                />
+              </div>
+            </div>
+            <div className="col-start-1">
+              <label className="">Unit:</label>
+            </div>
+            <div className="flex justify-between">
+              <div>
+                <input
+                  type="radio"
+                  name="unit"
+                  id="ml"
+                  className="mr-3"
+                  value="ml"
+                  required
+                  onChange={handleAddFormChange}
+                />
+                <label for="ml">ml</label>
+              </div>
+              <div>
+                <input
+                  type="radio"
+                  name="unit"
+                  id="g"
+                  className="mr-3"
+                  value="g"
+                  required
+                  onChange={handleAddFormChange}
+                />
+                <label for="unit">g</label>
+              </div>
+            </div>
+            <div className="col-start-1">
+              <label className="">Volume:</label>
+            </div>
+            <div>
+              <input
+                type="number"
+                name="volume"
+                className="input input-bordered w-full h-8 max-w-xs pr-10 focus:outline-none focus:bg-white"
+                placeholder="000"
+                required
+                onChange={handleAddFormChange}
+              />
+            </div>
+            <div className="col-start-1">
+              <label className="">Stock:</label>
+            </div>
+            <div>
+              <input
+                type="number"
+                name="stock"
+                className="input input-bordered w-full h-8 max-w-xs pr-10 focus:outline-none focus:bg-white"
+                placeholder="000"
+                required
+                onChange={handleAddFormChange}
+              />
+            </div>
+            <div className="col-start-1">
+              <label className="">Appearance:</label>
+            </div>
+            <div>
+              <input
+                type="text"
+                name="appearance"
+                className="input input-bordered w-full h-8 max-w-xs pr-10 focus:outline-none focus:bg-white"
+                placeholder="What does it look like?"
+                required
+                onChange={handleAddFormChange}
+              />
+            </div>
+            <div className="col-start-1">
+              <label className="">Category:</label>
+            </div>
+            {/* <DropdownCategories /> */}
+            <select name="categoryId" id="">
+              <option value="">Choose a category</option>
+              {categories.map((item, index) => (
+                <option ref={categoryId} value={item.id} key={index}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="flex">
+            <button className="mt-8 py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl items-center mr-3">
+              Add Product
+            </button>
+            <button
+              className="mt-8 py-2.5 px-6 text-white bg-red-500 hover:bg-red-400 transition rounded-xl items-center"
+              onClick={() => navigate(-1)}
+            >
+              <a href="http://localhost:3000/dashboard/product">Cancel</a>
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
