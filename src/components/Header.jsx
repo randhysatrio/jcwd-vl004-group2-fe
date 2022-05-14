@@ -19,7 +19,7 @@ const Header = () => {
   return (
     // header
     <header className="py-2 lg:py-4 shadow-sm bg-gray-50">
-      <div className="px-3 xl:container flex items-center justify-around lg:justify-between">
+      <div className="px-3 lg:px-1 xl:container flex items-center justify-around xl:justify-between">
         <h1
           onClick={() => navigate('/')}
           className="hidden md:block text-lg font-bold text-slate-600 hover:brightness-110 transition cursor-pointer"
@@ -36,7 +36,7 @@ const Header = () => {
             setKeyword('');
           }}
         >
-          <div className="w-[400px] sm:w-[350px] md:w-[400px] lg:w-[500px] relative flex">
+          <div className="w-[350px] md:w-[400px] lg:w-[500px] relative flex">
             <span className="absolute left-4 top-3 text-lg text-gray-400">
               <FaSearch className="lg:mt-1" />
             </span>

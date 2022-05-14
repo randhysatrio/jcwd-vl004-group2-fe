@@ -161,7 +161,7 @@ const ProductCardAll = ({ view, product }) => {
                 </div>
               ) : null}
             </div>
-            <div className="w-full overflow-hidden leading-none">
+            <div className="w-full overflow-hidden leading-none line-clamp-3">
               <span className="text-xs">{product.description}</span>
             </div>
           </div>

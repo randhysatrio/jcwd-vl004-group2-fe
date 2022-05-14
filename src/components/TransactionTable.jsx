@@ -9,6 +9,7 @@ import { FaSearchPlus } from 'react-icons/fa';
 
 const TransactionTable = ({ item, startNumber, i, socket }) => {
   const adminToken = localStorage.getItem('adminToken');
+  const [status, setStatus] = useState(item.status);
   const [enabled, setEnabled] = useState(item.status === 'pending');
   const [loadingApp, setLoadingApp] = useState(false);
   const [loadingRej, setLoadingRej] = useState(false);
@@ -36,6 +37,7 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
             }
           );
           setEnabled(false);
+          setStatus('approved');
           socket.emit('userNotif', response.data.userId);
           Swal.fire('Updated!', response.data.message, 'success');
           setLoadingApp(false);
@@ -70,6 +72,7 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
           );
 
           setEnabled(false);
+          setStatus('rejected');
           socket.emit('userNotif', response.data.userId);
           Swal.fire('Updated!', response.data.message, 'success');
           setLoadingRej(false);
@@ -130,11 +133,11 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
         </td>
         <td>
           <div
-            className={`badge p-3 ${item.status === 'pending' && 'badge-warning'} ${item.status === 'approved' && 'badge-success'} ${
-              item.status === 'rejected' && 'badge-error'
+            className={`badge p-3 ${status === 'pending' && 'badge-warning'} ${status === 'approved' && 'badge-success'} ${
+              status === 'rejected' && 'badge-error'
             } gap-2 `}
           >
-            {item.status}
+            {status}
           </div>
         </td>
         <td className="flex gap-3 items-center text-center ">

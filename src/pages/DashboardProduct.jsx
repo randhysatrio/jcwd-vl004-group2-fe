@@ -46,6 +46,7 @@ const Dashboard = () => {
     };
     fetchData();
     // dependency uses state outside useEffect
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentCategory, currentSortPrice, search]);
 
   const renderProducts = () => {

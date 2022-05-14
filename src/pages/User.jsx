@@ -63,7 +63,7 @@ const User = () => {
     <>
       <Header />
       <div className="min-h-screen w-full flex justify-end relative">
-        <div className="hidden md:flex py-2 flex-col md:w-[25vw] xl:w-1/5 min-h-full bg-gradient-to-t from-white to-sky-100 shadow-r">
+        <div className="hidden md:flex py-2 flex-col w-[22vw] xl:w-1/5 min-h-full bg-gradient-to-t from-white to-sky-100 shadow-r">
           <SidebarLink to={'/user'} icon={<AiOutlineUser />} end>
             Profile
           </SidebarLink>
@@ -77,7 +77,7 @@ const User = () => {
             Notifications
           </SidebarLink>
         </div>
-        <div className="w-full md:w-[75vw] xl:w-5/6 min-h-full">
+        <div className="w-full md:w-[78vw] xl:w-5/6 min-h-full">
           <Outlet />
         </div>
       </div>
