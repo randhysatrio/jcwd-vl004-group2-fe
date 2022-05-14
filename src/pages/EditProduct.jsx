@@ -109,6 +109,7 @@ const EditProduct = () => {
               type="text"
               name="description"
               className="h-32 w-5/6"
+              maxLength={350}
               required
               defaultValue={products.description}
               ref={description}

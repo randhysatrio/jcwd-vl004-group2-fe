@@ -176,9 +176,7 @@ const ProductDetail = () => {
           <div className="hidden md:block w-[2px] h-[85%] bg-slate-200 my-auto" />
           <div className="w-full md:w-[40%] md:h-full flex flex-col md:justify-center md:pl-3">
             <div className="w-full flex flex-col">
-              <div className="w-full h-8 md:h-12 flex items-center ">
-                <span className="text-lg md:text-xl font-bold text-sky-800 line-clamp-2">{productData.name}</span>
-              </div>
+              <span className="text-lg md:text-xl font-bold text-sky-800 line-clamp-2">{productData.name}</span>
               <div className="w-full h-9 flex items-center">
                 <span className="text-xl leading-snug font-bold w-max bg-gradient-to-r from-emerald-600 to-sky-500 bg-clip-text text-transparent">
                   Rp. {productData.price_sell ? productData.price_sell.toLocaleString('id') : null},-
@@ -193,11 +191,11 @@ const ProductDetail = () => {
               <span className="font-bold">Category:</span>
               <span className="text-slate-800">{productData.category?.name}</span>
             </div>
-            <div className="w-full h-[140px] flex flex-col text-sm mb-1">
-              <div className="w-full h-6 flex items-center">
+            <div className="w-full h-40 flex flex-col text-sm mb-1">
+              <div className="w-full py-[2px] flex items-center">
                 <span className="font-bold">Description</span>
               </div>
-              <div className="w-full h-full rounded-lg flex items-center bg-gray-100 p-1">
+              <div className="w-full h-full rounded-lg flex bg-gray-100 p-1">
                 <span className="text-slate-800">{productData.description}</span>
               </div>
             </div>

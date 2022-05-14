@@ -1,5 +1,6 @@
 import { useState, Fragment, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import Axios from 'axios';
 import { API_URL } from '../assets/constants';
 
@@ -28,7 +29,7 @@ const BuyAgainRow = ({ item, selected, setSelected }) => {
       ) : null}
       <div className="h-full w-[22%] flex justify-center items-center">
         <div className="w-16 h-16 rounded-md border flex justify-center items-center bg-white">
-          <img src={item.product.image} className="h-full object-contain" />
+          <img src={`${API_URL}/${item.product.image}`} className="h-full object-contain" />
         </div>
       </div>
       <div className="h-full w-[52%] flex flex-col justify-center items-start">
@@ -36,11 +37,11 @@ const BuyAgainRow = ({ item, selected, setSelected }) => {
         <span className="text-sm font-semibold text-gray-400">{item.product.category.name}</span>
         {item.quantity > item.product.stock_in_unit || item.product.deletedAt ? (
           <span className="text-xs text-red-400 relative z-[51]">
-            {item.quantity > item.product.stock_in_unit && item.product.deletedAt
+            {item.product.deletedAt
               ? 'This item is not available anymore'
               : item.quantity > item.product.stock_in_unit
-              ? 'Quantity exceeds stock'
-              : 'This item is not available anymore'}
+              ? 'Insufficient stock'
+              : null}
           </span>
         ) : null}
       </div>
@@ -58,6 +59,7 @@ const BuyAgainRow = ({ item, selected, setSelected }) => {
 };
 
 const BuyAgainModal = ({ invoiceId, userId }) => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState({});
@@ -102,9 +104,12 @@ const BuyAgainModal = ({ invoiceId, userId }) => {
 
       if (response.data.conflict) {
         toast.warning(response.data.message, { position: 'bottom-left', theme: 'colored' });
-      } else {
-        toast.success(response.data, { position: 'bottom-left', theme: 'colored' });
         setOpen(false);
+      } else {
+        dispatch({ type: 'CART_TOTAL', payload: response.data.cartTotal });
+        setOpen(false);
+        toast.success(response.data.message, { position: 'bottom-left', theme: 'colored' });
+
         navigate('/cart');
       }
     } catch (err) {
@@ -118,8 +123,8 @@ const BuyAgainModal = ({ invoiceId, userId }) => {
     <>
       <button
         onClick={() => {
-          setRefetch(refetch + 1);
           setOpen(true);
+          setRefetch(refetch + 1);
         }}
         className="h-10 w-32 xl:w-36 rounded-lg bg-gradient-to-r from-sky-500 to-emerald-500 text-white font-bold hover:brightness-110 transition active:scale-95 focus:outline-none flex items-center justify-center gap-2 text-sm xl:text-base"
       >

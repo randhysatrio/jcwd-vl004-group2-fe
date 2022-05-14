@@ -192,10 +192,10 @@ const Profile = () => {
   });
 
   return (
-    <div className="w-full min-h-screen flex flex-col items-center py-11 relative">
+    <div className="w-full min-h-screen flex flex-col items-center py-5 lg:py-11 relative">
       <div className="w-full h-32 bg-gradient-to-b from-sky-200 to-white absolute top-0 z-0"></div>
-      <div className="relative z-1 h-full flex">
-        <div className="w-4/6 md:w-[43vw] lg:w-[40vw] xl:w-[32vw] h-max px-4 mr-4 bg-white rounded-box border flex flex-col">
+      <div className="w-full relative z-1 h-full flex justify-center px-2">
+        <div className="w-[60%] sm:w-[55%] lg:w-[50%] xl:w-[40%] h-max px-4 mr-4 bg-white rounded-box border flex flex-col">
           <div className="w-full py-1">
             <div className="w-full flex py-2">
               <span className="text-xl font-bold bg-gradient-to-r from-sky-500 to-sky-400 bg-clip-text text-transparent mr-auto">
@@ -341,135 +341,156 @@ const Profile = () => {
               </button>
             </div>
           </div>
-          <div className="w-full mt-2 mb-4 pt-3 pr-3 lg:pr-0 rounded-box border border-emerald-200 relative flex flex-col">
+          <div className="w-full mt-2 mb-4 pt-4 px-3 rounded-box border border-emerald-200 relative flex flex-col items-center">
             <span className="text-sm font-semibold text-sky-400 bg-white px-1 absolute -top-3 left-4">Change Password:</span>
-            <form onSubmit={formikPassword.handleSubmit}>
+            <form onSubmit={formikPassword.handleSubmit} className="w-full">
               {formikPassword.touched.current_password || formikPassword.touched.new_password || formikPassword.touched.confirm_password ? (
                 <button
                   onClick={formikPassword.resetForm}
-                  className="font-bold flex flex-col items-center text-red-400 transition hover:brightness-110 active:scale-95 absolute top-4 right-6"
+                  className="font-bold flex flex-col items-center text-red-400 transition hover:brightness-110 active:scale-95 absolute top-2 right-1 sm:right-2"
                 >
-                  <AiFillCloseCircle className="text-lg" />
-                  <span className="text-xs">Cancel</span>
+                  <AiFillCloseCircle className="text-md xl:text-lg" />
+                  <span className="text-[11px] lg:text-xs">Cancel</span>
                 </button>
               ) : null}
-              <div className="w-full py-2 flex gap-2">
-                <div className="w-32 lg:w-36 flex items-center justify-end">
-                  <label className="text-sm md:text-xs lg:text-sm font-semibold text-sky-400">Current Password:</label>
-                </div>
-                <div className="flex flex-col relative">
-                  <div
-                    onClick={() => {
-                      if (document.getElementById('current_password').type === 'password') {
-                        document.getElementById('current_password').type = 'text';
-                      } else {
-                        document.getElementById('current_password').type = 'password';
-                      }
-                      setShowOld(!showOld);
-                    }}
-                    className="absolute right-1 top-1 text-sky-500 hover:brightness-125 cursor-pointer"
+              <div className="w-full flex gap-2">
+                <div className="w-[30%] h-7 lg:h-8 flex items-center justify-end">
+                  <label
+                    htmlFor="current_password"
+                    className="text-[11px] sm:text-sm font-semibold text-sky-400 hover:brightness-110 cursor-pointer"
                   >
-                    {showOld ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+                    Current Pass:
+                  </label>
+                </div>
+                <div className="w-[55%] lg:w-[57%] flex flex-col">
+                  <div className="w-full flex items-center relative">
+                    <div
+                      onClick={() => {
+                        if (document.getElementById('current_password').type === 'password') {
+                          document.getElementById('current_password').type = 'text';
+                        } else {
+                          document.getElementById('current_password').type = 'password';
+                        }
+                        setShowOld(!showOld);
+                      }}
+                      className="absolute right-1 text-sky-500 hover:brightness-125 cursor-pointer"
+                    >
+                      {showOld ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+                    </div>
+                    <input
+                      id="current_password"
+                      type="password"
+                      value={formikPassword.values.current_password}
+                      onChange={formikPassword.handleChange}
+                      onBlur={formikPassword.handleBlur}
+                      className={`w-full h-7 lg:h-8 border-b ${
+                        formikPassword.touched.current_password && formikPassword.errors.current_password
+                          ? 'border-red-300'
+                          : 'border-sky-300 focus:border-emerald-300'
+                      }  focus:outline-none mb-1`}
+                    />
                   </div>
-                  <input
-                    id="current_password"
-                    type="password"
-                    value={formikPassword.values.current_password}
-                    onChange={formikPassword.handleChange}
-                    onBlur={formikPassword.handleBlur}
-                    className={`w-52 border-b ${
-                      formikPassword.touched.current_password && formikPassword.errors.current_password
-                        ? 'border-red-300'
-                        : 'border-sky-300 focus:border-emerald-300'
-                    }  focus:outline-none mb-1`}
-                  />
                   {formikPassword.touched.current_password && formikPassword.errors.current_password ? (
-                    <span className="text-[11px] w-52 text-rose-400">{formikPassword.errors.current_password}</span>
+                    <span className="text-[11px] lg:text-xs w-full text-rose-400">{formikPassword.errors.current_password}</span>
                   ) : null}
                 </div>
               </div>
-              <div className="w-full py-2 flex gap-2">
-                <div className="w-32 lg:w-36 flex items-center justify-end">
-                  <label className="text-sm md:text-xs lg:text-sm font-semibold text-sky-400">New Password:</label>
-                </div>
-                <div className="flex flex-col relative">
-                  <div
-                    onClick={() => {
-                      if (document.getElementById('new_password').type === 'password') {
-                        document.getElementById('new_password').type = 'text';
-                      } else {
-                        document.getElementById('new_password').type = 'password';
-                      }
-                      setShowNew(!showNew);
-                    }}
-                    className="absolute right-1 top-1 text-sky-500 hover:brightness-125 cursor-pointer mb-1"
+              <div className="w-full flex gap-2">
+                <div className="w-[30%] h-7 lg:h-8 flex items-center justify-end">
+                  <label
+                    htmlFor="new_password"
+                    className="text-[11px] sm:text-sm font-semibold text-sky-400 hover:brightness-110 cursor-pointer"
                   >
-                    {showNew ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+                    New Pass:
+                  </label>
+                </div>
+                <div className="w-[55%] lg:w-[57%] flex flex-col">
+                  <div className="w-full flex items-center relative">
+                    <div
+                      onClick={() => {
+                        if (document.getElementById('new_password').type === 'password') {
+                          document.getElementById('new_password').type = 'text';
+                        } else {
+                          document.getElementById('new_password').type = 'password';
+                        }
+                        setShowNew(!showNew);
+                      }}
+                      className="absolute right-1 text-sky-500 hover:brightness-125 cursor-pointer"
+                    >
+                      {showNew ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+                    </div>
+                    <input
+                      id="new_password"
+                      type="password"
+                      value={formikPassword.values.new_password}
+                      onChange={formikPassword.handleChange}
+                      onBlur={formikPassword.handleBlur}
+                      className={`w-full h-7 lg:h-8 border-b ${
+                        formikPassword.touched.new_password && formikPassword.errors.new_password
+                          ? 'border-red-300'
+                          : 'border-sky-300 focus:border-emerald-300'
+                      } mb-1 focus:outline-none`}
+                    />
                   </div>
-                  <input
-                    id="new_password"
-                    type="password"
-                    value={formikPassword.values.new_password}
-                    onChange={formikPassword.handleChange}
-                    onBlur={formikPassword.handleBlur}
-                    className={`w-52 border-b ${
-                      formikPassword.touched.new_password && formikPassword.errors.new_password
-                        ? 'border-red-300'
-                        : 'border-sky-300 focus:border-emerald-300'
-                    } mb-1 focus:outline-none`}
-                  />
                   {formikPassword.touched.new_password && formikPassword.errors.new_password ? (
-                    <span className="text-[11px] w-52 text-rose-400">{formikPassword.errors.new_password}</span>
+                    <span className="text-[11px] lg:text-xs w-full text-rose-400">{formikPassword.errors.new_password}</span>
                   ) : null}
                 </div>
               </div>
-              <div className="w-full py-2 flex gap-2">
-                <div className="w-32 lg:w-36 flex justify-end items-center">
-                  <label className="text-sm md:text-xs lg:text-sm font-semibold text-sky-400">Confirm Password:</label>
-                </div>
-                <div className="flex flex-col relative">
-                  <div
-                    onClick={() => {
-                      if (document.getElementById('confirm_password').type === 'password') {
-                        document.getElementById('confirm_password').type = 'text';
-                      } else {
-                        document.getElementById('confirm_password').type = 'password';
-                      }
-                      setShowConf(!showConf);
-                    }}
-                    className="absolute right-1 top-1 text-sky-500 hover:brightness-125 cursor-pointer"
+              <div className="w-full flex gap-2">
+                <div className="w-[30%] h-7 lg:h-8 flex justify-end items-center">
+                  <label
+                    htmlFor="confirm_password"
+                    className="text-[11px] sm:text-sm font-semibold text-sky-400 hover:brightness-110 cursor-pointer"
                   >
-                    {showConf ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+                    Confirm Pass:
+                  </label>
+                </div>
+                <div className="w-[55%] lg:w-[57%] flex flex-col">
+                  <div className="w-full flex items-center relative">
+                    <div
+                      onClick={() => {
+                        if (document.getElementById('confirm_password').type === 'password') {
+                          document.getElementById('confirm_password').type = 'text';
+                        } else {
+                          document.getElementById('confirm_password').type = 'password';
+                        }
+                        setShowConf(!showConf);
+                      }}
+                      className="absolute right-1 text-sky-500 hover:brightness-125 cursor-pointer"
+                    >
+                      {showConf ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+                    </div>
+                    <input
+                      id="confirm_password"
+                      type="password"
+                      value={formikPassword.values.confirm_password}
+                      onChange={formikPassword.handleChange}
+                      onBlur={formikPassword.handleBlur}
+                      className={`w-full h-7 lg:h-8 border-b ${
+                        formikPassword.touched.confirm_password && formikPassword.errors.confirm_password
+                          ? 'border-red-300'
+                          : 'border-sky-300 focus:border-emerald-300'
+                      } mb-1 focus:outline-none`}
+                    />
                   </div>
-                  <input
-                    id="confirm_password"
-                    type="password"
-                    value={formikPassword.values.confirm_password}
-                    onChange={formikPassword.handleChange}
-                    onBlur={formikPassword.handleBlur}
-                    className={`w-52 border-b ${
-                      formikPassword.touched.confirm_password && formikPassword.errors.confirm_password
-                        ? 'border-red-300'
-                        : 'border-sky-300 focus:border-emerald-300'
-                    } mb-1 focus:outline-none`}
-                  />
                   {formikPassword.touched.confirm_password && formikPassword.errors.confirm_password ? (
-                    <span className="text-[11px] text-rose-400">{formikPassword.errors.confirm_password}</span>
+                    <span className="text-[11px] lg:text-xs text-rose-400 w-full">{formikPassword.errors.confirm_password}</span>
                   ) : null}
                 </div>
               </div>
-              <div className="w-full flex justify-center py-3">
+              <div className="w-full flex justify-center py-4">
                 <button
                   type="submit"
                   disabled={passwordLoading}
-                  className={`h-10 w-44 rounded-xl bg-gradient-to-r ${
+                  className={`h-9 sm:h-10 xl:h-11 w-40 lg:w-44 rounded-xl bg-gradient-to-r ${
                     formikPassword.errors.current_password ||
                     formikPassword.errors.new_password ||
                     formikPassword.errors.confirm_password ||
                     passwordLoading
                       ? 'from-sky-300 to-emerald-300 cursor-default'
                       : 'from-sky-500 to-emerald-500 active:scale-95 hover:brightness-110'
-                  } font-semibold text-white transition`}
+                  } font-semibold text-white transition text-sm sm:text-md xl:text-base`}
                 >
                   {passwordLoading ? (
                     <>
@@ -484,9 +505,9 @@ const Profile = () => {
             </form>
           </div>
         </div>
-        <div className="w-[28vw] md:w-[20vw] xl:w-[16vw] h-72 bg-white rounded-xl border flex flex-col">
-          <div className="w-full h-52 flex justify-center items-center relative">
-            <div className="w-40 h-40 md:w-36 md:h-36 lg:w-40 lg:h-40 rounded-full flex justify-center items-center shadow bg-blue-100">
+        <div className="w-[30%] sm:w-[25%] lg:w-[22%] xl:w-[18%] h-max bg-white rounded-xl border flex flex-col">
+          <div className="w-full py-5 flex justify-center items-center relative">
+            <div className="w-32 h-32 md:h-28 md:w-28 lg:w-36 lg:h-36 xl:w-40 xl:h-40 rounded-full flex justify-center items-center shadow bg-blue-100">
               <div className="w-[90%] h-[90%] rounded-full flex justify-center items-center overflow-hidden bg-white">
                 <img
                   id="profile-picture"
@@ -516,19 +537,17 @@ const Profile = () => {
             </div>
           </div>
           <div className="h-[2px] w-[90%] bg-gray-100 rounded-xl mx-auto" />
-          <div className="w-full h-10 flex justify-center">
-            <div className="max-w-full h-full flex items-center">
-              <span className="text-xl md:text-lg lg:text-2xl font-bold bg-gradient-to-r from-sky-400 to-emerald-400 bg-clip-text text-transparent">
-                {userData.name}
-              </span>
-            </div>
+          <div className="w-full pt-1 flex justify-center">
+            <span className="text-xl md:text-lg lg:text-2xl font-bold bg-gradient-to-r from-sky-400 to-emerald-400 bg-clip-text text-transparent line-clamp-1">
+              {userData.name}
+            </span>
             {userData.is_verified === 'verified' ? (
-              <div className="h-full px-1 flex items-center text-sky-400">
+              <div className="p-1 flex items-center text-sky-400">
                 <MdVerified />
               </div>
             ) : null}
           </div>
-          <div className="w-full flex justify-center gap-1 divide-x-2 text-sm  text-slate-400">
+          <div className="w-full py-1 flex justify-center gap-1 divide-x-2 text-sm text-slate-400">
             <div className="px-1 max-w-36 flex justify-center">
               <span className="font-semibold">#{userData.id}</span>
             </div>

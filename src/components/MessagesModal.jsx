@@ -69,7 +69,7 @@ const MessagesModal = ({ message, currentPage, limit, setMessages, setMaxPage, s
             </span>
             <span className="text-xs lg:text-sm text-gray-500 text-opacity-70 line-clamp-1">{message.content?.replace('|', ' ')}</span>
           </div>
-          <div className="h-full w-[28%] flex flex-col justify-center pr-2">
+          <div className="h-full w-[28%] flex flex-col justify-center pl-2">
             <span className="text-sm text-gray-500 text-opacity-70 leading-none">From:</span>
             <span className="text-sm md:text-xs lg:text-base font-bold text-gray-600 line-clamp-1">
               {message.to === 'user' ? 'Heizen Berg Admin Team' : `ID #${message.userId} (${message.user?.name})`}

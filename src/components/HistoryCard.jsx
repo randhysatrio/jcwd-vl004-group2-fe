@@ -22,12 +22,12 @@ const HistoryItem = ({ item, index }) => {
         </div>
         <div className="h-full w-[12%] flex justify-center items-center">
           <div className="h-12 w-12 md:h-16 md:w-16 rounded-md border flex items-center justify-center bg-white">
-            <img src={`${API_URL}/${item.image}`} className="h-full object-contain" />
+            <img src={`${API_URL}/${item.product.image}`} className="h-full object-contain" />
           </div>
         </div>
         <div className="h-full w-[36%] flex flex-col justify-center">
           <span
-            onClick={() => navigate(`/products/${item.product.id}`)}
+            onClick={() => navigate(`/product/${item.product.id}`)}
             className="text-sm md:text-md xl:text-base font-semibold text-sky-700 hover:brightness-150 transition cursor-pointer max-w-full truncate"
           >
             {item.product.name}
@@ -199,7 +199,7 @@ const HistoryCard = ({ invoice, userId }) => {
       <div className="w-full pb-2 px-3 flex gap-4 relative items-center">
         {invoice.invoice_path && (
           <a href={`${API_URL}/history/invoice/download?path=${invoice.invoice_path}`} target="_blank">
-            <button className="h-9 w-36 xl:w-40 rounded-lg bg-gradient-to-r from-sky-500 to-sky-400 text-white font-bold cursor-pointer hover:brightness-110 active:scale-95 transition flex items-center justify-center gap-2 text-xs lg:text-sm">
+            <button className="h-9 w-36 xl:w-40 rounded-lg bg-gradient-to-r from-sky-500 to-sky-400 text-white font-bold cursor-pointer hover:brightness-110 active:scale-95 transition flex items-center justify-center gap-2 text-xs xl:text-sm">
               <FaFileInvoiceDollar />
               Download Invoice
             </button>

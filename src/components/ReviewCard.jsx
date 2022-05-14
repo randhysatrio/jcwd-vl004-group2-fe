@@ -70,7 +70,7 @@ const ReviewCard = ({ data, userId, setTotalReviews, setAvgRating, setReviews, s
         </div>
         <div className="h-full w-[70%] md:w-[75%] flex flex-col ">
           <div className="w-full flex items-center justify-between py-1">
-            <span className="text-md md:text-lg xl:text-xl font-semibold">{review.title}</span>
+            <span className="text-md md:text-lg xl:text-xl font-semibold line-clamp-1">{review.title}</span>
             <div className="flex items-center text-amber-300 px-5">{renderStars(rating)}</div>
           </div>
           <div className="h-full w-full pr-4">
