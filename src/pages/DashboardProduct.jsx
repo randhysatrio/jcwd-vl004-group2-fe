@@ -73,7 +73,7 @@ const Dashboard = () => {
             <img
               src={`${API_URL}/${product.image}`}
               // m-auto makes img fit its container
-              className="w-40 aspect-[3/2] rounded-lg border object-cover items-center border-gray-200 m-auto"
+              className="w-40 aspect-[3/2] rounded-lg border object-cover border-gray-200 m-auto"
             />
           </td>
           <td className="justify-center items-center text-center p-4">
