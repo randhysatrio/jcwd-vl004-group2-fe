@@ -121,6 +121,7 @@ const EditProduct = () => {
                 type="text"
                 name="name"
                 className="h-16 input input-bordered w-full max-w-xs pr-10 focus:outline-none focus:bg-white"
+                maxLength={350}
                 required
                 defaultValue={products.name}
                 ref={name}

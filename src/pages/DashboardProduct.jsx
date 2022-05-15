@@ -59,7 +59,7 @@ const Dashboard = () => {
     };
     fetchData();
     // dependency uses state outside useEffect
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, [currentCategory, currentSortPrice, search]);
 
   const renderProducts = () => {
@@ -72,7 +72,8 @@ const Dashboard = () => {
           <td className="justify-center items-center text-center p-4">
             <img
               src={`${API_URL}/${product.image}`}
-              className="w-40 aspect-[3/2] rounded-lg object-cover object-top border border-gray-200"
+              // m-auto makes img fit its container
+              className="w-40 aspect-[3/2] rounded-lg border object-cover items-center border-gray-200 m-auto"
             />
           </td>
           <td className="justify-center items-center text-center p-4">

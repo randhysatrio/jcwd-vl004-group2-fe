@@ -172,7 +172,7 @@ const HomeAdmin = () => {
         <div className="w-full justify-between flex flex-col col-span-3 shadow-md bg-white rounded-md">
           <div className="flex-col">
             <div className="flex justify-between">
-              <div className="text-3xl mt-3 ml-8">Recent Transactions</div>
+              <div className="text-xl mt-3 ml-8">Recent Transactions</div>
               <div className="mt-6 mr-8">
                 <button
                   className="hover:bg-gray-100 transition rounded-xl items-center"
@@ -246,8 +246,8 @@ const HomeAdmin = () => {
         </div>
         <div className="w-full justify-between items-center flex flex-col-4 shadow-md bg-white rounded-md">
           <div className="flex-col">
-            <div className="flex justify-between">
-              <div className="mt-3 text-3xl ml-8">Latest Products</div>
+            <div className="flex justify-between items-center">
+              <div className="mt-3 text-xl ml-8">Latest Products</div>
               <div className="mt-5 mr-8">
                 <button
                   className="hover:bg-gray-100 transition rounded-xl items-center"
