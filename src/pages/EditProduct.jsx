@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
-import { useNavigate, useParams } from 'react-router-dom';
-import { API_URL } from '../assets/constants';
+import { useState, useEffect, useRef } from "react";
+import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
+import { API_URL } from "../assets/constants";
+import { FaPhotoVideo } from "react-icons/fa";
 
 const EditProduct = () => {
-  const Swal = require('sweetalert2');
+  const Swal = require("sweetalert2");
   // useState([]) is different from useState({}) findAll is array findbyPK is an object
   const [products, setProducts] = useState({});
   const [categories, setCategories] = useState([]);
@@ -44,7 +45,7 @@ const EditProduct = () => {
   };
 
   const fetchImagePreview = async () => {
-    let preview = document.getElementById('imgpreview');
+    let preview = document.getElementById("imgpreview");
     preview.src = `${API_URL}/${images}`;
   };
 
@@ -73,22 +74,22 @@ const EditProduct = () => {
       price_buy: parseInt(price_buy.current.value),
       price_sell: parseInt(price_sell.current.value),
       stock: parseInt(stock.current.value),
-      unit: newUnit,
+      unit: unit,
       volume: volume.current.value,
       description: description.current.value,
       appearance: newAppearance,
       categoryId: parseInt(categoryId.current.value),
     };
 
-    formData.append('productData', JSON.stringify(newProduct));
+    formData.append("productData", JSON.stringify(newProduct));
 
     if (images) {
-      formData.append('image', images);
+      formData.append("image", images);
     }
 
     try {
       await axios.patch(`${API_URL}/product/edit/${id}`, formData);
-      navigate('/dashboard/product');
+      navigate("/dashboard/product");
       Swal.fire({
         icon: "success",
         text: "Product has been edited!",
@@ -100,7 +101,7 @@ const EditProduct = () => {
 
   const onBtAddFile = (e) => {
     setImage(e.target.files[0]);
-    let preview = document.getElementById('imgpreview');
+    let preview = document.getElementById("imgpreview");
     preview.src = URL.createObjectURL(e.target.files[0]);
   };
 
@@ -128,11 +129,11 @@ const EditProduct = () => {
             <div className="col-start-1">
               <label className="">Description:</label>
             </div>
-            <div className="col-start-2 col-span-3">
+            <div className="col-start-2 col-span-4">
               <textarea
                 type="text"
                 name="description"
-                className="h-32 w-5/6 input input-bordered max-w-xs pr-10 focus:outline-none focus:bg-white"
+                className="h-32 w-full input input-bordered max-w-xs pr-10 focus:outline-none focus:bg-white"
                 required
                 defaultValue={products.description}
                 ref={description}
@@ -141,14 +142,26 @@ const EditProduct = () => {
             <div className="col-start-1">
               <label className="">Image:</label>
             </div>
-            <div className="col-start-2 col-span-3">
-              <input
-                type="file"
-                name="image"
-                required
-                onChange={onBtAddFile}
-                accept="image/*"
-              />
+            <div className="col-start-2">
+              <label htmlFor="file">
+                <div className="py-1 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl items-center">
+                  <div className="flex justify-center items-center">
+                    <FaPhotoVideo
+                      htmlColor="tomato"
+                      className="shareIcon mr-1"
+                    />
+                    <div>Change Photo</div>
+                  </div>
+                </div>
+                <input
+                  type="file"
+                  id="file"
+                  name="image"
+                  onChange={onBtAddFile}
+                  accept="image/*"
+                  style={{ display: "none" }}
+                />
+              </label>
             </div>
             <div className="col-start-2">
               {/* profileImage ? URL.createObjectURL(profileImage) : ${API_URL}/${userData.profile_picture} */}

@@ -106,7 +106,7 @@ const Dashboard = () => {
             <button
               type="button"
               className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl items-center mr-3"
-              onClick={(event) => handleEditClick(event, product)}
+              onClick={() => handleEditClick(product.id)}
             >
               Edit
             </button>
