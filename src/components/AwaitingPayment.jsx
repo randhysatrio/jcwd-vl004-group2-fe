@@ -1,0 +1,118 @@
+import { useEffect, useState } from 'react';
+import { API_URL } from '../assets/constants';
+import { format } from 'date-fns';
+
+import UploadPaymentModal from './UploadPaymentModal';
+
+const InvoiceItem = ({ item }) => {
+  return (
+    <div className="w-full h-12  md:h-14 lg:h-16 flex rounded-lg py-1">
+      <div className="h-full w-[20%] flex items-center justify-center">
+        <div className="h-11 w-11 sm:h-12 sm:w-12 lg:h-14 lg:w-14 bg-white border rounded-lg overflow-hidden">
+          <img src={`${API_URL}/${item.product?.image}`} className="h-full object-contain" />
+        </div>
+      </div>
+      <div className="h-full w-[55%] flex flex-col justify-center">
+        <span className="text-sm sm:text-md lg:text-base font-semibold line-clamp-1">{item.product?.name}</span>
+        <span className="text-xs sm:text-sm font-semibold text-opacity-60">
+          Rp. {item.price}/{item.product?.unit}
+        </span>
+      </div>
+      <div className="h-full w-[25%] flex flex-col items-center justify-center">
+        <span className="text-[10px] sm:text-xs font-bold lg:font-extrabold text-slate-700 mb-1">Qty:</span>
+        <span className="text-xs sm:text-sm lg:text-md font-semibold text-slate-700">
+          {item.quantity.toLocaleString('id')} {item.product?.unit}
+        </span>
+      </div>
+    </div>
+  );
+};
+
+const AwaitingPaymentCard = ({ invoice, setInvoices, setTotalData, currentPage, limit, setMaxPage }) => {
+  return (
+    <>
+      <div className="w-full xl:w-[85%] flex flex-col ring-1 ring-slate-200 rounded-lg">
+        <div className="w-full p-1 lg:px-2">
+          <div className="w-full flex items-center justify-between text-xs sm:text-sm lg:text-md font-semibold p-2 rounded-lg bg-sky-50">
+            <span>#{invoice.id}</span>
+            <span>{format(new Date(invoice.createdAt), 'PPPpp')}</span>
+          </div>
+        </div>
+        <div className="w-full h-full flex mb-1">
+          <div className="w-[70%] flex flex-col">
+            <div className="w-full flex items-center py-px px-3">
+              <span className="w-full text-sm lg:text-md font-bold">Items:</span>
+            </div>
+            <div className="w-full p-2 gap-2 flex flex-col">
+              {invoice.invoiceitems?.map((item) => (
+                <InvoiceItem key={item.id} item={item} />
+              ))}
+            </div>
+          </div>
+          <div className="w-[30%] flex flex-col py-1 pr-1">
+            <div className="w-full flex items-center justify-end px-1">
+              <span className="text-sm  lg:text-md  font-bold">Summary:</span>
+            </div>
+            <div className="w-full h-full bg-gray-100 rounded-lg flex flex-col py-1 gap-1">
+              <div className="w-full flex flex-col items-end px-2">
+                <span className="text-xs lg:text-sm font-bold">Subtotal (2 items):</span>
+                <span className="text-sm lg:text-base font-semibold">Rp. {parseInt(invoice.total)?.toLocaleString('id')}</span>
+              </div>
+              <div className="w-full flex flex-col items-end px-2">
+                <div className="flex items-center gap-1 text-xs lg:text-sm font-bold">
+                  <span>Delivery:</span>
+                  <span className="line-clamp-1">({invoice.deliveryoption?.name})</span>
+                </div>
+                <span className="text-sm md:text-base font-semibold">Rp. {invoice.deliveryoption?.cost.toLocaleString('id')}</span>
+              </div>
+              <div className="w-full flex flex-col items-end px-2">
+                <span className="text-xs lg:text-sm font-bold">Grand Total:</span>
+                <span className="text-sm lg:text-base font-semibold">
+                  Rp. {(parseInt(invoice.total) + invoice.deliveryoption?.cost).toLocaleString('id')}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="w-[95%] mx-auto flex justify-between items-center py-2 px-2 border-t">
+          <label
+            htmlFor={`cancel-invoice-${invoice.id}`}
+            className="font-semibold text-red-400 active:scale-95 hover:brightness-110 cursor-pointer transition text-sm lg:text-base"
+          >
+            Cancel Payment
+          </label>
+          <UploadPaymentModal
+            invoiceId={invoice.id}
+            setInvoices={setInvoices}
+            setMaxPage={setMaxPage}
+            setTotalData={setTotalData}
+            currentPage={currentPage}
+            limit={limit}
+          />
+        </div>
+      </div>
+
+      <input type="checkbox" id={`cancel-invoice-${invoice.id}`} class="modal-toggle" />
+      <div class="modal">
+        <div class="modal-box p-0">
+          <div className="pt-8 pb-3 flex justify-center">
+            <span className="font-bold text-xl">Are sure you want to cancel this transaction?</span>
+          </div>
+          <div className="py-6 flex justify-center gap-3">
+            <label
+              htmlFor={`cancel-invoice-${invoice.id}`}
+              className="w-36 py-2 font-bold text-white bg-red-400 rounded-full flex justify-center items-center hover:brightness-110 cursor-pointer active:scale-95 transition text-lg"
+            >
+              Cancel
+            </label>
+            <button className="w-36 py-2 font-bold text-white bg-green-400 rounded-full flex justify-center items-center hover:brightness-110 cursor-pointer active:scale-95 transition text-lg">
+              Yes I'm sure
+            </button>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default AwaitingPaymentCard;

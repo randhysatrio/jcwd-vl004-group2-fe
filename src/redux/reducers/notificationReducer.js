@@ -1,5 +1,6 @@
 const init_state = {
   alert: false,
+  awaiting: false,
   history: false,
 };
 

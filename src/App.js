@@ -30,8 +30,9 @@ import Checkout from './pages/Checkout';
 import Payment from './pages/Payment';
 import User from './pages/User';
 import Profile from './pages/Profile';
-import History from './pages/History';
 import Address from './pages/Address';
+import AwaitingPayment from './pages/AwaitingPayment';
+import History from './pages/History';
 import Messages from './pages/Messages';
 import NotFound from './pages/NotFound';
 
@@ -130,6 +131,7 @@ function App() {
           <Route path="history" element={<History />} />
           <Route path="address" element={<Address />} />
           <Route path="notification" element={<Messages />} />
+          <Route path="payment" element={<AwaitingPayment />} />
         </Route>
         <Route path="/products" element={<AllProducts />} />
         <Route path="/products/:id" element={<ProductDetail />} />

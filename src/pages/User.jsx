@@ -7,11 +7,13 @@ import Footer from '../components/Footer';
 import { AiOutlineUser, AiOutlineHistory } from 'react-icons/ai';
 import { FiMail } from 'react-icons/fi';
 import { IoLocationOutline } from 'react-icons/io5';
+import { MdPayment } from 'react-icons/md';
 
 const User = () => {
   const navigate = useNavigate();
   const notification = useSelector((state) => state.notification.alert);
   const history = useSelector((state) => state.notification.history);
+  const awaiting = useSelector((state) => state.notification.awaiting);
 
   useEffect(() => {
     const userToken = localStorage.getItem('userToken');
@@ -70,10 +72,13 @@ const User = () => {
           <SidebarLink to={'address'} icon={<IoLocationOutline />}>
             Address
           </SidebarLink>
-          <SidebarLink to={'history'} icon={<AiOutlineHistory />} notification={history} clear={'history'}>
+          <SidebarLink to={'payment'} icon={<MdPayment />} notification={awaiting}>
+            Payments
+          </SidebarLink>
+          <SidebarLink to={'history'} icon={<AiOutlineHistory />} notification={history}>
             History
           </SidebarLink>
-          <SidebarLink to={'notification'} icon={<FiMail />} notification={notification} clear={'alert'}>
+          <SidebarLink to={'notification'} icon={<FiMail />} notification={notification}>
             Notifications
           </SidebarLink>
         </div>
