@@ -16,9 +16,14 @@ const MessagesAdmin = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [maxPage, setMaxPage] = useState(0);
   const [totalMsg, setTotalMsg] = useState(0);
-  const limit = 8;
+  const limit = 7;
 
   useEffect(() => {
+    dispatch({
+      type: 'ALERT_CLEAR',
+      payload: 'alert',
+    });
+
     const fetchAdminMsg = async () => {
       try {
         const response = await Axios.post(`${API_URL}/message/admin`, {
@@ -28,7 +33,7 @@ const MessagesAdmin = () => {
         });
 
         setMessages(response.data.rows);
-        setMaxPage(Math.ceil(response.data.count / limit));
+        setMaxPage(response.data.maxPage);
         setTotalMsg(response.data.count);
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -50,6 +55,14 @@ const MessagesAdmin = () => {
       }
     };
   }, [currentPage, search]);
+
+  useEffect(() => {
+    if (currentPage === 1) {
+      return;
+    } else if (totalMsg <= currentPage * limit - limit) {
+      setCurrentPage(currentPage - 1);
+    }
+  }, [totalMsg]);
 
   const renderMessages = () => {
     return messages?.map((message) => (

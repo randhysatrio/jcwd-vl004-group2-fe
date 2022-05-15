@@ -16,6 +16,7 @@ import {
 } from 'react-icons/ai';
 import { BsFillGridFill, BsChevronRight } from 'react-icons/bs';
 import { toast } from 'react-toastify';
+import AllProductsSidebar from '../components/AllProductsSidebar';
 
 const AllProducts = () => {
   const navigate = useNavigate();
@@ -171,7 +172,7 @@ const AllProducts = () => {
 
   const renderAppearences = () => {
     return appearancesList.map((data) => (
-      <div key={data.appearance} className="w-full py-1 pl-2 flex items-center gap-2">
+      <div key={data.appearance} className="w-full pl-2 flex items-center gap-2">
         <input
           type="checkbox"
           id={data.appearance}
@@ -201,9 +202,9 @@ const AllProducts = () => {
   return (
     <>
       <Header />
-      <div className="md:container mx-auto">
+      <div className="lg:container mx-auto">
         <div className="flex h-max w-full">
-          <div className="w-1/5 h-max flex flex-col items-center pt-2">
+          <div className="hidden lg:flex w-1/5 h-max flex-col items-center pt-2">
             <div className="w-4/5 py-2 border-b border-slate-400 flex items-center justify-between">
               <span className="font-bold text-lg w-max bg-gradient-to-r from-sky-500 to-emerald-500 bg-clip-text text-transparent">
                 Categories
@@ -320,7 +321,7 @@ const AllProducts = () => {
             </div>
             <div className="w-4/5 py-2 px-2 flex flex-col gap-2 pl-2 border-b border-slate-200 mb-2">{renderAppearences()}</div>
           </div>
-          <div className="w-4/5 p-2 flex flex-col">
+          <div className="w-full lg:w-4/5 px-4 lg:px-2 py-2 flex flex-col">
             <div className="w-full flex items-center gap-2 text-sm py-2">
               <span
                 onClick={() => {
@@ -332,6 +333,24 @@ const AllProducts = () => {
               </span>
               <BsChevronRight className="text-xs" />
               <span className="underline underline-offset-1">Shop</span>
+              <AllProductsSidebar
+                navigate={navigate}
+                searchParams={searchParams}
+                search={search}
+                val={val}
+                setCurrentPage={setCurrentPage}
+                categoryList={categoryList}
+                appearancesList={appearancesList}
+                currentAppearance={currentAppearance}
+                setCurrentAppearance={setCurrentAppearance}
+                setMinPrice={setMinPrice}
+                setMaxPrice={setMaxPrice}
+                setPriceRange={setPriceRange}
+                minPrice={minPrice}
+                maxPrice={maxPrice}
+                setRangeError={setRangeError}
+                rangeError={rangeError}
+              />
             </div>
             {searchParams.get('keyword') && productsList.length ? (
               <div className="w-max h-[55px] my-2 pr-6 flex items-center gap-2 shadow-md rounded-lg overflow-hidden">

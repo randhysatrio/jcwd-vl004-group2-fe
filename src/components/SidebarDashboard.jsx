@@ -14,9 +14,6 @@ const SidebarDashboard = () => {
       <NavLink to={to} end={end}>
         {({ isActive }) => (
           <div
-            onClick={() => {
-              dispatch({ type: 'ALERT_CLEAR', payload: clear });
-            }}
             className={`flex items-center gap-3 my-1 px-4 py-3 text-white border-1-4 border-transparent hover:bg-primary transition ${
               isActive ? 'bg-primary' : 'bg-transparent'
             }`}

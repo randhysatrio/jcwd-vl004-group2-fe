@@ -34,7 +34,7 @@ const Messages = () => {
         });
 
         setMessages(response.data.rows);
-        setMaxPage(Math.ceil(response.data.count / limit));
+        setMaxPage(response.data.maxPage);
         setTotalMsg(response.data.count);
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -58,8 +58,10 @@ const Messages = () => {
   }, [userGlobal, currentPage, keyword]);
 
   useEffect(() => {
-    if (totalMsg <= currentPage * limit - limit) {
-      setCurrentPage(currentPage - 1 || 1);
+    if (currentPage === 1) {
+      return;
+    } else if (totalMsg <= currentPage * limit - limit) {
+      setCurrentPage(currentPage - 1);
     }
   }, [totalMsg]);
 

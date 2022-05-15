@@ -18,7 +18,7 @@ const ProductGridCard = ({ product, newarrival, bestseller }) => {
     }
 
     for (let i = 0; i < stars; i++) {
-      renderedStars.push(<AiFillStar />);
+      renderedStars.push(<AiFillStar key={i} />);
     }
 
     return renderedStars;

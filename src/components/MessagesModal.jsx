@@ -104,8 +104,9 @@ const MessagesModal = ({ message, currentPage, limit, setMessages, setMaxPage, s
                 }
 
                 setMessages(response.data.rows);
-                setMaxPage(Math.ceil(response.data.count / limit));
+                setMaxPage(response.data.maxPage);
                 setTotalMsg(response.data.count);
+
                 toast.success(response.data.message, { position: 'bottom-left', theme: 'colored' });
               } catch (err) {
                 toast.error('Unable to delete message!', { position: 'bottom-left', theme: 'colored' });

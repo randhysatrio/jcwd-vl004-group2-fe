@@ -46,7 +46,9 @@ const Address = () => {
   }, [currentPage]);
 
   useEffect(() => {
-    if (totalAddress <= limit * currentPage - limit) {
+    if (currentPage === 1) {
+      return;
+    } else if (totalAddress <= limit * currentPage - limit) {
       setCurrentPage(currentPage - 1 || 1);
     }
   }, [totalAddress]);
