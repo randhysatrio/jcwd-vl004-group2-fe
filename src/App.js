@@ -137,7 +137,7 @@ function App() {
         <Route path="/products/:id" element={<ProductDetail />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
-        <Route path="/payment" element={<Payment />} />
+        <Route path="/payment/:id" element={<Payment />} />
         <Route path="/admin/login" element={<LoginAdmin />} />
         <Route path="/admin/reset" element={<ResetAdmin />} />
         <Route path="/admin/change-password/:token" element={<ChangePassAdmin />} />
