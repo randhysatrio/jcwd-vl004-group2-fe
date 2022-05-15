@@ -7,8 +7,8 @@ import {
   useLocation,
 } from 'react-router-dom';
 
-import { AiOutlineClose } from 'react-icons/ai';
-import { FaBell, FaSearch, FaUserAlt } from 'react-icons/fa';
+import { AiOutlineClose } from "react-icons/ai";
+import { FaBell, FaSearch, FaUserAlt } from "react-icons/fa";
 
 const NavbarDashboard = ({ onChange, value, onClick }) => {
   const dispatch = useDispatch();
@@ -16,17 +16,17 @@ const NavbarDashboard = ({ onChange, value, onClick }) => {
   const socket = useSelector((state) => state.socket.instance);
   const notification = useSelector((state) => state.notification.alert);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [keyword, setKeyword] = useState('');
+  const [keyword, setKeyword] = useState("");
   const { pathname } = useLocation();
   const dataAdmin = JSON.parse(localStorage.getItem('dataAdmin'));
 
   return (
     <div className="h-16 bg-white shadow-sm pl-80 pr-8 fixed z-[3] w-full top-0 left-0 flex items-center">
-      <div className="flex justify-center items-center relative">
+      {/* <div className="flex justify-center items-center relative">
         <FaSearch
-          onClick={() => {
-            setSearchParams({ keyword }, { replace: true });
-          }}
+          // onClick={() => {
+          //   setSearchParams({ keyword }, { replace: true });
+          // }}
           className="absolute left-2 text-gray-400 bg-gray-100 cursor-pointer active:scale-95 transition"
         />
         <input
@@ -37,14 +37,15 @@ const NavbarDashboard = ({ onChange, value, onClick }) => {
           onChange={(e) => setKeyword(e.target.value)}
           className="search block w-72 shadow border-none rounded-3x1 focus:outline-none py-2 bg-gray-100 text-base text-gray-600 pl-11 pr-7"
         />
+    
         <AiOutlineClose
           onClick={() => {
-            setKeyword('');
+            setKeyword("");
             navigate(pathname);
           }}
           className="hover:brightness-110 cursor-pointer absolute right-2"
         />
-      </div>
+      </div> */}
 
       <div className="ml-auto flex items-center">
         {dataAdmin && <span className="mr-3">Halo, {dataAdmin.name}</span>}
@@ -77,12 +78,12 @@ const NavbarDashboard = ({ onChange, value, onClick }) => {
             </Link>
             <li
               onClick={() => {
-                localStorage.removeItem('adminToken');
-                localStorage.removeItem('dataAdmin');
-                dispatch({ type: 'ADMIN_LOGOUT' });
+                localStorage.removeItem("adminToken");
+                localStorage.removeItem("dataAdmin");
+                dispatch({ type: "ADMIN_LOGOUT" });
                 socket?.disconnect();
 
-                navigate('/admin/login', { replace: true });
+                navigate("/admin/login", { replace: true });
               }}
               className="py-1 font-semibold text-rose-600 group"
             >
