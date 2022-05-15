@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useEffect, useState, useCallback } from 'react';
 import { useSearchParams, useLocation } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { FiCalendar, FiMinus, FiFilter } from 'react-icons/fi';
 import { toast } from 'react-toastify';
@@ -11,6 +12,7 @@ import { startOfMonth, endOfMonth, format } from 'date-fns';
 import TransactionTable from '../components/TransactionTable';
 
 const DashboardTransaction = () => {
+  const dispatch = useDispatch();
   const [transactions, setTransactions] = useState();
   const [activePage, setActivePage] = useState(1);
   const [startNumber, setStartNumber] = useState(1);
@@ -28,6 +30,8 @@ const DashboardTransaction = () => {
   );
 
   useEffect(() => {
+    dispatch({ type: 'ALERT_CLEAR', payload: 'history' });
+
     const getTransaction = async () => {
       try {
         if (activePage > totalPage || activePage < 1) {

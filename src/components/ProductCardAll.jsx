@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Axios from 'axios';
 import { API_URL } from '../assets/constants';
 import { useNavigate } from 'react-router-dom';
@@ -16,6 +16,7 @@ import { toast } from 'react-toastify';
 
 const ProductCardAll = ({ view, product }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [cartLoading, setCartLoading] = useState(false);
   const userGlobal = useSelector((state) => state.user);
   const userToken = localStorage.getItem('userToken');
@@ -40,6 +41,8 @@ const ProductCardAll = ({ view, product }) => {
           toast.warning(response.data.message, { theme: 'colored', position: 'bottom-left' });
         } else {
           setCartLoading(false);
+
+          dispatch({ type: 'CART_TOTAL', payload: response.data.cartTotal });
 
           toast.success(`Added ${product.volume?.toLocaleString('id')}${product.unit} to your cart!`, {
             position: 'bottom-left',
@@ -167,7 +170,7 @@ const ProductCardAll = ({ view, product }) => {
               <span className="text-xs">{product.description}</span>
             </div>
           </div>
-          <div className="w-[25%] h-full pt-4 pl-4 lg:pl-0 lg:pr-4">
+          <div className="w-[25%] h-full pt-4 pl-4 lg:pl-0 lg:pr-4 flex flex-col items-end">
             <div onClick={() => navigate(`/product/${product.id}`)} className="w-full flex flex-col items-end gap-1 lg:gap-2 mb-3">
               <span className="text-lg md:text-xl lg:text-2xl w-max bg-gradient-to-r from-emerald-500 to-emerald-700 bg-clip-text text-transparent font-bold">
                 Rp. {product.price_sell?.toLocaleString('id')}/{product.unit}
@@ -196,27 +199,27 @@ const ProductCardAll = ({ view, product }) => {
                   </>
                 )}
               </div>
-              <div className="w-full sm:w-[85%] md:w-[75%] xl:w-[70%] flex">
-                {!adminToken && (
-                  <button
-                    onClick={addToCart}
-                    disabled={cartLoading}
-                    className="w-full py-2 rounded-lg bg-gradient-to-r from-sky-400 to-sky-600 text-white font-bold hover:brightness-110 cursor-pointer transition active:scale-95 text-md gap-2 flex justify-center items-center shadow disabled:from-sky-300 disabled:to-sky-500 disabled:active:scale-100 text-xs md:text-base"
-                  >
-                    {cartLoading ? (
-                      <>
-                        <AiOutlineLoading3Quarters className="animate-spin" />
-                        Adding item..
-                      </>
-                    ) : (
-                      <>
-                        <AiOutlineShoppingCart />
-                        <span className="font-semibold">Add to Cart</span>
-                      </>
-                    )}
-                  </button>
-                )}
-              </div>
+            </div>
+            <div className="w-full sm:w-[85%] md:w-[75%] xl:w-[70%] flex bg-red-200">
+              {!adminToken && (
+                <button
+                  onClick={addToCart}
+                  disabled={cartLoading}
+                  className="w-full py-2 rounded-lg bg-gradient-to-r from-sky-400 to-sky-600 text-white font-bold hover:brightness-110 cursor-pointer transition active:scale-95 text-md gap-2 flex justify-center items-center shadow disabled:from-sky-300 disabled:to-sky-500 disabled:active:scale-100 text-xs md:text-base"
+                >
+                  {cartLoading ? (
+                    <>
+                      <AiOutlineLoading3Quarters className="animate-spin" />
+                      Adding item..
+                    </>
+                  ) : (
+                    <>
+                      <AiOutlineShoppingCart />
+                      <span className="font-semibold">Add to Cart</span>
+                    </>
+                  )}
+                </button>
+              )}
             </div>
           </div>
         </div>

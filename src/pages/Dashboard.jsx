@@ -32,6 +32,12 @@ const Dashboard = () => {
         dispatch({ type: 'ALERT_NEW', payload: 'alert' });
         toast.info(`You have ${totalNotif} new notification(s)`, { position: 'top-center', theme: 'colored' });
       });
+
+      socket?.on('newAdminTransaction', (totalNotif) => {
+        dispatch({ type: 'ALERT_NEW', payload: 'alert' });
+        dispatch({ type: 'ALERT_NEW', payload: 'history' });
+        toast.info(`You have ${totalNotif} new notification(s)`, { position: 'top-center', theme: 'colored' });
+      });
     }
   }, [socket]);
 

@@ -1,4 +1,5 @@
-import { Fragment, useState, useEffect } from 'react';
+import { Fragment, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Axios from 'axios';
 import { API_URL } from '../assets/constants';
 
@@ -7,8 +8,10 @@ import { AiOutlineClose, AiOutlineLoading3Quarters } from 'react-icons/ai';
 import { RiImageAddLine } from 'react-icons/ri';
 import { toast } from 'react-toastify';
 
-const UploadPaymentModal = ({ invoiceId, setInvoices, setMaxPage, setTotalData, currentPage, limit }) => {
+const UploadPaymentModal = ({ invoiceId, setInvoices, setMaxPage, setTotalData, currentPage, limit, socket }) => {
   const userToken = localStorage.getItem('userToken');
+  const dispatch = useDispatch();
+  const awaitingNotif = useSelector((state) => state.notification.awaiting);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [paymentImage, setPaymentImage] = useState(null);
@@ -31,6 +34,11 @@ const UploadPaymentModal = ({ invoiceId, setInvoices, setMaxPage, setTotalData, 
       setInvoices(response.data.rows);
       setMaxPage(response.data.maxPage);
       setTotalData(response.data.count);
+      if (awaitingNotif) {
+        dispatch({ type: 'ALERT_CLEAR', payload: 'awaiting' });
+      }
+      dispatch({ type: 'ALERT_NEW', payload: 'history' });
+      socket.emit('newTransaction');
       setLoading(false);
 
       setOpen(false);

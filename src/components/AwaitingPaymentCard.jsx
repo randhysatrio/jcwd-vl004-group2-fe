@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import Axios from 'axios';
 import { API_URL } from '../assets/constants';
 import { format } from 'date-fns';
 
 import UploadPaymentModal from './UploadPaymentModal';
+import { toast } from 'react-toastify';
 
 const InvoiceItem = ({ item }) => {
   return (
@@ -28,7 +29,34 @@ const InvoiceItem = ({ item }) => {
   );
 };
 
-const AwaitingPaymentCard = ({ invoice, setInvoices, setTotalData, currentPage, limit, setMaxPage }) => {
+const AwaitingPaymentCard = ({ invoice, setInvoices, setTotalData, currentPage, limit, setMaxPage, socket }) => {
+  const userToken = localStorage.getItem('userToken');
+
+  const cancelHandler = async () => {
+    try {
+      const response = await Axios.post(
+        `${API_URL}/checkout/cancel/${invoice.id}`,
+        {
+          limit,
+          currentPage,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
+
+      setInvoices(response.data.rows);
+      setMaxPage(response.data.maxPage);
+      setTotalData(response.data.count);
+
+      toast.success(response.data.message, { position: 'top-center', theme: 'colored' });
+    } catch (err) {
+      toast.error('Unable to cancel Invoice!', { position: 'bottom-left', theme: 'colored' });
+    }
+  };
+
   return (
     <>
       <div className="w-full xl:w-[85%] flex flex-col ring-1 ring-slate-200 rounded-lg">
@@ -88,6 +116,7 @@ const AwaitingPaymentCard = ({ invoice, setInvoices, setTotalData, currentPage, 
             setTotalData={setTotalData}
             currentPage={currentPage}
             limit={limit}
+            socket={socket}
           />
         </div>
       </div>
@@ -105,7 +134,10 @@ const AwaitingPaymentCard = ({ invoice, setInvoices, setTotalData, currentPage, 
             >
               Cancel
             </label>
-            <button className="w-36 py-2 font-bold text-white bg-green-400 rounded-full flex justify-center items-center hover:brightness-110 cursor-pointer active:scale-95 transition text-lg">
+            <button
+              onClick={cancelHandler}
+              className="w-36 py-2 font-bold text-white bg-green-400 rounded-full flex justify-center items-center hover:brightness-110 cursor-pointer active:scale-95 transition text-lg"
+            >
               Yes I'm sure
             </button>
           </div>
