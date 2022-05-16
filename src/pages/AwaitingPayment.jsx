@@ -44,17 +44,19 @@ const AwaitingPayment = () => {
         setInvoices(response.data.rows);
         setMaxPage(response.data.maxPage);
         setTotalData(response.data.count);
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } catch (err) {
         toast.error('Unable to fetch invoices!', { position: 'bottom-left', theme: 'colored' });
       }
     };
     fetchAwaiting();
-  }, []);
+  }, [currentPage]);
 
   useEffect(() => {
     if (currentPage === 1) {
       return;
-    } else if (totalData < currentPage * limit - limit) {
+    } else if (totalData <= currentPage * limit - limit) {
       setCurrentPage(currentPage - 1);
     }
   }, [totalData]);
@@ -109,9 +111,9 @@ const AwaitingPayment = () => {
         {invoices.length ? (
           <div className="w-full lg:w-[80%] mt-auto flex items-center justify-end py-1 border-t">
             <div className="flex items-center gap-1 text-xs lg:text-sm">
-              <span className="font-semibold">{currentPage}</span>
+              <span className="font-semibold">{limit * currentPage - limit + 1}</span>
               <span>to</span>
-              <span className="font-semibold">{maxPage}</span>
+              <span className="font-semibold">{limit * currentPage - limit + invoices.length}</span>
               <span>from</span>
               <span className="font-semibold">{totalData}</span>
             </div>
