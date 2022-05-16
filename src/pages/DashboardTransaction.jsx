@@ -4,7 +4,7 @@ import { FaArrowLeft, FaArrowRight, FaSearch } from "react-icons/fa";
 import { AiOutlineClose } from "react-icons/ai";
 import { FiCalendar, FiMinus, FiFilter } from "react-icons/fi";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
-import { useDispatch } from 'react-redux';
+import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { API_URL } from "../assets/constants";
 import { useSelector } from "react-redux";
@@ -75,7 +75,7 @@ const DashboardTransaction = () => {
   };
 
   useEffect(() => {
-    dispatch({ type: 'ALERT_CLEAR', payload: 'history' });
+    dispatch({ type: "ALERT_CLEAR", payload: "history" });
 
     const getTransaction = async () => {
       try {
@@ -147,6 +147,31 @@ const DashboardTransaction = () => {
     ));
   };
 
+  const renderPages = () => {
+    const pagination = [];
+    for (let i = 1; i <= totalPage; i++) {
+      pagination.push(i);
+    }
+    return pagination.map((value) => {
+      return (
+        // <AdminPagination key={value} pagination={value} setPage={setPage} />
+        <option key={value}>{value}</option>
+      );
+    });
+  };
+
+  const nextPageHandler = () => {
+    if (activePage < totalPage) {
+      setActivePage(activePage + 1);
+    }
+  };
+
+  const prevPageHandler = () => {
+    if (activePage > 1) {
+      setActivePage(activePage - 1);
+    }
+  };
+
   return (
     <div className="h-full w-full bg-gray-100">
       {/* Search Bar */}
@@ -166,7 +191,6 @@ const DashboardTransaction = () => {
             onChange={(e) => setKeyword(e.target.value)}
             className="search block w-72 shadow border-none rounded-3x1 focus:outline-none py-2 bg-gray-100 text-base text-gray-600 pl-11 pr-7"
           />
-
           <AiOutlineClose
             onClick={() => {
               setKeyword("");
@@ -181,33 +205,6 @@ const DashboardTransaction = () => {
           <h1 className="text-3xl text-gray-700 font-bold">Transactions</h1>
         </div>
         <div className="flex justify-between items-center space-x-4">
-          {/* <div className="flex gap-2 items-center mr-5">
-            <FiFilter size={24} />
-            {startDate === format(startOfMonth(Date.now()), 'yyyy-MM-dd') && endDate === format(endOfMonth(Date.now()), 'yyyy-MM-dd') ? (
-              <span>this month</span>
-            ) : (
-              <span>custom date</span>
-            )}
-          </div>
-          <div className="flex relative items-center w-44">
-            <input
-              type="date"
-              className="input input-bordered w-full max-w-xs mt-2 pl-11"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-            />
-            <FiCalendar size="22" className="absolute left-3 top-5" />
-          </div>
-          <FiMinus size={24} />
-          <div className="flex relative items-center w-44">
-            <input
-              type="date"
-              value={endDate}
-              className="input input-bordered w-full max-w-xs mt-2 pl-11"
-              onChange={(e) => setEndDate(e.target.value)}
-            />
-            <FiCalendar size="22" className="absolute left-3 top-5" />
-          </div> */}
           <div className="relative ml-auto group">
             <div className="p-2 rounded-lg text-white bg-primary flex items-center cursor-pointer group">
               <span
@@ -254,7 +251,7 @@ const DashboardTransaction = () => {
                   Reset
                 </button>
                 <button
-                  className="w-24 py-2 rounded-2xl text-white font-bold bg-emerald-400 hover:brightness-110 active:scale-95 transition"
+                  className="w-24 py-2 rounded-2xl text-white font-bold bg-primary hover:brightness-110 active:scale-95 transition"
                   onClick={() =>
                     setSelectedDates({
                       startDate: startOfDay(ranges[0].startDate),
@@ -284,7 +281,7 @@ const DashboardTransaction = () => {
       </div>
       <div className="bg-white shadow-sm p-5">
         <div className="overflow-x-auto">
-          <table className="table w-full">
+          <table className="w-full">
             <thead>
               <tr>
                 <th className="bg-white border-b border-gray-200">No</th>
@@ -302,39 +299,23 @@ const DashboardTransaction = () => {
             </thead>
             <tbody>{renderTransactions()}</tbody>
           </table>
-          <div className="mt-3 flex justify-center items-center gap-4 border-t pt-3">
-            <button
-              className={
-                activePage === 1
-                  ? `hover:cursor-not-allowed`
-                  : `hover:cursor-pointer`
-              }
-              disabled={activePage === 1}
-              onClick={() => setActivePage(activePage - 1)}
-            >
+          <div className="mt-3 flex justify-center items-center gap-4 pt-3">
+            <button onClick={prevPageHandler}>
               <FaArrowLeft />
             </button>
             <div>
               Page{" "}
-              <input
+              <select
                 type="number"
                 className="mx-2 text-center focus:outline-none w-10 bg-gray-100"
                 value={activePage}
-                onChange={(e) =>
-                  e.target.value <= totalPage && setActivePage(e.target.value)
-                }
-              />{" "}
+                onChange={(e) => setActivePage(+e.target.value)}
+              >
+                {renderPages()}
+              </select>{" "}
               of {totalPage}
             </div>
-            <button
-              className={
-                activePage === totalPage
-                  ? `hover:cursor-not-allowed`
-                  : `hover:cursor-pointer`
-              }
-              disabled={activePage === totalPage}
-              onClick={() => setActivePage(activePage + 1)}
-            >
+            <button onClick={nextPageHandler}>
               <FaArrowRight />
             </button>
           </div>

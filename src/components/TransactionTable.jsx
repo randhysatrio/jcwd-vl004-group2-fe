@@ -119,25 +119,31 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
 
   return (
     <>
-      <tr key={item.id}>
+      <tr className="text-sm border-b border-gray-200" key={item.id}>
         <th>{startNumber + i + 1}</th>
         <td className="max-w-sm whitespace-normal">{item.user.name}</td>
         <td className="max-w-md whitespace-normal">
           {item.address.address}, {item.address.city}, {item.address.province}
         </td>
-        <td>{item.deliveryoption.name}</td>
-        <td>{item.notes}</td>
-        <td>{format(new Date(item.createdAt), "dd/MM/yyyy")}</td>
-        <td>
+        <td className="justify-center items-center text-center p-4">
+          {item.deliveryoption.name}
+        </td>
+        <td className="justify-center items-center text-center p-4">
+          {item.notes}
+        </td>
+        <td className="justify-center items-center text-center p-4">
+          {format(new Date(item.createdAt), "dd/MM/yyyy")}
+        </td>
+        <td className="justify-center items-center text-center p-4">
           <label
             htmlFor={`detail-modal-${item.id}`}
-            className="flex gap-3 items-center hover:cursor-pointer border-b pb-1 px-1 border-primary text-primary w-20"
+            className="flex gap-3 items-center hover:cursor-pointer border-b pb-1 px-1 m-auto border-primary text-primary w-20"
           >
             <span>Detail</span>
             <FaSearchPlus size={20} />
           </label>
         </td>
-        <td>
+        <td className="justify-center items-center text-center p-4">
           <div
             className={`badge p-3 ${status === 'pending' && 'badge-warning'} ${status === 'approved' && 'badge-success'} ${
               status === 'rejected' && 'badge-error'
