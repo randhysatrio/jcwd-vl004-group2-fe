@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 
 const InvoiceItem = ({ item }) => {
   return (
-    <div className="w-full h-12  md:h-14 lg:h-16 flex rounded-lg py-1">
+    <div className="w-full h-12 md:h-14 lg:h-16 flex rounded-lg py-1">
       <div className="h-full w-[20%] flex items-center justify-center">
         <div className="h-11 w-11 sm:h-12 sm:w-12 lg:h-14 lg:w-14 bg-white border rounded-lg overflow-hidden">
           <img src={`${API_URL}/${item.product?.image}`} className="h-full object-contain" />
@@ -21,7 +21,7 @@ const InvoiceItem = ({ item }) => {
       </div>
       <div className="h-full w-[25%] flex flex-col items-center justify-center">
         <span className="text-[10px] sm:text-xs font-bold lg:font-extrabold text-slate-700 mb-1">Qty:</span>
-        <span className="text-xs sm:text-sm lg:text-md font-semibold text-slate-700">
+        <span className="text-xs sm:text-sm lg:text-md xl:text-base font-semibold text-slate-700">
           {item.quantity.toLocaleString('id')} {item.product?.unit}
         </span>
       </div>
@@ -79,7 +79,7 @@ const AwaitingPaymentCard = ({ invoice, setInvoices, setTotalData, currentPage, 
           </div>
           <div className="w-[30%] flex flex-col py-1 pr-1">
             <div className="w-full flex items-center justify-end px-1">
-              <span className="text-sm  lg:text-md  font-bold">Summary:</span>
+              <span className="text-sm lg:text-md font-bold">Summary:</span>
             </div>
             <div className="w-full h-full bg-gray-100 rounded-lg flex flex-col py-1 gap-1">
               <div className="w-full flex flex-col items-end px-2">

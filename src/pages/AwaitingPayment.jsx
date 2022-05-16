@@ -73,7 +73,7 @@ const AwaitingPayment = () => {
 
   return (
     <div className="h-full flex justify-center py-3 lg:py-5">
-      <div className="h-full w-[90%] sm:w-[85%] md:w-[90%] lg:w-[80%] xl:w-[75%] flex flex-col items-center">
+      <div className="h-full w-[90%] sm:w-[85%] md:w-[90%] lg:w-[80%] flex flex-col items-center">
         <div className="w-full flex items-center py-2">
           <span className="text-3xl font-semibold leading-10 bg-gradient-to-r from-sky-400 to-emerald-400 bg-clip-text text-transparent">
             Awaiting Payment
@@ -90,19 +90,27 @@ const AwaitingPayment = () => {
           )}
         </div>
         {invoices.length ? (
-          <div className="w-full xl:w-[85%] mt-auto flex items-center justify-end py-1 border-t">
-            <div className="flex items-center gap-1">
-              <span>{currentPage}</span>
+          <div className="w-full lg:w-[80%] mt-auto flex items-center justify-end py-1 border-t">
+            <div className="flex items-center gap-1 text-xs lg:text-sm">
+              <span className="font-semibold">{currentPage}</span>
               <span>to</span>
-              <span>{maxPage}</span>
+              <span className="font-semibold">{maxPage}</span>
               <span>from</span>
-              <span>{totalData}</span>
+              <span className="font-semibold">{totalData}</span>
             </div>
             <div className="flex items-center gap-1">
-              <button>
+              <button
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(currentPage - 1)}
+                className="active:scale-95 hover:brightness-110 transition disabled:text-gray-400 disabled:active:scale-100"
+              >
                 <FiChevronLeft />
               </button>
-              <button>
+              <button
+                disabled={currentPage === maxPage}
+                onClick={() => setCurrentPage(currentPage + 1)}
+                className="active:scale-95 hover:brightness-110 transition disabled:text-gray-400 disabled:active:scale-100"
+              >
                 <FiChevronRight />
               </button>
             </div>

@@ -187,10 +187,11 @@ function Checkout() {
         }
       );
 
-      if (response) {
+      if (response.data.invoice) {
         let paymentData = paymentMethod;
         paymentData.bill = subtotal + costDelivery;
         paymentData.invoice = response.data.invoice;
+        paymentData.createdAt = response.data.createdAt;
 
         localStorage.removeItem('checkout-data');
         localStorage.setItem('payment-data', JSON.stringify(paymentData));

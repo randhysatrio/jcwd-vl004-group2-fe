@@ -200,7 +200,7 @@ const ProductCardAll = ({ view, product }) => {
                 )}
               </div>
             </div>
-            <div className="w-full sm:w-[85%] md:w-[75%] xl:w-[70%] flex bg-red-200">
+            <div className="w-full sm:w-[85%] md:w-[75%] xl:w-[70%] flex">
               {!adminToken && (
                 <button
                   onClick={addToCart}
