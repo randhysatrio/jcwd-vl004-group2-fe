@@ -15,7 +15,6 @@ import Navbar from '../components/Navbar';
 const Cart = () => {
   const [cart, setCart] = useState();
   const [page, setPage] = useState(1);
-  // const [quantity, setQuantity] = useState();
   const userGlobal = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const userToken = localStorage.getItem('userToken');
@@ -104,7 +103,7 @@ const Cart = () => {
       localStorage.setItem('checkout-data', JSON.stringify(checkoutData));
       navigate('/checkout');
     } else {
-      toast.error('Your cart is empty');
+      toast.error('none item selected');
     }
   };
 
@@ -164,23 +163,21 @@ const Cart = () => {
     }
   };
 
-  const toIDR = (number) => {
-    return parseInt(number).toLocaleString('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0,
-    });
-  };
-
   const rendDetail = () => {
     return cart?.notAvailable.map((item) => {
       return (
         <div key={item.id} className="flex gap-3 border-b mb-2 py-2">
-          <img src={item.product.image} className="h-24" alt="cart product" />
+          <img
+            src={`${API_URL}/${item.product.image}`}
+            className="h-24 w-24 object-cover"
+            alt="cart product"
+          />
           <div className="flex w-full flex-col py-1">
             <h2 className="text-sm font-semibold mb-2">{item.product.name}</h2>
             <div className="flex gap-4">
-              <span>Price : {toIDR(item.product.price_sell)}</span>
+              <span>
+                Price : Rp. {item.product.price_sell.toLocaleString('id')}
+              </span>
             </div>
             <div className="flex justify-end pr-5">
               <span>
@@ -202,7 +199,7 @@ const Cart = () => {
     <>
       <Header />
       <Navbar />
-      <div className="flex flex-col m-auto justify-center my-32 gap-8 w-11/12">
+      <div className="flex flex-col m-auto justify-center my-20 gap-8 w-11/12">
         {cart?.notAvailable.length !== 0 && (
           <div className="alert shadow-lg w-max gap-20">
             <div className="text-warning">
@@ -212,7 +209,7 @@ const Cart = () => {
                 processed
               </span>
             </div>
-            <div class="flex-none">
+            <div className="flex-none">
               <label
                 htmlFor="detail-modal"
                 href="#detail-modal"
@@ -223,19 +220,21 @@ const Cart = () => {
             </div>
           </div>
         )}
-        <div className="flex justify-start w-44 px-7 form-control">
-          <label className="label cursor-pointer">
-            <input
-              id="checkeall"
-              type="checkbox"
-              checked={cart?.isCheckedAll}
-              className="checkbox"
-              onChange={handCheckAll}
-              disabled={isLoading}
-            />
-            <span className="label-text text-lg">Select All</span>
-          </label>
-        </div>
+        {cart?.cartList.length ? (
+          <div className="flex justify-start w-44 px-7 form-control">
+            <label className="label cursor-pointer">
+              <input
+                id="checkeall"
+                type="checkbox"
+                checked={cart?.isCheckedAll}
+                className="checkbox"
+                onChange={handCheckAll}
+                disabled={isLoading}
+              />
+              <span className="label-text text-lg">Select All</span>
+            </label>
+          </div>
+        ) : null}
         <div className="flex m-auto justify-center gap-8 w-full">
           <div className="w-9/12 flex flex-col gap-8">
             {/* List items */}
@@ -275,21 +274,22 @@ const Cart = () => {
                   {cart?.checkoutItems ? cart?.checkoutItems.length : 0}{' '}
                   {cart?.checkoutItems?.length > 1 ? 'items' : 'item'})
                 </span>
-                <span>{toIDR(rendSubtotal())}</span>
+                <span>Rp. {rendSubtotal().toLocaleString('id')}</span>
               </div>
               <div className="flex justify-between">
                 <span>Discount</span>
-                <span>{toIDR(0)}</span>
+                <span>Rp. {0}</span>
               </div>
               <div className="border-gray-300 border-t"></div>
               <div className="flex justify-between">
                 <span className="font-bold text-lg">TOTAL</span>
                 <span className="font-bold text-lg">
-                  {toIDR(rendSubtotal())}
+                  Rp. {rendSubtotal().toLocaleString('id')}
                 </span>
               </div>
             </div>
             <button
+              disabled={!cart?.checkoutItems.length}
               className="btn btn-block btn-primary"
               onClick={handCheckout}
             >
@@ -310,11 +310,8 @@ const Cart = () => {
               </label>
             </div>
             <div className="flex my-3 items-center">
-              <h3 className="text-lg font-bold mb-3">Not available</h3>
+              <h3 className="text-lg font-bold mb-3">Not available item</h3>
             </div>
-            <span className="font-semibold mb-4 pt-9 w-28 border-b-2 border-primary">
-              Order Items
-            </span>
             {rendDetail()}
           </div>
         </div>

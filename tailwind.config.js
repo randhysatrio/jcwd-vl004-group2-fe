@@ -12,6 +12,9 @@ module.exports = {
       height: {
         500: '500px',
       },
+      width: {
+        modal: '650px',
+      },
     },
   },
   variants: {

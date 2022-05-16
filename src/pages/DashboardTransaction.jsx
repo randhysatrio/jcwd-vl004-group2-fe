@@ -152,7 +152,7 @@ const DashboardTransaction = () => {
               Page{' '}
               <input
                 type="number"
-                className="px-2 text-center focus:outline-none w-6 bg-gray-100"
+                className="mx-2 text-center focus:outline-none w-10 bg-gray-100"
                 value={activePage}
                 onChange={(e) => e.target.value <= totalPage && setActivePage(e.target.value)}
               />{' '}

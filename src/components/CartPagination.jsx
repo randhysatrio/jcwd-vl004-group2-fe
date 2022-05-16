@@ -26,10 +26,14 @@ function CartPagination({
       if (minBtn) {
         for (let i = 1; i <= cart?.total_page; i++) {
           if (i === cart?.active_page) {
-            button.push(<button className="btn btn-active">{i}</button>);
+            button.push(
+              <button key={cart?.id} className="btn btn-active">
+                {i}
+              </button>
+            );
           } else {
             button.push(
-              <button className="btn" onClick={switchPage}>
+              <button key={cart?.id} className="btn" onClick={switchPage}>
                 {i}
               </button>
             );
@@ -37,7 +41,9 @@ function CartPagination({
         }
       } else if (hiddenFirst && hiddenLast) {
         button.push(
-          <button className="btn btn-active">{cart?.active_page}</button>
+          <button key={cart?.id} className="btn btn-active">
+            {cart?.active_page}
+          </button>
         );
       } else if (hiddenLast) {
         for (let i = 1; i <= cart?.active_page; i++) {
@@ -54,10 +60,14 @@ function CartPagination({
       } else if (hiddenFirst) {
         for (let i = cart?.active_page; i <= cart?.total_page; i++) {
           if (i === cart?.active_page) {
-            button.push(<button className="btn btn-active">{i}</button>);
+            button.push(
+              <button key={cart?.id} className="btn btn-active">
+                {i}
+              </button>
+            );
           } else {
             button.push(
-              <button className="btn" onClick={switchPage}>
+              <button key={cart?.id} className="btn" onClick={switchPage}>
                 {i}
               </button>
             );
@@ -83,11 +93,11 @@ function CartPagination({
               </button>
               {/* more btn */}
               <div className="dropdown">
-                <label tabindex="0" className="btn">
+                <label tabIndex="0" className="btn">
                   <FiMoreHorizontal size={20} />
                 </label>
                 <div
-                  tabindex="0"
+                  tabIndex="0"
                   className="dropdown-content card card-compact w-36 p-2 shadow bg-gray-300 text-primary-content"
                 >
                   <div className="card-body">
@@ -95,7 +105,7 @@ function CartPagination({
                       <div className="input-group input-group-md">
                         <input
                           type="number"
-                          className="input input-bordered input-sm w-full max-w-xs w-12 text-gray-700"
+                          className="input input-bordered input-sm w-full max-w-xs text-gray-700"
                           onChange={(e) =>
                             setChangePage(parseInt(e.target.value))
                           }
@@ -123,11 +133,11 @@ function CartPagination({
             <>
               {/* more btn */}
               <div className="dropdown">
-                <label tabindex="0" className="btn">
+                <label tabIndex="0" className="btn">
                   <FiMoreHorizontal size={20} />
                 </label>
                 <div
-                  tabindex="0"
+                  tabIndex="0"
                   className="dropdown-content card card-compact w-36 p-2 shadow bg-gray-300 text-primary-content"
                 >
                   <div className="card-body">
@@ -135,7 +145,7 @@ function CartPagination({
                       <div className="input-group input-group-md">
                         <input
                           type="number"
-                          className="input input-bordered input-sm w-full max-w-xs w-12 text-gray-700"
+                          className="input input-bordered input-sm w-full max-w-xs text-gray-700"
                           onChange={(e) =>
                             setChangePage(parseInt(e.target.value))
                           }

@@ -2,9 +2,9 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { DateRangePicker } from 'react-date-range';
 import {
   FiCalendar,
-  FiMinus,
   FiFilter,
   FiMoreHorizontal,
   FiAward,
@@ -19,64 +19,81 @@ const DashboardReport = () => {
   const [totalPage, setTotalPage] = useState(1);
   const [statistic, setStatistic] = useState();
   const [mostSold, setMostSold] = useState();
-  const [startDate, setStartDate] = useState();
-  const [endDate, setEndDate] = useState();
   const adminToken = localStorage.getItem('adminToken');
+  const [selectedDates, setSelectedDates] = useState([
+    {
+      startDate: new Date(new Date().setDate(1)),
+      endDate: new Date(),
+      key: 'selection',
+    },
+  ]);
 
   const [searchParams] = useSearchParams();
   const { search } = useLocation();
 
-  useEffect(() => {
-    const getTransaction = async () => {
-      try {
-        if ((activePage > totalPage && search) || activePage < 1) {
-          return;
-        }
-
-        const response = await axios.post(
-          `${API_URL}/admin/report/get`,
-          {
-            startDate,
-            endDate,
-            search: searchParams.get('keyword'),
-            page: activePage,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${adminToken}`,
-            },
-          }
-        );
-
-        setReport(response.data.data);
-        setMostSold(response.data.mostSold);
-        setStatistic({
-          sales: response.data.sales,
-          profit: response.data.profit,
-          capital: response.data.capital,
-          revenue: response.data.revenue,
-        });
-        setTotalPage(response.data.totalPage);
-        setStartNumber(response.data.startNumber);
-      } catch (error) {
-        toast.error(error.response.data.message);
+  const getTransaction = async (stardDate, endDate) => {
+    try {
+      // protect pagination
+      if (activePage > totalPage || activePage < 1) {
+        return;
       }
-    };
 
+      const response = await axios.post(
+        `${API_URL}/admin/report/get`,
+        {
+          startDate: stardDate ? stardDate : selectedDates[0].startDate,
+          endDate: endDate ? endDate : selectedDates[0].endDate,
+          search: searchParams.get('keyword'),
+          page: activePage,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${adminToken}`,
+          },
+        }
+      );
+
+      setReport(response.data.data);
+      setMostSold(response.data.mostSold);
+      setStatistic({
+        sales: response.data.sales,
+        profit: response.data.profit,
+        capital: response.data.capital,
+        revenue: response.data.revenue,
+      });
+      setTotalPage(response.data.totalPage);
+      setStartNumber(response.data.startNumber);
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
+  };
+
+  useEffect(() => {
     getTransaction();
-  }, [activePage, search, startDate, endDate]);
+  }, [activePage, search]);
 
   useEffect(() => {
     setActivePage(1);
-  }, [search, startDate]);
+  }, [search]);
 
-  const toIDR = (number) => {
-    number = parseInt(number);
-    return number.toLocaleString('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0,
-    });
+  const isDefaultDate = () => {
+    let startDate = selectedDates[0].startDate.toLocaleDateString('id');
+    let endDate = selectedDates[0].endDate.toLocaleDateString('id');
+    let firstDate = new Date(new Date().setDate(1)).toLocaleDateString('id');
+    let today = new Date().toLocaleDateString('id');
+
+    if (startDate === firstDate && endDate === today) {
+      return true;
+    }
+    return false;
+  };
+
+  const resetDate = () => {
+    let startDate = new Date();
+    let endDate = new Date();
+    setSelectedDates([{ ...selectedDates[0], startDate, endDate }]);
+    setActivePage(1);
+    getTransaction(startDate, endDate);
   };
 
   return (
@@ -88,32 +105,33 @@ const DashboardReport = () => {
         <div className="flex gap-3 items-center">
           <div className="flex gap-2 items-center mr-5">
             <FiFilter size={24} />
-            {startDate ? <span>custom date</span> : <span>this month</span>}
+            {isDefaultDate() ? (
+              <span>this month</span>
+            ) : selectedDates[0].startDate.toLocaleDateString('id') ===
+              selectedDates[0].endDate.toLocaleDateString('id') ? (
+              <span>{`${selectedDates[0].startDate.toLocaleDateString(
+                'id'
+              )}`}</span>
+            ) : (
+              <span>{`${selectedDates[0].startDate.toLocaleDateString(
+                'id'
+              )} - ${selectedDates[0].endDate.toLocaleDateString('id')}`}</span>
+            )}
           </div>
-          <div className="flex relative items-center w-44">
-            <input
-              type="date"
-              placeholder="DD-YYYY-MM"
-              className="input input-bordered w-full max-w-xs mt-2 pl-11"
-              onChange={(e) => setStartDate(e.target.value)}
-            />
-            <FiCalendar size="22" className="absolute left-3 top-5" />
-          </div>
-          <FiMinus size={24} />
-          <div className="flex relative items-center w-44">
-            <input
-              type="date"
-              className="input input-bordered w-full max-w-xs mt-2 pl-11"
-              onChange={(e) => setEndDate(e.target.value)}
-            />
-            <FiCalendar size="22" className="absolute left-3 top-5" />
-          </div>
+          <label
+            htmlFor="date-modal"
+            href="#date-modal"
+            className="flex items-center gap-3 btn btn-primary hover:cursor-pointer"
+          >
+            <FiCalendar size={24} />
+            Select date
+          </label>
           <div className="ml-5">
             <div className="stats shadow">
               <div className="stat">
                 <div className="stat-title text-xs">Profit</div>
                 <div className="stat-value text-xl text-primary">
-                  {statistic ? toIDR(statistic.profit) : 0}
+                  Rp. {statistic ? statistic.profit.toLocaleString('id') : 0}
                 </div>
               </div>
               <div className="stat">
@@ -166,15 +184,22 @@ const DashboardReport = () => {
                       <th>{startNumber + i + 1}</th>
                       <td>{item.name}</td>
                       <td>
-                        {toIDR(item.price)}/{item.unit}
+                        Rp. {parseInt(item.price).toLocaleString('id')}/
+                        {item.unit}
                       </td>
                       <td>{item.total_sales} sales</td>
                       <td>
-                        {item.sold_volume} {item.unit}
+                        {parseInt(item.sold_volume).toLocaleString('id')}{' '}
+                        {item.unit}
                       </td>
-                      <td>{toIDR(item.capital)}</td>
-                      <td>{toIDR(item.total_bill)}</td>
-                      <td>{toIDR(item.total_bill - item.capital)}</td>
+                      <td>Rp. {parseInt(item.capital).toLocaleString('id')}</td>
+                      <td>
+                        Rp. {parseInt(item.total_bill).toLocaleString('id')}
+                      </td>
+                      <td>
+                        Rp.{' '}
+                        {(item.total_bill - item.capital).toLocaleString('id')}
+                      </td>
                     </tr>
                   </>
                 );
@@ -198,7 +223,7 @@ const DashboardReport = () => {
               Page{' '}
               <input
                 type="number"
-                className="px-2 text-center focus:outline-none w-6 bg-gray-100"
+                className="mx-2 text-center focus:outline-none w-10 bg-gray-100"
                 value={activePage}
                 onChange={(e) =>
                   e.target.value <= totalPage && setActivePage(e.target.value)
@@ -222,6 +247,49 @@ const DashboardReport = () => {
           </div>
         </div>
       </div>
+      {/* date picker modal */}
+      <input type="checkbox" id="date-modal" className="modal-toggle" />
+      <div className="modal">
+        <div className="modal-box w-modal max-w-full bg-gray-100 overflow-auto">
+          <div className="modal-action">
+            <label
+              htmlFor="date-modal"
+              className="btn btn-sm btn-circle absolute right-2 top-2"
+            >
+              ✕
+            </label>
+          </div>
+          <div className="flex flex-col items-center gap-3 pt-5 w-full">
+            {/* date */}
+            <DateRangePicker
+              className="rounded-lg overflow-hidden"
+              onChange={(item) => setSelectedDates([item.selection])}
+              showSelectionPreview={true}
+              ranges={selectedDates}
+              direction="horizontal"
+            />
+            <div className="flex gap-3 justify-end modal-action w-full px-5">
+              <label
+                htmlFor="date-modal"
+                onClick={resetDate}
+                className="btn btn-warning btn-md"
+              >
+                Reset
+              </label>
+              <label
+                htmlFor="date-modal"
+                onClick={() => {
+                  setActivePage(1);
+                  getTransaction();
+                }}
+                className="btn btn-primary btn-md"
+              >
+                Apply
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
       {/* detail statistic */}
       <input type="checkbox" id="detail-modal" className="modal-toggle" />
       <div className="modal">
@@ -240,13 +308,13 @@ const DashboardReport = () => {
               <div className="stat">
                 <div className="stat-title text-xs">Capital</div>
                 <div className="stat-value text-xl">
-                  {statistic ? toIDR(statistic.capital) : 0}
+                  Rp. {statistic ? statistic.capital.toLocaleString('id') : 0}
                 </div>
               </div>
               <div className="stat">
                 <div className="stat-title text-xs">Profit</div>
                 <div className="stat-value text-xl text-primary">
-                  {statistic ? toIDR(statistic.profit) : 0}
+                  Rp. {statistic ? statistic.profit.toLocaleString('id') : 0}
                 </div>
               </div>
             </div>
@@ -255,7 +323,7 @@ const DashboardReport = () => {
                 <div className="stat">
                   <div className="stat-title">Revenue</div>
                   <div className="stat-value">
-                    {statistic ? toIDR(statistic.revenue) : 0}
+                    Rp. {statistic ? statistic.revenue.toLocaleString('id') : 0}
                   </div>
                 </div>
               </div>
@@ -278,7 +346,7 @@ const DashboardReport = () => {
                   mostSold.map((item, i) => {
                     return (
                       <li
-                        key={i}
+                        key={item.id}
                         className={`py-3 ${
                           i === 2 ? null : 'border-b border-gray-200'
                         } flex justify-between px-2 gap-1`}

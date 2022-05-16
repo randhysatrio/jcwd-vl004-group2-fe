@@ -68,6 +68,7 @@ function CheckoutAddAddress({ onClick }) {
         <div className="modal-box">
           <div className="modal-action">
             <label
+              id="close-btn"
               htmlFor="modal-add-address"
               className="btn btn-sm btn-circle absolute right-2 top-2"
             >

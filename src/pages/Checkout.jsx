@@ -5,8 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { API_URL } from '../assets/constants';
+import CartCard from '../components/CartCard';
 import CheckoutAddAddress from '../components/CheckoutAddAddress';
-import CheckoutCard from '../components/CheckoutCard';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import Navbar from '../components/Navbar';
@@ -75,7 +75,7 @@ function Checkout() {
 
       setAddress(
         response.data.rows.find((item) => {
-          return item.is_default === true;
+          return item.is_default === true ? item : response.data.rows[0];
         })
       );
     } catch (error) {
@@ -145,14 +145,6 @@ function Checkout() {
     }
   };
 
-  const toIDR = (number) => {
-    return number.toLocaleString('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0,
-    });
-  };
-
   const handCheckout = async () => {
     try {
       setIsLoading(true);
@@ -187,11 +179,16 @@ function Checkout() {
         }
       );
 
-      if (response.data.invoice) {
-        let paymentData = paymentMethod;
-        paymentData.bill = subtotal + costDelivery;
-        paymentData.invoice = response.data.invoice;
-        paymentData.createdAt = response.data.createdAt;
+      if (response) {
+        let paymentData = [paymentMethod];
+        paymentData[0].bill = subtotal + costDelivery;
+        paymentData[0].invoice = response.data.invoice;
+        paymentData[0].createdAt = response.data.createdAt;
+
+        // set invoice data
+        let data = localStorage.getItem('payment-data');
+        data = JSON.parse(data);
+        if (data) paymentData.push(...data);
 
         localStorage.removeItem('checkout-data');
         localStorage.setItem('payment-data', JSON.stringify(paymentData));
@@ -205,7 +202,7 @@ function Checkout() {
 
         setIsLoading(false);
         toast.success(response.data.message);
-        return navigate('/payment', { replace: true });
+        return navigate(`/payment/${response.data.invoice}`, { replace: true });
       }
       setIsLoading(false);
     } catch (error) {
@@ -218,17 +215,17 @@ function Checkout() {
     <>
       <Header />
       <Navbar />
-      <div className="flex m-auto justify-start mt-32 pb-7 w-11/12">
+      <div className="flex m-auto justify-start mt-20 pb-7 w-11/12">
         <h2 className="text-3xl">Checkout</h2>
       </div>
       <div className="flex m-auto justify-center mb-32 gap-8 w-11/12">
-        <div className="w-8/12 flex flex-col gap-8">
+        <div className="w-8/12 flex flex-col gap-8 ">
           {/* Shipping Address */}
           <div className="border-gray-300 border rounded-md py-4 px-3 min-h-48">
             <h3 className="text-xl font-semibold">Shipping Address</h3>
             <div className="divider" />
             <div className="flex justify-between items-end">
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-3 w-full">
                 <div className="flex items-center gap-3">
                   <FiUser size={20} />
                   <span className="font-semibold">{userGlobal.name}</span>
@@ -238,13 +235,18 @@ function Checkout() {
                   {editPhone ? (
                     <>
                       <input
-                        defaultValue={phone}
+                        value={phone ? phone : ''}
                         type="text"
                         placeholder="Type here"
                         className="input input-bordered input-sm w-36 max-w-xs mr-4"
                         onChange={(e) => setPhone(e.target.value)}
-                      ></input>
-                      <FiSave size={24} color="#0EA5E9" className="hover:cursor-pointer" onClick={() => handEditPhone(phone)} />
+                      />
+                      <FiSave
+                        size={24}
+                        color="#0EA5E9"
+                        className="hover:cursor-pointer"
+                        onClick={() => handEditPhone(phone)}
+                      />
                       <FiXSquare
                         size={24}
                         color="red"
@@ -262,30 +264,48 @@ function Checkout() {
                     </>
                   )}
                 </div>
-                <div className="flex items-center gap-3 flex-wrap">
-                  <FiMapPin size={20} />
-                  {address ? (
-                    <span>
-                      {address.address}, {address.city}, {address.province}, {address.country}, {address.postalcode}
-                    </span>
-                  ) : (
-                    <a href="#modal-add-address" className="text-primary border-primary border-b font-semibold">
-                      Add Address
-                    </a>
+                <div className="flex justify-between items-center gap-3">
+                  <div className="flex gap-3 w-3/5">
+                    <FiMapPin size={20} />
+                    <div className="flex justify-start w-full">
+                      {address ? (
+                        <span className="flex flex-wrap">
+                          {address.address}, {address.city}, {address.province},{' '}
+                          {address.country}, {address.postalcode}
+                        </span>
+                      ) : (
+                        <label
+                          htmlFor="modal-add-address"
+                          href="#modal-add-address"
+                          className="text-primary border-primary border-b
+                      font-semibold hover:cursor-pointer"
+                        >
+                          Add Address
+                        </label>
+                      )}
+                    </div>
+                  </div>
+                  {address && (
+                    <div className="flex gap-3">
+                      <label
+                        htmlFor="modal-add-address"
+                        href="#modal-add-address"
+                        className="btn btn-sm"
+                      >
+                        Add Address
+                      </label>
+
+                      <label
+                        htmlFor="modal-change-address"
+                        href="#modal-change-address"
+                        className="btn btn-sm"
+                      >
+                        Change Address
+                      </label>
+                    </div>
                   )}
                 </div>
               </div>
-              {address && (
-                <div className="flex gap-3">
-                  <label htmlFor="modal-add-address" href="#modal-add-address" className="btn btn-sm">
-                    Add Address
-                  </label>
-
-                  <label htmlFor="modal-change-address" href="#modal-change-address" className="btn btn-sm">
-                    Change Address
-                  </label>
-                </div>
-              )}
             </div>
             <div className="divider" />
 
@@ -306,7 +326,7 @@ function Checkout() {
                   deliveryOptions.map((item, i) => {
                     return (
                       <option key={item.id} value={i}>
-                        {item.name} - {toIDR(item.cost)}
+                        {item.name} - Rp. {item.cost.toLocaleString('id')}
                       </option>
                     );
                   })}
@@ -321,7 +341,14 @@ function Checkout() {
             </div>
             <div className="divider" />
             {orderItems.map((item) => {
-              return <CheckoutCard key={item.id} item={item} />;
+              return (
+                <CartCard
+                  key={item.id}
+                  item={item}
+                  checkout
+                  setIsLoading={setIsLoading}
+                />
+              );
             })}
           </div>
         </div>
@@ -332,16 +359,18 @@ function Checkout() {
               <span>
                 Subtotal ({orderItems.length} {orderItems.length > 1 ? 'items' : 'item'})
               </span>
-              <span>{toIDR(subtotal)}</span>
+              <span>Rp. {subtotal.toLocaleString('id')}</span>
             </div>
             <div className="flex justify-between">
               <span>Delivery</span>
-              <span>{toIDR(costDelivery)}</span>
+              <span>Rp. {costDelivery.toLocaleString('id')}</span>
             </div>
             <div className="divider"></div>
             <div className="flex justify-between">
               <span className="font-bold text-lg">TOTAL</span>
-              <span className="font-bold text-lg">{toIDR(subtotal + costDelivery)}</span>
+              <span className="font-bold text-lg">
+                Rp. {(subtotal + costDelivery).toLocaleString('id')}
+              </span>
             </div>
           </div>
           <label htmlFor="modal-payment" className="h-20 bg-gray-200 rounded-md flex justify-center items-center hover:cursor-pointer">
