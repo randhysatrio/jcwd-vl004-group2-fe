@@ -1,8 +1,9 @@
 import axios from "axios";
 import { useEffect, useState, useCallback } from "react";
-import { useSearchParams, useLocation } from "react-router-dom";
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { FaArrowLeft, FaArrowRight, FaSearch } from "react-icons/fa";
+import { AiOutlineClose } from "react-icons/ai";
 import { FiCalendar, FiMinus, FiFilter } from "react-icons/fi";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { API_URL } from "../assets/constants";
 import { useSelector } from "react-redux";
@@ -15,12 +16,16 @@ import TransactionTable from "../components/TransactionTable";
 
 const DashboardTransaction = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [transactions, setTransactions] = useState();
   const [activePage, setActivePage] = useState(1);
   const [startNumber, setStartNumber] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [currentSortDate, setCurrentSortDate] = useState("");
   const [paymentProof, setPaymentProof] = useState("");
+  const { pathname } = useLocation();
+  const [loading, setLoading] = useState(false);
+  const [keyword, setKeyword] = useState("");
   const [startDate, setStartDate] = useState(
     format(startOfDay(Date.now()), "yyyy-MM-dd")
   );
@@ -46,6 +51,28 @@ const DashboardTransaction = () => {
 
   console.log(transactions);
 
+  const useDebounce = (value, delay) => {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+
+    useEffect(() => {
+      const handler = setTimeout(() => {
+        setDebouncedValue(value);
+      }, delay);
+
+      return () => {
+        clearTimeout(handler);
+      };
+    }, [value, delay]);
+
+    return debouncedValue;
+  };
+
+  const debouncedSearch = useDebounce(keyword, 1000);
+
+  const loadingFalse = () => {
+    setLoading(false);
+  };
+
   useEffect(() => {
     dispatch({ type: 'ALERT_CLEAR', payload: 'history' });
 
@@ -54,14 +81,14 @@ const DashboardTransaction = () => {
         if (activePage > totalPage || !activePage) {
           return;
         }
-
+        setLoading(true);
         const response = await axios.post(
-          `${API_URL}/admin/transaction/get`,
+          `${API_URL}/admin/transaction/get?keyword=${debouncedSearch}`,
           {
             page: activePage,
             startDate: selectedDates.startDate,
             endDate: selectedDates.endDate,
-            search: searchParams.get("keyword"),
+            // search: searchParams.get("keyword"),
             sort: currentSortDate,
           },
           {
@@ -76,6 +103,7 @@ const DashboardTransaction = () => {
         setTransactions(response.data.data);
         setTotalPage(response.data.totalPage);
         setStartNumber(response.data.startNumber);
+        setTimeout(loadingFalse, 1000);
       } catch (error) {
         toast.error(error.response.data.message);
       }
@@ -119,7 +147,34 @@ const DashboardTransaction = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="h-full w-full bg-gray-100">
+      {/* Search Bar */}
+      <div className="h-16 bg-white shadow-sm pl-80 pr-8 fixed z-[3] w-10 top-0 left-0 flex items-center">
+        <div className="flex justify-center items-center relative">
+          <FaSearch
+            // onClick={() => {
+            //   setSearchParams({ keyword }, { replace: true });
+            // }}
+            className="absolute left-2 text-gray-400 bg-gray-100 active:scale-95 transition"
+          />
+          <input
+            type="text"
+            value={keyword}
+            id="myInput"
+            placeholder="Search..."
+            onChange={(e) => setKeyword(e.target.value)}
+            className="search block w-72 shadow border-none rounded-3x1 focus:outline-none py-2 bg-gray-100 text-base text-gray-600 pl-11 pr-7"
+          />
+
+          <AiOutlineClose
+            onClick={() => {
+              setKeyword("");
+              navigate(pathname);
+            }}
+            className="hover:brightness-110 cursor-pointer absolute right-2"
+          />
+        </div>
+      </div>
       <div className="flex items-center justify-between py-7 px-10">
         <div>
           <h1 className="text-3xl text-gray-700 font-bold">Transactions</h1>
