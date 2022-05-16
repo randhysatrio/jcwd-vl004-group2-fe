@@ -1,22 +1,48 @@
-import { FaSearch, FaBell, FaUserAlt, FaHome, FaBars, FaShoppingBag, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
-import { AiOutlineClose } from 'react-icons/ai';
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router';
-import axios from 'axios';
-import UserTable from '../components/UserTable';
-import Pagination from '../components/Pagination';
-import Swal from 'sweetalert2';
-import { useLocation, useSearchParams } from 'react-router-dom';
-import { API_URL } from '../assets/constants';
-import AdminPagination from '../components/AdminPagination';
+import {
+  FaSearch,
+  FaBell,
+  FaUserAlt,
+  FaHome,
+  FaBars,
+  FaShoppingBag,
+  FaArrowLeft,
+  FaArrowRight,
+} from "react-icons/fa";
+import { AiOutlineClose } from "react-icons/ai";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
+import axios from "axios";
+import UserTable from "../components/UserTable";
+import Pagination from "../components/Pagination";
+import Swal from "sweetalert2";
+import { useLocation, useSearchParams } from "react-router-dom";
+import { API_URL } from "../assets/constants";
 
 const Dashboard = () => {
-  const Swal = require('sweetalert2');
+  const [loading, setLoading] = useState(false);
+  const [keyword, setKeyword] = useState("");
+  const Swal = require("sweetalert2");
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
   const [users, setUsers] = useState([]);
   const [query, setQuery] = useState('');
+
+  const useDebounce = (value, delay) => {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+
+    useEffect(() => {
+      const handler = setTimeout(() => {
+        setDebouncedValue(value);
+      }, delay);
+
+      return () => {
+        clearTimeout(handler);
+      };
+    }, [value, delay]);
+
+    return debouncedValue;
+  };
 
   const handleSort = async (e) => {
     let query = e.target.value;
@@ -42,22 +68,34 @@ const Dashboard = () => {
     setPage(1);
   };
 
+  const debouncedSearch = useDebounce(keyword, 1000);
+  const debouncedStatus = useDebounce(status, 1000);
+
+  const loadingFalse = () => {
+    setLoading(false);
+  };
+
   useEffect(() => {
     const fetchUsers = async () => {
-      const userList = await axios.post(`${API_URL}/user/query`, {
-        active: status,
-        keyword: searchParams.get('keyword'),
-      });
+      setLoading(true);
+      const userList = await axios.post(
+        `${API_URL}/user/query?keyword=${debouncedSearch}`,
+        {
+          active: debouncedStatus,
+        }
+      );
       if (userList.data.length) {
         setUsers(userList.data.users);
         setMaxPage(Math.ceil(userList.data.length / 5));
         setPage(1);
+        setTimeout(loadingFalse, 1000);
       } else {
+        setTimeout(loadingFalse, 1000);
         setUserNotFound(true);
       }
     };
     fetchUsers();
-  }, [search, status]);
+  }, [debouncedSearch, debouncedStatus]);
 
   const renderUsers = () => {
     const beginningIndex = (page - 1) * 5;
@@ -135,7 +173,34 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="h-full w-full bg-gray-100">
+      {/* Search Bar */}
+      <div className="h-16 bg-white shadow-sm pl-80 pr-8 fixed z-[3] w-10 top-0 left-0 flex items-center">
+        <div className="flex justify-center items-center relative">
+          <FaSearch
+            // onClick={() => {
+            //   setSearchParams({ keyword }, { replace: true });
+            // }}
+            className="absolute left-2 text-gray-400 bg-gray-100 active:scale-95 transition"
+          />
+          <input
+            type="text"
+            value={keyword}
+            id="myInput"
+            placeholder="Search..."
+            onChange={(e) => setKeyword(e.target.value)}
+            className="search block w-72 shadow border-none rounded-3x1 focus:outline-none py-2 bg-gray-100 text-base text-gray-600 pl-11 pr-7"
+          />
+
+          <AiOutlineClose
+            onClick={() => {
+              setKeyword("");
+              navigate(pathname);
+            }}
+            className="hover:brightness-110 cursor-pointer absolute right-2"
+          />
+        </div>
+      </div>
       <div className="flex items-center justify-between py-7 px-10">
         <h1 className="text-3xl text-gray-700 font-bold">User</h1>
         <div className="flex justify-between items-center space-x-4">
@@ -152,9 +217,53 @@ const Dashboard = () => {
           </select>
         </div>
       </div>
-      <div className="bg-white shadow-sm p-5">
-        {/* <form action=""></form> */}
-        <div className="overflow-x-auto">
+      {loading ? (
+        <div className="bg-white shadow-sm p-5">
+          <table className="w-full">
+            <thead>
+              <tr className="text-sm font-medium text-gray-700 border-b border-gray-200">
+                <th className="py-4 px-4 text-center">ID</th>
+                <th className="py-4 px-4 text-center">Profile Picture</th>
+                <th className="py-4 px-4 text-center">Name</th>
+                <th className="py-4 px-4 text-center">Email</th>
+                <th className="py-4 px-4 text-center">Phone</th>
+                <th className="py-4 px-4 text-center">Status</th>
+                <th className="py-4 px-4 text-center">Actions</th>
+              </tr>
+            </thead>
+          </table>
+          <div class="flex h-screen w-full items-center justify-center">
+            <button
+              type="button"
+              class="flex items-center rounded-lg bg-primary px-4 py-2 text-white"
+              disabled
+            >
+              <svg
+                class="mr-3 h-5 w-5 animate-spin text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              <span class="font-medium"> Processing... </span>
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="bg-white shadow-sm p-5">
           <table className="w-full">
             <thead>
               <tr className="text-sm font-medium text-gray-700 border-b border-gray-200">
@@ -193,7 +302,7 @@ const Dashboard = () => {
             </button>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

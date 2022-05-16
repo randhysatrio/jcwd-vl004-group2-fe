@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { API_URL } from '../assets/constants';
-import { format } from 'date-fns';
+import { useState } from "react";
+import axios from "axios";
+import { API_URL } from "../assets/constants";
+import { format } from "date-fns";
 
-import Swal from 'sweetalert2';
-import { AiOutlineLoading3Quarters } from 'react-icons/ai';
-import { FaSearchPlus } from 'react-icons/fa';
+import Swal from "sweetalert2";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { FaSearchPlus } from "react-icons/fa";
 
 const TransactionTable = ({ item, startNumber, i, socket }) => {
   const adminToken = localStorage.getItem('adminToken');
@@ -21,13 +21,13 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
 
   const handleApprovedClick = (id) => {
     Swal.fire({
-      title: 'Are you sure?',
+      title: "Are you sure?",
       text: "You won't be able to revert this!",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, Change it!',
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Change it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
@@ -56,13 +56,13 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
 
   const handleRejectedClick = (id) => {
     Swal.fire({
-      title: 'Are you sure?',
+      title: "Are you sure?",
       text: "You won't be able to revert this!",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, Change it!',
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Change it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
@@ -127,7 +127,7 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
         </td>
         <td>{item.deliveryoption.name}</td>
         <td>{item.notes}</td>
-        <td>{format(new Date(item.createdAt), 'dd/MM/yyyy')}</td>
+        <td>{format(new Date(item.createdAt), "dd/MM/yyyy")}</td>
         <td>
           <label
             htmlFor={`detail-modal-${item.id}`}

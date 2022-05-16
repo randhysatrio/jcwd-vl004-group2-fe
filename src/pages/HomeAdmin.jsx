@@ -158,7 +158,7 @@ const HomeAdmin = () => {
         <div className="w-full justify-between items-center flex flex-col-4 shadow-md bg-white rounded-md">
           <div className="flex-col">
             <div className="font-bold text-3xl mt-3 ml-8">
-              {statistic ? toIDR(statistic.profit) : 0}
+              Rp. {statistic?.profit.toLocaleString("id")}
             </div>
             <div className="mb-3 ml-8">Profits</div>
           </div>

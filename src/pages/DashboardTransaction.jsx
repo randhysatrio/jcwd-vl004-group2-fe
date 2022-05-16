@@ -1,15 +1,17 @@
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-import { useSearchParams, useLocation } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
-import { FiCalendar, FiMinus, FiFilter } from 'react-icons/fi';
-import { toast } from 'react-toastify';
-import { API_URL } from '../assets/constants';
-import { useSelector } from 'react-redux';
-import { startOfMonth, endOfMonth, format } from 'date-fns';
+import axios from "axios";
+import { useEffect, useState, useCallback } from "react";
+import { useSearchParams, useLocation } from "react-router-dom";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import { FiCalendar, FiMinus, FiFilter } from "react-icons/fi";
+import { toast } from "react-toastify";
+import { API_URL } from "../assets/constants";
+import { useSelector } from "react-redux";
+import { startOfDay, endOfDay, format } from "date-fns";
+import { DateRangePicker } from "react-date-range";
+import "react-date-range/dist/styles.css";
+import "react-date-range/dist/theme/default.css";
 
-import TransactionTable from '../components/TransactionTable';
+import TransactionTable from "../components/TransactionTable";
 
 const DashboardTransaction = () => {
   const dispatch = useDispatch();
@@ -17,13 +19,28 @@ const DashboardTransaction = () => {
   const [activePage, setActivePage] = useState(1);
   const [startNumber, setStartNumber] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
-  const [currentSortDate, setCurrentSortDate] = useState('');
+  const [currentSortDate, setCurrentSortDate] = useState("");
   const [paymentProof, setPaymentProof] = useState("");
-  const [startDate, setStartDate] = useState(format(startOfMonth(Date.now()), 'yyyy-MM-dd'));
-  const [endDate, setEndDate] = useState(format(endOfMonth(Date.now()), 'yyyy-MM-dd'));
-  const adminToken = localStorage.getItem('adminToken');
+  const [startDate, setStartDate] = useState(
+    format(startOfDay(Date.now()), "yyyy-MM-dd")
+  );
+  const [endDate, setEndDate] = useState(
+    format(endOfDay(Date.now()), "yyyy-MM-dd")
+  );
+  const adminToken = localStorage.getItem("adminToken");
   const [searchParams] = useSearchParams();
   const { search } = useLocation();
+  const [ranges, setRanges] = useState([
+    {
+      startDate: new Date(),
+      endDate: new Date(),
+      key: "selection",
+    },
+  ]);
+  const [selectedDates, setSelectedDates] = useState({});
+  const limit = 7;
+
+  console.log(selectedDates.startDate);
 
   const socket = useSelector((state) => state.socket.instance);
 
@@ -42,9 +59,9 @@ const DashboardTransaction = () => {
           `${API_URL}/admin/transaction/get`,
           {
             page: activePage,
-            startDate,
-            endDate,
-            search: searchParams.get('keyword'),
+            startDate: selectedDates.startDate,
+            endDate: selectedDates.endDate,
+            search: searchParams.get("keyword"),
             sort: currentSortDate,
           },
           {
@@ -79,7 +96,7 @@ const DashboardTransaction = () => {
     return () => {
       dispatch({ type: 'ALERT_CLEAR', payload: 'history' });
     };
-  }, [activePage, search, currentSortDate, startDate, endDate]);
+  }, [activePage, search, currentSortDate, startDate, endDate, selectedDates]);
 
   useEffect(() => {
     if (!search) {
@@ -90,7 +107,15 @@ const DashboardTransaction = () => {
   }, [search]);
 
   const renderTransactions = () => {
-    return transactions?.map((item, i) => <TransactionTable key={item.id} item={item} i={i} startNumber={startNumber} socket={socket} />);
+    return transactions?.map((item, i) => (
+      <TransactionTable
+        key={item.id}
+        item={item}
+        i={i}
+        startNumber={startNumber}
+        socket={socket}
+      />
+    ));
   };
 
   return (
@@ -100,7 +125,7 @@ const DashboardTransaction = () => {
           <h1 className="text-3xl text-gray-700 font-bold">Transactions</h1>
         </div>
         <div className="flex justify-between items-center space-x-4">
-          <div className="flex gap-2 items-center mr-5">
+          {/* <div className="flex gap-2 items-center mr-5">
             <FiFilter size={24} />
             {startDate === format(startOfMonth(Date.now()), 'yyyy-MM-dd') && endDate === format(endOfMonth(Date.now()), 'yyyy-MM-dd') ? (
               <span>this month</span>
@@ -126,6 +151,65 @@ const DashboardTransaction = () => {
               onChange={(e) => setEndDate(e.target.value)}
             />
             <FiCalendar size="22" className="absolute left-3 top-5" />
+          </div> */}
+          <div className="relative ml-auto group">
+            <div className="p-2 rounded-lg text-white bg-primary flex items-center cursor-pointer group">
+              <span
+                className={`font-semibold flex items-center gap-2 text-sm ${
+                  selectedDates.gte && selectedDates.lte
+                    ? "text-sky-500"
+                    : "text-white group-hover:hover:text-sky-600"
+                } transition`}
+              >
+                <FiFilter className="text-white" />
+                {selectedDates.gte && selectedDates.lte
+                  ? `${selectedDates.gte.toLocaleDateString(
+                      "id"
+                    )} - ${selectedDates.lte.toLocaleDateString("id")}`
+                  : "Select Date"}
+              </span>
+            </div>
+            <div className="w-max p-3 flex flex-col rounded-lg bg-gray-300 bg-opacity-60 backdrop-blur-sm absolute z-[40] right-3 md:right-11 top-8 opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all shadow-lg">
+              <DateRangePicker
+                className="rounded-lg overflow-hidden"
+                onChange={(date) => setRanges([date.selection])}
+                showSelectionPreview={true}
+                months={2}
+                ranges={ranges}
+                direction="horizontal"
+                // preventSnapRefocus={true}
+                // calendarFocus="backwards"
+              />
+
+              <div className="w-full mt-2 flex justify-center gap-3">
+                <button
+                  className="w-24 py-2 rounded-2xl text-white font-bold bg-rose-400 hover:brightness-110 active:scale-95 transition"
+                  onClick={() => {
+                    setRanges([
+                      {
+                        ...ranges[0],
+                        startDate: new Date(),
+                        endDate: new Date(),
+                      },
+                    ]);
+                    setSelectedDates({});
+                  }}
+                >
+                  Reset
+                </button>
+                <button
+                  className="w-24 py-2 rounded-2xl text-white font-bold bg-emerald-400 hover:brightness-110 active:scale-95 transition"
+                  onClick={() =>
+                    setSelectedDates({
+                      startDate: startOfDay(ranges[0].startDate),
+                      endDate: endOfDay(ranges[0].endDate),
+                    })
+                  }
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
           </div>
           <div>
             <select
@@ -152,7 +236,9 @@ const DashboardTransaction = () => {
                 <th className="bg-white border-b border-gray-200">Address</th>
                 <th className="bg-white border-b border-gray-200">Delivery</th>
                 <th className="bg-white border-b border-gray-200">Notes</th>
-                <th className="bg-white border-b border-gray-200">Invoice Date</th>
+                <th className="bg-white border-b border-gray-200">
+                  Invoice Date
+                </th>
                 <th className="bg-white border-b border-gray-200">Details</th>
                 <th className="bg-white border-b border-gray-200">Status</th>
                 <th className="bg-white border-b border-gray-200">Actions</th>
@@ -162,24 +248,34 @@ const DashboardTransaction = () => {
           </table>
           <div className="mt-3 flex justify-center items-center gap-4 border-t pt-3">
             <button
-              className={activePage === 1 ? `hover:cursor-not-allowed` : `hover:cursor-pointer`}
+              className={
+                activePage === 1
+                  ? `hover:cursor-not-allowed`
+                  : `hover:cursor-pointer`
+              }
               disabled={activePage === 1}
               onClick={() => setActivePage(activePage - 1)}
             >
               <FaArrowLeft />
             </button>
             <div>
-              Page{' '}
+              Page{" "}
               <input
                 type="number"
                 className="mx-2 text-center focus:outline-none w-10 bg-gray-100"
                 value={activePage}
-                onChange={(e) => setActivePage(parseInt(e.target.value))}
-              />{' '}
+                onChange={(e) =>
+                  e.target.value <= totalPage && setActivePage(e.target.value)
+                }
+              />{" "}
               of {totalPage}
             </div>
             <button
-              className={activePage === totalPage ? `hover:cursor-not-allowed` : `hover:cursor-pointer`}
+              className={
+                activePage === totalPage
+                  ? `hover:cursor-not-allowed`
+                  : `hover:cursor-pointer`
+              }
               disabled={activePage === totalPage}
               onClick={() => setActivePage(activePage + 1)}
             >

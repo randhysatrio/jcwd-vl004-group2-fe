@@ -60,10 +60,13 @@ const Dashboard = () => {
     setPage(1);
   };
 
+  const loadingFalse = () => {
+    setLoading(false);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
-      // setTimeout(setLoading(true), 2500);
-      setTimeout(setLoading(true), 2500);
+      setLoading(true);
       const productList = await axios.post(
         `${API_URL}/product/query?keyword=${debouncedSearch}`,
         {
@@ -72,18 +75,18 @@ const Dashboard = () => {
           // keyword: searchParams.get("keyword"),
         }
       );
-
       if (productList.data.products.length) {
         const categoryList = await axios.get(`${API_URL}/category/all`);
-        setTimeout(setLoading(false), 500);
         setCategories(categoryList.data);
         // nested objects
         setProducts(productList.data.products);
         setItemsPerPage(productList.data.products.length);
         setMaxPage(Math.ceil(productList.data.length / 5));
         setPage(1);
+        // i need to use a function to use setTimeout
+        setTimeout(loadingFalse, 1000);
       } else {
-        setTimeout(setLoading(false), 500);
+        setTimeout(loadingFalse, 1000);
         setProductNotFound(true);
       }
     };
@@ -91,7 +94,7 @@ const Dashboard = () => {
     fetchData();
     // dependency uses state outside useEffect
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [debouncedSearch, debouncedCategory, debouncedSortPrice, search]);
+  }, [debouncedSearch, debouncedCategory, debouncedSortPrice]);
 
   const renderProducts = () => {
     const beginningIndex = (page - 1) * 5;
@@ -192,11 +195,6 @@ const Dashboard = () => {
     });
   };
 
-  // const handleEditClick = async (event, value) => {
-  //   const id = value.id;
-  //   navigate(`editproduct/?${id}`);
-  // };
-
   const handleAddProduct = async (event, value) => {
     navigate(`addproduct`);
   };
@@ -236,15 +234,15 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* <NavbarDashboard /> */}
+    <div className="h-full w-full bg-gray-100">
+      {/* Search Bar */}
       <div className="h-16 bg-white shadow-sm pl-80 pr-8 fixed z-[3] w-10 top-0 left-0 flex items-center">
         <div className="flex justify-center items-center relative">
           <FaSearch
             // onClick={() => {
             //   setSearchParams({ keyword }, { replace: true });
             // }}
-            className="absolute left-2 text-gray-400 bg-gray-100 cursor-pointer active:scale-95 transition"
+            className="absolute left-2 text-gray-400 bg-gray-100 active:scale-95 transition"
           />
           <input
             type="text"
