@@ -117,7 +117,7 @@ const ProductDetail = () => {
       navigate('/login');
     } else {
       const checkoutData = {
-        data: [{ userId: userGlobal.id, quantity, price: productData.price_sell, product: productData }],
+        data: [{ userId: userGlobal.id, quantity, price: productData.price_sell, productId: productData.id, product: productData }],
         subtotal: productData.price_sell * quantity,
       };
 

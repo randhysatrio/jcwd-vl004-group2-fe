@@ -35,6 +35,8 @@ function CartCard({ item, setCart, page, handCheck, isLoading, setIsLoading }) {
           return;
         }
 
+        console.log(quantity);
+
         // Update quantity cart
         const response = await axios.patch(
           `${API_URL}/cart/update`,
@@ -138,10 +140,10 @@ function CartCard({ item, setCart, page, handCheck, isLoading, setIsLoading }) {
         <div className="flex justify-center items-center">
           <button
             className={`border border-primary w-10 h-10 flex justify-center items-center text-primary bg-sky-50 hover:bg-sky-100 ${
-              item.quantity <= 1 ? 'hover:cursor-not-allowed' : null
+              quantity <= 1 ? 'hover:cursor-not-allowed' : null
             }`}
-            onClick={() => setQuantity(item.quantity - item.product.volume)}
-            disabled={item.quantity <= 1 || isLoading}
+            onClick={() => setQuantity(quantity - item.product.volume)}
+            disabled={quantity <= 1 || isLoading}
           >
             <FiMinus />
           </button>
@@ -157,8 +159,8 @@ function CartCard({ item, setCart, page, handCheck, isLoading, setIsLoading }) {
             className={`border border-primary w-10 h-10 flex justify-center items-center text-primary bg-sky-50 hover:bg-sky-100 ${
               item.quantity === item.product.stock_in_unit ? 'hover:cursor-not-allowed' : null
             }`}
-            onClick={() => setQuantity(item.quantity === 1 ? item.product.volume : item.quantity + item.product.volume)}
-            disabled={item.quantity === item.product.stock_in_unit || isLoading}
+            onClick={() => setQuantity(quantity + item.product.volume)}
+            disabled={quantity === item.product.stock_in_unit || isLoading}
           >
             <FiPlus />
           </button>

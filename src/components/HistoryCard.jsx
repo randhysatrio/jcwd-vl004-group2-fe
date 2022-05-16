@@ -21,7 +21,7 @@ const HistoryItem = ({ item, index }) => {
           <span className="font-semibold">{index + 1}.</span>
         </div>
         <div className="h-full w-[12%] flex justify-center items-center">
-          <div className="h-12 w-12 md:h-16 md:w-16 rounded-md border flex items-center justify-center bg-white">
+          <div className="h-12 w-12 md:h-16 md:w-16 rounded-md border flex items-center justify-center bg-white overflow-hidden">
             <img src={`${API_URL}/${item.product.image}`} className="h-full object-contain" />
           </div>
         </div>

@@ -46,7 +46,9 @@ const Address = () => {
   }, [currentPage]);
 
   useEffect(() => {
-    if (totalAddress <= limit * currentPage - limit) {
+    if (currentPage === 1) {
+      return;
+    } else if (totalAddress <= limit * currentPage - limit) {
       setCurrentPage(currentPage - 1 || 1);
     }
   }, [totalAddress]);
@@ -68,7 +70,7 @@ const Address = () => {
   };
 
   return (
-    <div className="w-full h-full px-10 md:px-5 lg:px-0 flex justify-center">
+    <div className="w-full h-full px-3 lg:px-0 flex justify-center">
       <div className="w-full lg:w-[80%] h-full py-8">
         <div className="w-full flex flex-col justify-center p-1">
           <div className="w-full py-1 flex justify-between items-center">

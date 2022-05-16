@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Axios from 'axios';
 import { API_URL } from '../assets/constants';
 import { useNavigate } from 'react-router-dom';
@@ -16,6 +16,7 @@ import { toast } from 'react-toastify';
 
 const ProductCardAll = ({ view, product }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [cartLoading, setCartLoading] = useState(false);
   const userGlobal = useSelector((state) => state.user);
   const userToken = localStorage.getItem('userToken');
@@ -40,6 +41,8 @@ const ProductCardAll = ({ view, product }) => {
           toast.warning(response.data.message, { theme: 'colored', position: 'bottom-left' });
         } else {
           setCartLoading(false);
+
+          dispatch({ type: 'CART_TOTAL', payload: response.data.cartTotal });
 
           toast.success(`Added ${product.volume?.toLocaleString('id')}${product.unit} to your cart!`, {
             position: 'bottom-left',
@@ -90,7 +93,7 @@ const ProductCardAll = ({ view, product }) => {
                 </span>
               </div>
               {product.totalReviews ? (
-                <div className="flex w-full items-center gap-2 text-sm">
+                <div className="flex w-full items-center gap-1 lg:gap-2 text-sm">
                   <div className="flex text-amber-300 py-2">{renderStars(product.avgRating)}</div>
                   <span className="font-semibold text-sky-900">{product.totalReviews} review(s)</span>
                 </div>
@@ -144,33 +147,35 @@ const ProductCardAll = ({ view, product }) => {
           </div>
         </div>
       ) : (
-        <div className="w-full h-60 flex border-b mb-1 border-slate-300 cursor-pointer">
+        <div className="w-full flex border-b mb-1 border-slate-300 cursor-pointer">
           <div onClick={() => navigate(`/product/${product.id}`)} className="w-[30%] h-full flex justify-center items-center p-4">
-            <div className="w-52 h-52 bg-white border rounded-lg overflow-hidden flex shadow justify-center items-center cursor-pointer">
+            <div className="w-32 h-32 sm:w-36 sm:h-36 lg:w-48 lg:h-48 bg-white border rounded-lg overflow-hidden flex shadow justify-center items-center cursor-pointer">
               <img src={`${API_URL}/${product.image}`} alt={product.name} className="w-full object-contain hover:scale-110 transition" />
             </div>
           </div>
           <div onClick={() => navigate(`/product/${product.id}`)} className="w-[45%] h-full flex flex-col pt-4">
-            <div className="w-full flex flex-col gap-1 mb-2">
-              <span className="text-xl font-semibold text-zinc-800 hover:text-sky-500 transition line-clamp-1">{product.name}</span>
+            <div className="w-full flex flex-col lg:gap-1 mb-2">
+              <span className="text-lg lg:text-xl font-semibold text-zinc-800 hover:text-sky-500 transition line-clamp-1">
+                {product.name}
+              </span>
               <span className="font-semibold text-slate-400">{product.category.name}</span>
               {product.totalReviews ? (
                 <div className="flex w-full items-center gap-2">
-                  <div className="flex text-md text-amber-300 py-1">{renderStars(product.avgRating)}</div>
-                  <span className="text-md font-semibold text-sky-900">{product.totalReviews} review(s)</span>
+                  <div className="flex text-sm lg:text-md text-amber-300 py-1">{renderStars(product.avgRating)}</div>
+                  <span className="text-sm lg:text-md font-semibold text-sky-900">{product.totalReviews} review(s)</span>
                 </div>
               ) : null}
             </div>
-            <div className="w-full overflow-hidden leading-none line-clamp-3">
+            <div className="w-full leading-none line-clamp-3">
               <span className="text-xs">{product.description}</span>
             </div>
           </div>
-          <div className="w-[25%] h-full pt-4 pr-4">
-            <div onClick={() => navigate(`/product/${product.id}`)} className="w-full flex flex-col items-end gap-2 mb-3">
-              <span className="text-2xl w-max bg-gradient-to-r from-emerald-500 to-emerald-700 bg-clip-text text-transparent font-bold">
+          <div className="w-[25%] h-full pt-4 pl-4 lg:pl-0 lg:pr-4 flex flex-col items-end">
+            <div onClick={() => navigate(`/product/${product.id}`)} className="w-full flex flex-col items-end gap-1 lg:gap-2 mb-3">
+              <span className="text-lg md:text-xl lg:text-2xl w-max bg-gradient-to-r from-emerald-500 to-emerald-700 bg-clip-text text-transparent font-bold">
                 Rp. {product.price_sell?.toLocaleString('id')}/{product.unit}
               </span>
-              <div className="text-lg flex items-center font-semibold text-slate-800 gap-2">
+              <div className="text-xs sm:text-sm md:text-base lg:text-lg flex items-center font-semibold text-slate-800 gap-2">
                 {product.stock_in_unit ? (
                   product.stock_in_unit <= 5 * product.volume ? (
                     <>
@@ -184,7 +189,7 @@ const ProductCardAll = ({ view, product }) => {
                   ) : (
                     <>
                       <AiOutlineCheckCircle className="text-sky-400" />
-                      <span>Currently in stock!</span>
+                      <span>In stock!</span>
                     </>
                   )
                 ) : (
@@ -195,12 +200,12 @@ const ProductCardAll = ({ view, product }) => {
                 )}
               </div>
             </div>
-            <div className="w-full flex justify-end">
+            <div className="w-full sm:w-[85%] md:w-[75%] xl:w-[70%] flex">
               {!adminToken && (
                 <button
                   onClick={addToCart}
                   disabled={cartLoading}
-                  className="w-[75%] h-10 rounded-lg bg-gradient-to-r from-sky-400 to-sky-600 text-white font-bold hover:brightness-110 cursor-pointer transition active:scale-95 text-md gap-2 flex justify-center items-center shadow disabled:from-sky-300 disabled:to-sky-500 disabled:active:scale-100"
+                  className="w-full py-2 rounded-lg bg-gradient-to-r from-sky-400 to-sky-600 text-white font-bold hover:brightness-110 cursor-pointer transition active:scale-95 text-md gap-2 flex justify-center items-center shadow disabled:from-sky-300 disabled:to-sky-500 disabled:active:scale-100 text-xs md:text-base"
                 >
                   {cartLoading ? (
                     <>

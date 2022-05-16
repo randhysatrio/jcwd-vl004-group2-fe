@@ -8,6 +8,7 @@ import { API_URL } from '../assets/constants';
 import Footer from '../components/Footer';
 import Header from '../components/Header';
 import Navbar from '../components/Navbar';
+import { format, addDays } from 'date-fns';
 
 function Payment() {
   const [isLoading, setIsLoading] = useState(false);
@@ -17,17 +18,17 @@ function Payment() {
     useSelector((state) => state.socket.instance),
     []
   );
+  const data = JSON.parse(localStorage.getItem('payment-data'));
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    const data = localStorage.getItem('payment-data');
     if (data) {
-      setPaymentData(JSON.parse(data));
+      return;
     } else {
       navigate('/', { replace: true });
     }
-  }, [navigate]);
+  }, []);
 
   const handCopy = () => {
     let textCopy = document.getElementById('no-account').textContent;
@@ -49,26 +50,19 @@ function Payment() {
       if (addFile) {
         let formData = new FormData();
 
-        formData.append(
-          'data',
-          JSON.stringify({ invoiceheaderId: paymentData.invoice })
-        );
+        formData.append('data', JSON.stringify({ invoiceheaderId: paymentData.invoice }));
         formData.append('file', addFile);
 
-        const response = await axios.post(
-          `${API_URL}/checkout/proof`,
-          formData,
-          {
-            headers: {
-              Authorization: `Bearer ${userToken}`,
-            },
-          }
-        );
+        const response = await axios.post(`${API_URL}/checkout/proof`, formData, {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        });
 
         setIsLoading(false);
         toast.success(response.data.message);
         localStorage.removeItem('payment-data');
-        socket?.emit('adminNotif');
+        socket?.emit('newTransaction');
 
         return setTimeout(() => navigate('/', { replace: true }), 3000);
       }
@@ -94,18 +88,16 @@ function Payment() {
       <Navbar />
       <div className="flex flex-col items-center m-auto mt-32 pb-7 w-11/12">
         <div className="flex flex-col items-center justify-center w-full">
-          <h2 className="text-3xl font-semibold mb-3">Please pay your bill</h2>
-          <span className="text-md">this bill will be expire at</span>
-          <span className="font-semibold text-lg">
-            Monday, 18 April 2021, 10:17 AM
-          </span>
+          <h2 className="text-3xl font-semibold mb-3">Please pay your invoice</h2>
+          <span className="text-md">This invoice will expire at</span>
+          <span className="font-semibold text-lg">{format(addDays(new Date(data.createdAt), 1), 'PPPpp')}</span>
         </div>
         <div className="border-gray-300 border rounded-md mt-10 mb-7 py-4 px-3 min-h-48 w-4/6">
           <div className="flex justify-between px-5">
             <h3 className="text-xl">Payment Method</h3>
             <div className="flex items-center gap-3">
               <h3 className="text-xl font-semibold">
-                {paymentData.type} - {paymentData.bankName}
+                {data.type} - {data.bankName}
               </h3>
               <FiCreditCard size={24} />
             </div>
@@ -114,38 +106,29 @@ function Payment() {
           <div className="flex flex-col gap-6 px-5">
             <div className="flex flex-col">
               <span className="text-lg text-gray-500">Account Name</span>
-              <span className="text-xl font-semibold">{paymentData.name}</span>
+              <span className="text-xl font-semibold">{data.name}</span>
             </div>
             <div className="flex items-center gap-8">
               <div className="flex flex-col">
                 <span className="text-lg text-gray-500">Account Number</span>
                 <span id="no-account" className="text-xl font-semibold">
-                  {paymentData.noAccount}
+                  {data.noAccount}
                 </span>
               </div>
-              <FiCopy
-                size={28}
-                color="#0EA5E9"
-                className="hover:cursor-pointer"
-                onClick={handCopy}
-              />
+              <FiCopy size={28} color="#0EA5E9" className="hover:cursor-pointer" onClick={handCopy} />
             </div>
           </div>
           <div className="divider" />
           <div className="flex justify-start px-5">
             <div className="flex flex-col">
               <span className="text-lg text-gray-500">Total Bill</span>
-              <span className="text-xl font-semibold">
-                {toIDR(paymentData.bill)}
-              </span>
+              <span className="text-xl font-semibold">{toIDR(data.bill)}</span>
             </div>
           </div>
           <div className="divider" />
           <div className="flex justify-between px-5 pb-3">
             <div className="flex flex-col gap-2">
-              <span className="text-lg text-gray-500">
-                Upload proof of payment here
-              </span>
+              <span className="text-lg text-gray-500">Upload proof of payment here</span>
               <label className="block">
                 <span className="sr-only">Choose profile photo</span>
                 <input
@@ -158,11 +141,7 @@ function Payment() {
           </div>
         </div>
         <div className="flex justify-end w-4/6">
-          <button
-            disabled={isLoading}
-            className="btn btn-primary"
-            onClick={handUpload}
-          >
+          <button disabled={isLoading} className="btn btn-primary" onClick={handUpload}>
             Confirm Payment
           </button>
         </div>
