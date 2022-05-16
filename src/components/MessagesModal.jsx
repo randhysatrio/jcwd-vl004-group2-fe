@@ -15,7 +15,11 @@ const MessagesModal = ({ message, currentPage, limit, setMessages, setMaxPage, s
   const [isRead, setIsRead] = useState(message.is_read);
 
   const renderContent = () => {
-    return message.content?.split('|').map((sentence) => <span className="first-of-type:mb-3 mb-2 last-of-type:mb-0">{sentence}</span>);
+    return message.content?.split('|').map((sentence, index) => (
+      <span key={index} className="first-of-type:mb-3 mb-2 last-of-type:mb-0">
+        {sentence}
+      </span>
+    ));
   };
 
   const formatRelativeLocale = {

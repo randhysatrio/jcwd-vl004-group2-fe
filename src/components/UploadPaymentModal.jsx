@@ -38,11 +38,11 @@ const UploadPaymentModal = ({ invoiceId, setInvoices, setMaxPage, setTotalData, 
         dispatch({ type: 'ALERT_CLEAR', payload: 'awaiting' });
       }
       dispatch({ type: 'ALERT_NEW', payload: 'history' });
-      socket.emit('newTransaction');
+      socket.emit('newPayment');
       setLoading(false);
 
       setOpen(false);
-      toast.success(response.data.message, { position: 'top-center', theme: 'colored' });
+      toast.success('Thank you for shopping at Heizen Berg Co.', { position: 'top-center', theme: 'colored' });
     } catch (error) {
       setLoading(false);
 
@@ -94,7 +94,7 @@ const UploadPaymentModal = ({ invoiceId, setInvoices, setMaxPage, setTotalData, 
                   }`}
                 >
                   <AiOutlineClose />
-                  <span>Reset</span>
+                  <span>Remove</span>
                 </div>
               </div>
               <div className="w-full h-[45vh] lg:h-[50vh] flex justify-center">
@@ -147,7 +147,7 @@ const UploadPaymentModal = ({ invoiceId, setInvoices, setMaxPage, setTotalData, 
                 <button
                   disabled={loading || !paymentImage}
                   onClick={uploadHandler}
-                  className="px-4 py-2 lg:py-3 lg:px-5 rounded-xl bg-gradient-to-r from-sky-400 to-violet-500 font-bold text-white hover:brightness-110 active:scale-95 transition cursor-pointer disabled:from-sky-300 disabled:to-violet-300 disabled:active:scale-100 disabled:hover:brightness-100 disabled:cursor-default flex justify-center items-center gap-2"
+                  className="px-4 py-2 lg:py-3 lg:px-5 rounded-full bg-gradient-to-r from-sky-400 to-violet-500 font-bold text-white hover:brightness-110 active:scale-95 transition cursor-pointer disabled:from-sky-300 disabled:to-violet-300 disabled:active:scale-100 disabled:hover:brightness-100 disabled:cursor-default flex justify-center items-center gap-2"
                 >
                   {loading ? (
                     <>

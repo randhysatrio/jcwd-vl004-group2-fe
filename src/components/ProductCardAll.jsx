@@ -44,7 +44,7 @@ const ProductCardAll = ({ view, product }) => {
 
           dispatch({ type: 'CART_TOTAL', payload: response.data.cartTotal });
 
-          toast.success(`Added ${product.volume?.toLocaleString('id')}${product.unit} to your cart!`, {
+          toast.success(`Added ${product.volume?.toLocaleString('id')} ${product.unit} to your cart!`, {
             position: 'bottom-left',
             theme: 'colored',
           });

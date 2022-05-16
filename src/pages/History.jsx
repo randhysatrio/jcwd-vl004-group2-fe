@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Axios from 'axios';
 import { API_URL } from '../assets/constants';
@@ -29,6 +29,8 @@ const History = () => {
   ]);
   const [selectedDates, setSelectedDates] = useState({});
   const limit = 7;
+
+  const socket = useCallback(useSelector((state) => state.socket.instance));
 
   useEffect(() => {
     dispatch({
@@ -71,6 +73,11 @@ const History = () => {
       }
     };
     fetchInvoices();
+
+    socket.on('newUserPayment', () => {
+      fetchInvoices();
+      return;
+    });
 
     return () => {
       dispatch({ type: 'ALERT_CLEAR', payload: 'history' });

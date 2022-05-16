@@ -33,7 +33,12 @@ const Dashboard = () => {
         toast.info(`You have ${totalNotif} new notification(s)`, { position: 'top-center', theme: 'colored' });
       });
 
-      socket?.on('newAdminTransaction', (totalNotif) => {
+      socket?.on('newTransactionNotif', () => {
+        dispatch({ type: 'ALERT_NEW', payload: 'history' });
+        toast.info(`You have new transaction!`, { position: 'top-center', theme: 'colored' });
+      });
+
+      socket?.on('newPaymentNotif', (totalNotif) => {
         dispatch({ type: 'ALERT_NEW', payload: 'alert' });
         dispatch({ type: 'ALERT_NEW', payload: 'history' });
         toast.info(`You have ${totalNotif} new notification(s)`, { position: 'top-center', theme: 'colored' });

@@ -5,15 +5,15 @@ import { API_URL } from '../assets/constants';
 
 import AwaitingPaymentCard from '../components/AwaitingPaymentCard';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { AiOutlineCheck } from 'react-icons/ai';
+import { IoWarningOutline } from 'react-icons/io5';
 import { toast } from 'react-toastify';
 
 const AwaitingPayment = () => {
   const dispatch = useDispatch();
   const userToken = localStorage.getItem('userToken');
-  const socket = useCallback(
-    useSelector((state) => state.socket.instance),
-    []
-  );
+  const socket = useSelector((state) => state.socket.instance);
+  const [expInvoices, setExpInvoices] = useState(0);
   const [invoices, setInvoices] = useState([]);
   const [totalData, setTotalData] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -38,6 +38,9 @@ const AwaitingPayment = () => {
           }
         );
 
+        if (response.data.expiredInvoices) {
+          setExpInvoices(response.data.expiredInvoices);
+        }
         setInvoices(response.data.rows);
         setMaxPage(response.data.maxPage);
         setTotalData(response.data.count);
@@ -80,12 +83,26 @@ const AwaitingPayment = () => {
           </span>
         </div>
         <div className="h-px w-full bg-gray-100" />
+        {expInvoices ? (
+          <div className="w-full flex items-start py-4">
+            <div className="flex items-center gap-2 p-4 rounded-xl bg-gray-100 font-semibold">
+              <IoWarningOutline className="text-amber-400" />
+              <span>We have cancelled {expInvoices} transaction(s) due to expiry date</span>
+              <button
+                onClick={() => setExpInvoices(0)}
+                className="text-sky-400 hover:text-green-400 transition cursor-pointer active:scale-95"
+              >
+                <AiOutlineCheck />
+              </button>
+            </div>
+          </div>
+        ) : null}
         <div className="w-full flex flex-col items-center py-4 gap-6">
           {invoices.length ? (
             renderInvoices()
           ) : (
-            <div className="w-full h-60 lg:h-80 flex items-center justify-center">
-              <span className="text-2xl lg:text-3xl font-thin text-slate-700">You don't have any unpaid invoices</span>
+            <div className="w-full h-[60vh] lg:h-96 flex items-center justify-center">
+              <span className="text-2xl md:text-3xl font-thin text-slate-700">You don't have any unpaid invoices</span>
             </div>
           )}
         </div>

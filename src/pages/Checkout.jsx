@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { FiEdit, FiMapPin, FiPhone, FiSave, FiUser, FiXSquare } from 'react-icons/fi';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -31,6 +31,10 @@ function Checkout() {
   const dispatch = useDispatch();
   const userToken = localStorage.getItem('userToken');
   const userGlobal = useSelector((state) => state.user);
+  const socket = useCallback(
+    useSelector((state) => state.socket.instance),
+    []
+  );
 
   const payments = [
     {
@@ -199,12 +203,12 @@ function Checkout() {
           payload: response.data.cartTotal,
         });
         dispatch({ type: 'ALERT_NEW', payload: 'awaiting' });
+        socket?.emit('newTransaction');
 
         setIsLoading(false);
         toast.success(response.data.message);
         return navigate(`/payment/${response.data.invoice}`, { replace: true });
       }
-      setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
       toast.error(error.response.data.message);

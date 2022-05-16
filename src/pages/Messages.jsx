@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Axios from 'axios';
 import { API_URL } from '../assets/constants';
@@ -18,6 +18,8 @@ const Messages = () => {
   const [maxPage, setMaxPage] = useState(0);
   const [totalMsg, setTotalMsg] = useState(0);
   const limit = 7;
+
+  const socket = useSelector((state) => state.socket.instance);
 
   useEffect(() => {
     dispatch({
@@ -44,6 +46,16 @@ const Messages = () => {
     };
     fetchMessages();
 
+    socket?.on('newUserNotif', () => {
+      fetchMessages();
+      return;
+    });
+
+    socket?.on('newUserPayment', () => {
+      fetchMessages();
+      return;
+    });
+
     return async () => {
       try {
         dispatch({
@@ -55,7 +67,7 @@ const Messages = () => {
         toast.error('Unable to update messages status!', { position: 'bottom-left', theme: 'colored' });
       }
     };
-  }, [userGlobal, currentPage, keyword]);
+  }, [userGlobal, currentPage, keyword, socket]);
 
   useEffect(() => {
     if (currentPage === 1) {

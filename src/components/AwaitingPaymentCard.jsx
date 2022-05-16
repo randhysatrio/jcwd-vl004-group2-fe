@@ -4,19 +4,20 @@ import { format } from 'date-fns';
 
 import UploadPaymentModal from './UploadPaymentModal';
 import { toast } from 'react-toastify';
+import { addDays } from 'date-fns/esm';
 
 const InvoiceItem = ({ item }) => {
   return (
     <div className="w-full h-12 md:h-14 lg:h-16 flex rounded-lg py-1">
       <div className="h-full w-[20%] flex items-center justify-center">
-        <div className="h-11 w-11 sm:h-12 sm:w-12 lg:h-14 lg:w-14 bg-white border rounded-lg overflow-hidden">
+        <div className="h-11 w-11 sm:h-12 sm:w-12 lg:h-14 lg:w-14 bg-white border rounded-lg overflow-hidden flex justify-center items-center">
           <img src={`${API_URL}/${item.product?.image}`} className="h-full object-contain" />
         </div>
       </div>
       <div className="h-full w-[55%] flex flex-col justify-center">
         <span className="text-sm sm:text-md lg:text-base font-semibold line-clamp-1">{item.product?.name}</span>
         <span className="text-xs sm:text-sm font-semibold text-opacity-60">
-          Rp. {item.price}/{item.product?.unit}
+          Rp. {item.price.toLocaleString('id')}/{item.product?.unit}
         </span>
       </div>
       <div className="h-full w-[25%] flex flex-col items-center justify-center">
@@ -60,25 +61,25 @@ const AwaitingPaymentCard = ({ invoice, setInvoices, setTotalData, currentPage, 
   return (
     <>
       <div className="w-full xl:w-[85%] flex flex-col ring-1 ring-slate-200 rounded-lg">
-        <div className="w-full p-1 lg:px-2">
-          <div className="w-full flex items-center justify-between text-xs sm:text-sm lg:text-md font-semibold p-2 rounded-lg bg-sky-50">
+        <div className="w-full p-1 lg:p-2 ">
+          <div className="w-full flex items-center justify-between text-xs sm:text-sm lg:text-md font-semibold p-2 lg:px-3 rounded-lg bg-sky-50">
             <span>#{invoice.id}</span>
-            <span>{format(new Date(invoice.createdAt), 'PPPpp')}</span>
+            <span>{format(new Date(invoice.createdAt), 'PPP')}</span>
           </div>
         </div>
         <div className="w-full h-full flex mb-1">
-          <div className="w-[70%] flex flex-col">
-            <div className="w-full flex items-center py-px px-3">
+          <div className="w-[70%] flex flex-col items-center">
+            <div className="w-[95%] flex items-center py-px">
               <span className="w-full text-sm lg:text-md font-bold">Items:</span>
             </div>
-            <div className="w-full p-2 gap-2 flex flex-col">
+            <div className="w-[95%] p-1 gap-2 flex flex-col ring-1 ring-gray-200 rounded-lg">
               {invoice.invoiceitems?.map((item) => (
                 <InvoiceItem key={item.id} item={item} />
               ))}
             </div>
           </div>
           <div className="w-[30%] flex flex-col py-1 pr-1">
-            <div className="w-full flex items-center justify-end px-1">
+            <div className="w-full flex items-center justify-end py-px px-1">
               <span className="text-sm lg:text-md font-bold">Summary:</span>
             </div>
             <div className="w-full h-full bg-gray-100 rounded-lg flex flex-col py-1 gap-1">
@@ -102,12 +103,12 @@ const AwaitingPaymentCard = ({ invoice, setInvoices, setTotalData, currentPage, 
             </div>
           </div>
         </div>
-        <div className="w-[95%] mx-auto flex justify-between items-center py-2 px-2 border-t">
+        <div className="w-[97%] mx-auto flex justify-between items-center py-2 border-t">
           <label
             htmlFor={`cancel-invoice-${invoice.id}`}
             className="font-semibold text-red-400 active:scale-95 hover:brightness-110 cursor-pointer transition text-sm lg:text-base"
           >
-            Cancel Payment
+            Cancel Transaction
           </label>
           <UploadPaymentModal
             invoiceId={invoice.id}
@@ -118,6 +119,10 @@ const AwaitingPaymentCard = ({ invoice, setInvoices, setTotalData, currentPage, 
             limit={limit}
             socket={socket}
           />
+          <div className="h-full flex flex-col justify-center bg-amber-100 px-3 py-1 rounded-lg">
+            <span className="text-[11px] lg:text-xs font-bold leading-tight">Expired At:</span>
+            <span className="text-xs lg:text-sm font-semibold">{format(addDays(new Date(invoice.createdAt), 1), 'PPPpp')}</span>
+          </div>
         </div>
       </div>
 

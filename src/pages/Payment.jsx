@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useEffect, useState, useCallback } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { FiCreditCard, FiCopy } from 'react-icons/fi';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -11,14 +11,12 @@ import Navbar from '../components/Navbar';
 import { format, addDays } from 'date-fns';
 
 function Payment() {
+  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [addFile, setAddFile] = useState();
   const [paymentData, setPaymentData] = useState({});
   const [isExpired, seIsExpired] = useState(false);
-  const socket = useCallback(
-    useSelector((state) => state.socket.instance),
-    []
-  );
+  const socket = useSelector((state) => state.socket.instance);
   const params = useParams();
   const userToken = localStorage.getItem('userToken');
 
@@ -91,31 +89,27 @@ function Payment() {
       if (addFile) {
         let formData = new FormData();
 
-        formData.append(
-          'data',
-          JSON.stringify({ invoiceheaderId: paymentData.invoice })
-        );
+        formData.append('data', JSON.stringify({ invoiceheaderId: paymentData.invoice }));
         formData.append('file', addFile);
 
-        const response = await axios.post(
-          `${API_URL}/checkout/proof`,
-          formData,
-          {
-            headers: {
-              Authorization: `Bearer ${userToken}`,
-            },
-          }
-        );
+        const response = await axios.post(`${API_URL}/checkout/proof`, formData, {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        });
 
         setIsLoading(false);
-        toast.success(response.data.message);
         localStorage.removeItem('payment-data');
-        socket?.emit('newTransaction');
+        socket.emit('newPayment');
+        dispatch({ type: 'ALERT_CLEAR', payload: 'awaiting' });
+        dispatch({ type: 'ALERT_NEW', payload: 'history' });
 
-        return setTimeout(() => navigate('/', { replace: true }), 3000);
+        navigate('/', { replace: true });
+        toast.success('Thank you for shopping at Heizen Berg Co.!', { position: 'top-center', theme: 'colored' });
+      } else {
+        setIsLoading(false);
+        toast.error('Please input file');
       }
-      setIsLoading(false);
-      toast.error('Please input file');
     } catch (error) {
       setIsLoading(false);
       toast.error(error.response.data.message);
@@ -128,21 +122,10 @@ function Payment() {
       <Navbar />
       <div className="flex flex-col items-center m-auto mt-20 pb-7 w-11/12">
         <div className="flex flex-col items-center justify-center w-full">
-          <h2 className="text-3xl font-semibold mb-3">
-            {isExpired
-              ? 'Your transaction cannot continue'
-              : 'Please pay your bill'}
-          </h2>
-          <span className="text-md">
-            {isExpired ? 'this bill expired at' : 'this bill will be expire at'}
-          </span>
-          <span
-            className={`${
-              isExpired ? 'text-red-400' : null
-            } font-semibold text-xl`}
-          >
-            {paymentData?.createdAt &&
-              format(addDays(new Date(paymentData?.createdAt), 1), 'PPPpp')}
+          <h2 className="text-3xl font-semibold mb-3">{isExpired ? 'Your transaction cannot continue' : 'Please pay your bill'}</h2>
+          <span className="text-md">{isExpired ? 'this bill expired at' : 'this bill will be expire at'}</span>
+          <span className={`${isExpired ? 'text-red-400' : null} font-semibold text-xl`}>
+            {paymentData?.createdAt && format(addDays(new Date(paymentData?.createdAt), 1), 'PPPpp')}
           </span>
         </div>
         <div className="border-gray-300 border rounded-md mt-10 mb-7 py-4 px-3 min-h-48 w-4/6">
@@ -168,34 +151,23 @@ function Payment() {
                   {paymentData.noAccount}
                 </span>
               </div>
-              <FiCopy
-                size={28}
-                color="#0EA5E9"
-                className="hover:cursor-pointer"
-                onClick={handCopy}
-              />
+              <FiCopy size={28} color="#0EA5E9" className="hover:cursor-pointer" onClick={handCopy} />
             </div>
           </div>
           <div className="divider" />
           <div className="flex justify-start px-5">
             <div className="flex flex-col">
               <span className="text-lg text-gray-500">Total Bill</span>
-              <span className="text-xl font-semibold">
-                Rp. {paymentData.bill?.toLocaleString('id')}
-              </span>
+              <span className="text-xl font-semibold">Rp. {paymentData.bill?.toLocaleString('id')}</span>
             </div>
           </div>
           <div className="divider" />
           <div className="flex justify-between px-5 pb-3">
             {isExpired ? (
-              <span className="font-bold">
-                you can't upload your payment proof
-              </span>
+              <span className="font-bold">you can't upload your payment proof</span>
             ) : (
               <div className="flex flex-col gap-2">
-                <span className="text-lg text-gray-500">
-                  Upload proof of payment here
-                </span>
+                <span className="text-lg text-gray-500">Upload proof of payment here</span>
                 <label className="block">
                   <span className="sr-only">Choose profile photo</span>
                   <input
@@ -209,11 +181,7 @@ function Payment() {
           </div>
         </div>
         <div className="flex justify-end w-4/6">
-          <button
-            disabled={isLoading || isExpired || !addFile}
-            className="btn btn-primary"
-            onClick={handUpload}
-          >
+          <button disabled={isLoading || isExpired || !addFile} className="btn btn-primary" onClick={handUpload}>
             Confirm Payment
           </button>
         </div>

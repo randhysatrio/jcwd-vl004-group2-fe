@@ -36,9 +36,10 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
               },
             }
           );
+
           setEnabled(false);
           setStatus('approved');
-          socket.emit('userNotif', response.data.userId);
+          socket.emit('userPayment', response.data.userId);
           Swal.fire('Updated!', response.data.message, 'success');
           setLoadingApp(false);
         } catch (error) {
@@ -73,7 +74,7 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
 
           setEnabled(false);
           setStatus('rejected');
-          socket.emit('userNotif', response.data.userId);
+          socket.emit('userPayment', response.data.userId);
           Swal.fire('Updated!', response.data.message, 'success');
           setLoadingRej(false);
         } catch (error) {
@@ -146,39 +147,45 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
             {status}
           </div>
         </td>
-        <td className="flex gap-3 items-center text-center ">
-          <button
-            disabled={!enabled || loadingApp || loadingRej}
-            type="button"
-            className="py-3 w-36 text-white disabled:bg-gray-400 bg-primary hover:bg-blue-400' rounded-xl flex justify-center items-center gap-2"
-            onClick={() => handleApprovedClick(item.id)}
-          >
-            {loadingApp ? (
-              <>
-                <AiOutlineLoading3Quarters className="animate-spin" />
-                Updating..
-              </>
-            ) : (
-              'Approve'
-            )}
-            {/* Approve */}
-          </button>
-          <button
-            disabled={!enabled || loadingRej || loadingApp}
-            type="button"
-            className={`py-3 w-36 text-white disabled:bg-gray-400 bg-red-500 hover:bg-red-400 rounded-xl flex justify-center items-center gap-2`}
-            onClick={() => handleRejectedClick(item.id)}
-          >
-            {loadingRej ? (
-              <>
-                <AiOutlineLoading3Quarters className="animate-spin" />
-                Updating..
-              </>
-            ) : (
-              'Reject'
-            )}
-          </button>
-        </td>
+        {item.status === 'awaiting' ? (
+          <td className="flex items-center text-center ">
+            <span className="font-semibold text-xl">Awaiting Payment..</span>
+          </td>
+        ) : (
+          <td className="flex gap-3 items-center text-center ">
+            <button
+              disabled={!enabled || loadingApp || loadingRej}
+              type="button"
+              className="py-3 w-36 text-white disabled:bg-gray-400 bg-primary hover:bg-blue-400' rounded-xl flex justify-center items-center gap-2"
+              onClick={() => handleApprovedClick(item.id)}
+            >
+              {loadingApp ? (
+                <>
+                  <AiOutlineLoading3Quarters className="animate-spin" />
+                  Updating..
+                </>
+              ) : (
+                'Approve'
+              )}
+              {/* Approve */}
+            </button>
+            <button
+              disabled={!enabled || loadingRej || loadingApp}
+              type="button"
+              className={`py-3 w-36 text-white disabled:bg-gray-400 bg-red-500 hover:bg-red-400 rounded-xl flex justify-center items-center gap-2`}
+              onClick={() => handleRejectedClick(item.id)}
+            >
+              {loadingRej ? (
+                <>
+                  <AiOutlineLoading3Quarters className="animate-spin" />
+                  Updating..
+                </>
+              ) : (
+                'Reject'
+              )}
+            </button>
+          </td>
+        )}
       </tr>
 
       <input
