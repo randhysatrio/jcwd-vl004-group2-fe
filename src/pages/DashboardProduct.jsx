@@ -39,8 +39,8 @@ const Dashboard = () => {
   };
 
   const debouncedSearch = useDebounce(keyword, 1000);
-  const debouncedCategory = useDebounce(currentCategory, 1000);
-  const debouncedSortPrice = useDebounce(currentSortPrice, 1000);
+  const debouncedCategory = useDebounce(currentCategory, 0);
+  const debouncedSortPrice = useDebounce(currentSortPrice, 0);
 
   const [searchParams] = useSearchParams();
   const { search } = useLocation();

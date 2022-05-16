@@ -4,6 +4,7 @@ import { FaArrowLeft, FaArrowRight, FaSearch } from "react-icons/fa";
 import { AiOutlineClose } from "react-icons/ai";
 import { FiCalendar, FiMinus, FiFilter } from "react-icons/fi";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
+import { useDispatch } from 'react-redux';
 import { toast } from "react-toastify";
 import { API_URL } from "../assets/constants";
 import { useSelector } from "react-redux";
