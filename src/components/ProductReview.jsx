@@ -8,13 +8,17 @@ import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
 
-const ProductReview = ({ productId, setTotalReviews, setAvgRating }) => {
+const ProductReview = ({ productId, totalReviews, setTotalReviews, setAvgRating }) => {
   const adminToken = localStorage.getItem('adminToken');
   const userId = useSelector((state) => state.user.id);
   const [reviews, setReviews] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [maxPage, setMaxPage] = useState(1);
   const limit = 5;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [productId]);
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -34,8 +38,12 @@ const ProductReview = ({ productId, setTotalReviews, setAvgRating }) => {
   }, [currentPage, productId]);
 
   useEffect(() => {
-    setCurrentPage(1);
-  }, [productId]);
+    if (currentPage === 1) {
+      return;
+    } else if (totalReviews <= currentPage * limit - limit) {
+      setCurrentPage(currentPage - 1);
+    }
+  }, [totalReviews]);
 
   const renderReviews = () => {
     return reviews.map((review) => (
@@ -46,8 +54,8 @@ const ProductReview = ({ productId, setTotalReviews, setAvgRating }) => {
         setTotalReviews={setTotalReviews}
         setAvgRating={setAvgRating}
         setReviews={setReviews}
-        setCurrentPage={setCurrentPage}
         setMaxPage={setMaxPage}
+        currentPage={currentPage}
         limit={limit}
       />
     ));
@@ -70,6 +78,7 @@ const ProductReview = ({ productId, setTotalReviews, setAvgRating }) => {
           )}
           {reviews?.length ? (
             <div className="w-full flex items-center justify-end gap-1 text-sm text-gray-400 border-t py-1">
+              <span>Page</span>
               <span>{currentPage}</span>
               <span>of</span>
               <span>{maxPage}</span>

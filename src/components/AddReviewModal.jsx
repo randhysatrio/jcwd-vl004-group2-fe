@@ -70,7 +70,7 @@ const AddReviewModal = ({ userId, productId, setTotalReviews, setAvgRating, setR
             setOpen(true);
           }
         }}
-        className="w-40 lg:w-full h-12 rounded-lg text-white font-bold bg-gradient-to-r from-sky-300 to-emerald-400 transition active:scale-95 hover:brightness-110"
+        className="w-1/3 lg:w-full h-12 rounded-lg text-white font-bold bg-gradient-to-r from-sky-300 to-emerald-400 transition active:scale-95 hover:brightness-110"
       >
         Add Reviews
       </button>

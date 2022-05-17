@@ -354,7 +354,7 @@ const ProductDetail = () => {
             )}
           </div>
         </div>
-        <ProductReview productId={params.id} setTotalReviews={setTotalReviews} setAvgRating={setAvgRating} />
+        <ProductReview productId={params.id} setTotalReviews={setTotalReviews} totalReviews={totalReviews} setAvgRating={setAvgRating} />
         <ProductDetailCarousel
           header={'More from'}
           category={productData.category?.name}

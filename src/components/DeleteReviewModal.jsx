@@ -5,24 +5,21 @@ import { API_URL } from '../assets/constants';
 import { Dialog, Transition } from '@headlessui/react';
 import { toast } from 'react-toastify';
 
-const DeleteReviewModal = ({ productId, reviewId, setTotalReviews, setAvgRating, setReviews, setCurrentPage, setMaxPage, limit }) => {
+const DeleteReviewModal = ({ productId, reviewId, setTotalReviews, setAvgRating, setReviews, setMaxPage, currentPage, limit }) => {
   const [show, setShow] = useState(false);
 
   const deleteHandler = async () => {
     try {
-      const productReview = document.getElementById('product-review');
-
-      const response = await Axios.post(`${API_URL}/review/delete/${reviewId}`, { productId, limit });
+      const response = await Axios.post(`${API_URL}/review/delete/${reviewId}`, { productId, limit, currentPage });
 
       setTotalReviews(response.data.totalReviews);
       setAvgRating(response.data.avgRating);
       setReviews(response.data.rows);
       setMaxPage(response.data.maxPage);
-      setCurrentPage(1);
 
       setShow(false);
+      document.getElementById('product-review').scrollIntoView({ behavior: 'smooth' });
       toast.success(response.data.message, { position: 'top-center', theme: 'colored' });
-      productReview.scrollIntoView({ behavior: 'smooth' });
     } catch (err) {
       toast.error('Unable to delete Review!', { position: 'bottom-left', theme: 'colored' });
     }
@@ -60,9 +57,9 @@ const DeleteReviewModal = ({ productId, reviewId, setTotalReviews, setAvgRating,
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-90 scale-90"
           >
-            <div className="w-[45%] flex flex-col bg-sky-50 shadow fixed z-10 rounded-xl">
-              <div className="w-full flex justify-center items-center py-8">
-                <span className="text-2xl font-bold text-gray-700">Are you sure you want to delete your review?</span>
+            <div className="w-2/3 md:w-1/2 lg:w-1/3 flex flex-col bg-sky-50 shadow fixed z-10 rounded-box">
+              <div className="w-full flex justify-center items-center py-8 px-6">
+                <span className="text-2xl font-bold text-gray-700">Delete your review?</span>
               </div>
               <div className="w-full pb-5 flex justify-center gap-3">
                 <button

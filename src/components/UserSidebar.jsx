@@ -5,6 +5,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import { AiOutlineUser, AiOutlineHistory, AiOutlineMenu } from 'react-icons/ai';
 import { FiMail } from 'react-icons/fi';
 import { IoLocationOutline } from 'react-icons/io5';
+import { MdPayment } from 'react-icons/md';
 
 const SidebarNavigation = ({ children, to, setOpen }) => {
   return (
@@ -83,7 +84,7 @@ const UserSidebar = () => {
             <div className="min-h-screen w-60 absolute z-10 bg-gray-50 flex flex-col transl">
               <div className="flex justify-center py-4 bg-gray-800">
                 <span onClick={() => navigate('/')} className="text-lg font-bold text-white hover:text-sky-200 transition cursor-pointer">
-                  Heizen Berg.co
+                  Heizen Berg Co.
                 </span>
               </div>
               <div className="w-full flex flex-col py-4">
@@ -111,6 +112,9 @@ const UserSidebar = () => {
                     </ProfileNavigation>
                     <ProfileNavigation to={'address'} icon={<IoLocationOutline />} setOpen={setOpen}>
                       Address
+                    </ProfileNavigation>
+                    <ProfileNavigation to={'payment'} icon={<MdPayment />} setOpen={setOpen}>
+                      Payment
                     </ProfileNavigation>
                     <ProfileNavigation to={'history'} icon={<AiOutlineHistory />} setOpen={setOpen}>
                       History
