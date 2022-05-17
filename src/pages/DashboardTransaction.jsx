@@ -1,19 +1,19 @@
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-import { FaArrowLeft, FaArrowRight, FaSearch } from 'react-icons/fa';
-import { AiOutlineClose } from 'react-icons/ai';
-import { FiCalendar, FiMinus, FiFilter } from 'react-icons/fi';
-import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { toast } from 'react-toastify';
-import { API_URL } from '../assets/constants';
-import { useSelector } from 'react-redux';
-import { startOfDay, endOfDay, format } from 'date-fns';
-import { DateRangePicker } from 'react-date-range';
-import 'react-date-range/dist/styles.css';
-import 'react-date-range/dist/theme/default.css';
-import Swal from 'sweetalert2';
-import TransactionTable from '../components/TransactionTable';
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { FaArrowLeft, FaArrowRight, FaSearch } from "react-icons/fa";
+import { AiOutlineClose } from "react-icons/ai";
+import { FiCalendar, FiMinus, FiFilter } from "react-icons/fi";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
+import { API_URL } from "../assets/constants";
+import { useSelector } from "react-redux";
+import { startOfDay, endOfDay, format } from "date-fns";
+import { DateRangePicker } from "react-date-range";
+import "react-date-range/dist/styles.css";
+import "react-date-range/dist/theme/default.css";
+import Swal from "sweetalert2";
+import TransactionTable from "../components/TransactionTable";
 
 const DashboardTransaction = () => {
   const dispatch = useDispatch();
@@ -23,23 +23,26 @@ const DashboardTransaction = () => {
   const [activePage, setActivePage] = useState(1);
   const [startNumber, setStartNumber] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
-  const [currentSortDate, setCurrentSortDate] = useState('');
-  const [currentSortStatus, setCurrentSortStatus] = useState('');
+  const [currentSortDate, setCurrentSortDate] = useState("");
+  const [currentSortStatus, setCurrentSortStatus] = useState("");
   const { pathname } = useLocation();
   const [loading, setLoading] = useState(false);
-  const [keyword, setKeyword] = useState('');
-  const [startDate, setStartDate] = useState(format(startOfDay(Date.now()), 'yyyy-MM-dd'));
-  const [endDate, setEndDate] = useState(format(endOfDay(Date.now()), 'yyyy-MM-dd'));
-  const adminToken = localStorage.getItem('adminToken');
+  const [keyword, setKeyword] = useState("");
+  const [startDate, setStartDate] = useState(
+    format(startOfDay(Date.now()), "yyyy-MM-dd")
+  );
+  const [endDate, setEndDate] = useState(
+    format(endOfDay(Date.now()), "yyyy-MM-dd")
+  );
+  const adminToken = localStorage.getItem("adminToken");
   const [ranges, setRanges] = useState([
     {
       startDate: new Date(),
       endDate: new Date(),
-      key: 'selection',
+      key: "selection",
     },
   ]);
   const [selectedDates, setSelectedDates] = useState({});
-  const limit = 6;
 
   console.log(selectedDates.startDate);
 
@@ -66,7 +69,7 @@ const DashboardTransaction = () => {
   const debouncedSearch = useDebounce(keyword, 1000);
 
   useEffect(() => {
-    dispatch({ type: 'ALERT_CLEAR', payload: 'history' });
+    dispatch({ type: "ALERT_CLEAR", payload: "history" });
 
     const getTransaction = async () => {
       try {
@@ -82,7 +85,7 @@ const DashboardTransaction = () => {
             endDate: selectedDates.endDate,
             sort: currentSortDate,
             status: currentSortStatus,
-            limit,
+            limit: 5,
           },
           {
             headers: {
@@ -90,8 +93,6 @@ const DashboardTransaction = () => {
             },
           }
         );
-
-        if (response.data.data.length === 0) setProductNotFound(true);
         setTransactions(response.data.data);
         setTotalPage(response.data.totalPage);
         setStartNumber(response.data.startNumber);
@@ -103,39 +104,56 @@ const DashboardTransaction = () => {
 
     getTransaction();
 
-    socket?.on('newTransactionNotif', () => {
+    socket?.on("newTransactionNotif", () => {
       getTransaction();
       return;
     });
 
-    socket?.on('newPaymentNotif', () => {
+    socket?.on("newPaymentNotif", () => {
       getTransaction();
       return;
     });
 
     return () => {
-      dispatch({ type: 'ALERT_CLEAR', payload: 'history' });
+      dispatch({ type: "ALERT_CLEAR", payload: "history" });
     };
-  }, [activePage, currentSortDate, startDate, endDate, selectedDates, debouncedSearch, currentSortStatus, socket]);
+  }, [
+    activePage,
+    currentSortDate,
+    startDate,
+    endDate,
+    selectedDates,
+    debouncedSearch,
+    currentSortStatus,
+    socket,
+  ]);
 
   const renderTransactions = () => {
-    return transactions?.map((item, i) => <TransactionTable key={item.id} item={item} i={i} startNumber={startNumber} socket={socket} />);
+    return transactions?.map((item, i) => (
+      <TransactionTable
+        key={item.id}
+        item={item}
+        i={i}
+        startNumber={startNumber}
+        socket={socket}
+      />
+    ));
   };
 
   const renderAlert = () => {
     Swal.fire({
-      text: 'Product Not Found!',
-      icon: 'question',
-      confirmButtonColor: '#3085d6',
-      confirmButtonText: 'Okay',
+      text: "Product Not Found!",
+      icon: "question",
+      confirmButtonColor: "#3085d6",
+      confirmButtonText: "Okay",
     }).then((result) => {
       if (result.isConfirmed) {
         try {
           setProductNotFound(false);
           // go back to current url i intended to delete all the params in the url
-          setKeyword('');
+          setKeyword("");
           navigate(pathname);
-          setCurrentSortStatus('');
+          setCurrentSortStatus("");
           if (selectedDates.startDate !== undefined) {
             setRanges([
               {
@@ -199,7 +217,7 @@ const DashboardTransaction = () => {
           />
           <AiOutlineClose
             onClick={() => {
-              setKeyword('');
+              setKeyword("");
               navigate(pathname);
             }}
             className="hover:brightness-110 cursor-pointer absolute right-2"
@@ -216,13 +234,17 @@ const DashboardTransaction = () => {
             <div className="p-2 rounded-lg text-white bg-primary flex items-center cursor-pointer group">
               <span
                 className={`font-semibold flex items-center gap-2 text-sm ${
-                  selectedDates.gte && selectedDates.lte ? 'text-sky-500' : 'text-white group-hover:hover:text-sky-600'
+                  selectedDates.gte && selectedDates.lte
+                    ? "text-sky-500"
+                    : "text-white group-hover:hover:text-sky-600"
                 } transition`}
               >
                 <FiFilter className="text-white" />
                 {selectedDates.gte && selectedDates.lte
-                  ? `${selectedDates.gte.toLocaleDateString('id')} - ${selectedDates.lte.toLocaleDateString('id')}`
-                  : 'Select Date'}
+                  ? `${selectedDates.gte.toLocaleDateString(
+                      "id"
+                    )} - ${selectedDates.lte.toLocaleDateString("id")}`
+                  : "Select Date"}
               </span>
             </div>
             <div className="w-max p-3 flex flex-col rounded-lg bg-gray-300 backdrop-blur-sm absolute z-[40] right-3 md:right-11 top-8 opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all shadow-lg">
@@ -309,7 +331,9 @@ const DashboardTransaction = () => {
                 <th className="bg-white border-b border-gray-200">Address</th>
                 <th className="bg-white border-b border-gray-200">Delivery</th>
                 <th className="bg-white border-b border-gray-200">Notes</th>
-                <th className="bg-white border-b border-gray-200">Invoice Date</th>
+                <th className="bg-white border-b border-gray-200">
+                  Invoice Date
+                </th>
                 <th className="bg-white border-b border-gray-200">Details</th>
                 <th className="bg-white border-b border-gray-200">Status</th>
                 <th className="bg-white border-b border-gray-200">Actions</th>
@@ -317,9 +341,25 @@ const DashboardTransaction = () => {
             </thead>
           </table>
           <div class="flex h-screen w-full items-center justify-center">
-            <button type="button" class="flex items-center rounded-lg bg-primary px-4 py-2 text-white" disabled>
-              <svg class="mr-3 h-5 w-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <button
+              type="button"
+              class="flex items-center rounded-lg bg-primary px-4 py-2 text-white"
+              disabled
+            >
+              <svg
+                class="mr-3 h-5 w-5 animate-spin text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
                 <path
                   class="opacity-75"
                   fill="currentColor"
@@ -340,24 +380,36 @@ const DashboardTransaction = () => {
                 <th className="bg-white border-b border-gray-200">Address</th>
                 <th className="bg-white border-b border-gray-200">Delivery</th>
                 <th className="bg-white border-b border-gray-200">Notes</th>
-                <th className="bg-white border-b border-gray-200">Invoice Date</th>
+                <th className="bg-white border-b border-gray-200">
+                  Invoice Date
+                </th>
                 <th className="bg-white border-b border-gray-200">Details</th>
                 <th className="bg-white border-b border-gray-200">Status</th>
                 <th className="bg-white border-b border-gray-200">Actions</th>
               </tr>
             </thead>
-            <tbody>{productNotFound ? <>{renderAlert()}</> : <>{renderTransactions()}</>}</tbody>
+            <tbody>
+              {productNotFound ? (
+                <>{renderAlert()}</>
+              ) : (
+                <>{renderTransactions()}</>
+              )}
+            </tbody>
           </table>
           <div className="mt-3 flex justify-center items-center gap-4 pt-3">
             <button
               onClick={prevPageHandler}
-              className={activePage === 1 ? `hover:cursor-not-allowed` : `hover:cursor-pointer`}
+              className={
+                activePage === 1
+                  ? `hover:cursor-not-allowed`
+                  : `hover:cursor-pointer`
+              }
               disabled={activePage === 1}
             >
               <FaArrowLeft />
             </button>
             <div>
-              Page{' '}
+              Page{" "}
               <select
                 type="number"
                 className="mx-2 text-center focus:outline-none w-10 bg-gray-100"
@@ -365,12 +417,16 @@ const DashboardTransaction = () => {
                 onChange={(e) => setActivePage(+e.target.value)}
               >
                 {renderPages()}
-              </select>{' '}
+              </select>{" "}
               of {totalPage}
             </div>
             <button
               onClick={nextPageHandler}
-              className={activePage === totalPage ? `hover:cursor-not-allowed` : `hover:cursor-pointer`}
+              className={
+                activePage === totalPage
+                  ? `hover:cursor-not-allowed`
+                  : `hover:cursor-pointer`
+              }
               disabled={activePage === totalPage}
             >
               <FaArrowRight />

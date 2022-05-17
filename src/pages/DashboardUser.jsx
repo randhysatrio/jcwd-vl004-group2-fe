@@ -82,17 +82,15 @@ const Dashboard = () => {
       const userList = await axios.post(
         `${API_URL}/user/query?keyword=${debouncedSearch}`,
         {
+          activePage: page,
           active: status,
+          limit: 5,
         }
       );
-      if (userList.data.length) {
-        setUsers(userList.data.users);
-        setMaxPage(Math.ceil(userList.data.length / 5));
-        setTimeout(loadingFalse, 500);
-      } else {
-        setTimeout(loadingFalse, 1000);
-        setUserNotFound(true);
-      }
+
+      setUsers(userList.data.users);
+      setMaxPage(Math.ceil(userList.data.length / 5));
+      setTimeout(loadingFalse, 500);
     };
     fetchUsers();
   }, [debouncedSearch, page]);
@@ -103,8 +101,7 @@ const Dashboard = () => {
 
   const renderUsers = () => {
     const beginningIndex = (page - 1) * 5;
-    const currentData = users.slice(beginningIndex, beginningIndex + 5);
-    return currentData.map((value) => {
+    return users.map((value) => {
       return (
         <UserTable
           key={value.id}

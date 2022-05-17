@@ -67,25 +67,25 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      const productList = await axios.post(`${API_URL}/product/query?keyword=${debouncedSearch}`, {
-        category: debouncedCategory,
-        sort: debouncedSortPrice,
-        // keyword: searchParams.get("keyword"),
-      });
+      const productList = await axios.post(
+        `${API_URL}/product/query?keyword=${debouncedSearch}`,
+        {
+          activePage: page,
+          category: debouncedCategory,
+          sort: debouncedSortPrice,
+          limit: 5,
+          // keyword: searchParams.get("keyword"),
+        }
+      );
 
-      if (productList.data.products.length) {
-        const categoryList = await axios.get(`${API_URL}/category/all`);
-        setCategories(categoryList.data);
-        // nested objects
-        setProducts(productList.data.products);
-        setItemsPerPage(productList.data.products.length);
-        setMaxPage(Math.ceil(productList.data.length / 5));
-        // i need to use a function to use setTimeout
-        setTimeout(loadingFalse, 500);
-      } else {
-        setTimeout(loadingFalse, 1000);
-        setProductNotFound(true);
-      }
+      const categoryList = await axios.get(`${API_URL}/category/all`);
+      setCategories(categoryList.data);
+      // nested objects
+      setProducts(productList.data.products);
+      setItemsPerPage(productList.data.products.length);
+      setMaxPage(Math.ceil(productList.data.length / 5));
+      // i need to use a function to use setTimeout
+      setTimeout(loadingFalse, 500);
     };
     fetchData();
     // dependency uses state outside useEffect otherwise infinite loop will occur
@@ -98,8 +98,7 @@ const Dashboard = () => {
 
   const renderProducts = () => {
     const beginningIndex = (page - 1) * 5;
-    const currentData = products.slice(beginningIndex, beginningIndex + 5);
-    return currentData.map((product, i) => {
+    return products.map((product, i) => {
       return (
         <tr className="text-sm border-b border-gray-200" key={product.id}>
           <th>{beginningIndex + i + 1}</th>
