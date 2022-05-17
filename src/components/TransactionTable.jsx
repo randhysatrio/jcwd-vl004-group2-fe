@@ -1,33 +1,33 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { API_URL } from '../assets/constants';
-import { format } from 'date-fns';
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { API_URL } from "../assets/constants";
+import { format } from "date-fns";
 
-import Swal from 'sweetalert2';
-import { AiOutlineLoading3Quarters } from 'react-icons/ai';
-import { FaSearchPlus } from 'react-icons/fa';
+import Swal from "sweetalert2";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { FaSearchPlus } from "react-icons/fa";
 
 const TransactionTable = ({ item, startNumber, i, socket }) => {
-  const adminToken = localStorage.getItem('adminToken');
-  const [status, setStatus] = useState('');
+  const adminToken = localStorage.getItem("adminToken");
+  const [status, setStatus] = useState("");
   const [enabled, setEnabled] = useState(false);
   const [loadingApp, setLoadingApp] = useState(false);
   const [loadingRej, setLoadingRej] = useState(false);
 
   useEffect(() => {
     setStatus(item.status);
-    setEnabled(item.status === 'pending');
+    setEnabled(item.status === "pending");
   }, [item]);
 
   const handleApprovedClick = (id) => {
     Swal.fire({
-      title: 'Are you sure?',
+      title: "Are you sure?",
       text: "You won't be able to revert this!",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, Change it!',
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Change it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
@@ -43,9 +43,9 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
           );
 
           setEnabled(false);
-          setStatus('approved');
-          socket.emit('userPayment', response.data.userId);
-          Swal.fire('Updated!', response.data.message, 'success');
+          setStatus("approved");
+          socket.emit("userPayment", response.data.userId);
+          Swal.fire("Updated!", response.data.message, "success");
           setLoadingApp(false);
         } catch (error) {
           console.log(error);
@@ -56,13 +56,13 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
 
   const handleRejectedClick = (id) => {
     Swal.fire({
-      title: 'Are you sure?',
+      title: "Are you sure?",
       text: "You won't be able to revert this!",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, Change it!',
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Change it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
@@ -76,11 +76,12 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
               },
             }
           );
-
+          Swal.fire("Updated!", response.data.message, "success");
+          setLoadingRej(false);
           setEnabled(false);
-          setStatus('rejected');
-          socket.emit('userPayment', response.data.userId);
-          Swal.fire('Updated!', response.data.message, 'success');
+          setStatus("rejected");
+          socket.emit("userPayment", response.data.userId);
+          Swal.fire("Updated!", response.data.message, "success");
           setLoadingRej(false);
         } catch (error) {
           console.log(error);
@@ -93,14 +94,20 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
     return item.invoiceitems.map((item) => {
       return (
         <div key={item.id} className="flex gap-3 border-b mb-2 py-2">
-          <img src={`${API_URL}/${item.product.image}`} className="h-24" alt="cart product" />
+          <img
+            src={`${API_URL}/${item.product.image}`}
+            className="h-24"
+            alt="cart product"
+          />
           <div className="flex flex-col py-1">
             <h2 className="text-sm font-semibold mb-2">{item.product.name}</h2>
             <div className="flex gap-4">
               <span>Price : Rp. {item.price?.toLocaleString()}</span>
               <span>Qty: {item.quantity?.toLocaleString()}</span>
             </div>
-            <span>Subtotal : Rp. {(item.quantity * item.price).toLocaleString()}</span>
+            <span>
+              Subtotal : Rp. {(item.quantity * item.price).toLocaleString()}
+            </span>
           </div>
         </div>
       );
@@ -119,39 +126,47 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
 
   return (
     <>
-      <tr key={item.id}>
+      <tr className="text-sm border-b border-gray-200" key={item.id}>
         <th>{startNumber + i + 1}</th>
-        <td className="max-w-sm whitespace-normal">{item.user.name}</td>
-        <td className="max-w-md whitespace-normal">
+        <td className="justify-center items-center text-center p-4">
+          {item.user.name}
+        </td>
+        <td className="justify-center items-center text-center p-4">
           {item.address.address}, {item.address.city}, {item.address.province}
         </td>
-        <td>{item.deliveryoption.name}</td>
-        <td>{item.notes}</td>
-        <td>{format(new Date(item.createdAt), 'dd/MM/yyyy')}</td>
-        <td>
+        <td className="justify-center items-center text-center p-4">
+          {item.deliveryoption.name}
+        </td>
+        <td className="justify-center items-center text-center p-4">
+          {item.notes}
+        </td>
+        <td className="justify-center items-center text-center p-4">
+          {format(new Date(item.createdAt), "dd/MM/yyyy")}
+        </td>
+        <td className="justify-center items-center text-center p-4">
           <label
             htmlFor={`detail-modal-${item.id}`}
-            className="flex gap-3 items-center hover:cursor-pointer border-b pb-1 px-1 border-primary text-primary w-20"
+            className="flex gap-3 items-center hover:cursor-pointer border-b pb-1 px-1 m-auto border-primary text-primary w-20"
           >
             <span>Detail</span>
             <FaSearchPlus size={20} />
           </label>
         </td>
-        <td>
+        <td className="justify-center items-center text-center p-4">
           <div
-            className={`badge p-3 ${status === 'pending' && 'badge-warning'} ${status === 'approved' && 'badge-success'} ${
-              status === 'rejected' && 'badge-error'
-            } gap-2 `}
+            className={`badge p-3 ${status === "pending" && "badge-warning"} ${
+              status === "approved" && "badge-success"
+            } ${status === "rejected" && "badge-error"} gap-2 `}
           >
             {status}
           </div>
         </td>
-        {item.status === 'awaiting' ? (
+        {item.status === "awaiting" ? (
           <td className="flex items-center text-center ">
             <span className="font-semibold text-xl">Awaiting Payment..</span>
           </td>
         ) : (
-          <td className="flex gap-3 items-center text-center ">
+          <td className="flex gap-3 justify-center items-center text-center p-4">
             <button
               disabled={!enabled || loadingApp || loadingRej}
               type="button"
@@ -164,7 +179,7 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
                   Updating..
                 </>
               ) : (
-                'Approve'
+                "Approve"
               )}
               {/* Approve */}
             </button>
@@ -180,34 +195,52 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
                   Updating..
                 </>
               ) : (
-                'Reject'
+                "Reject"
               )}
             </button>
           </td>
         )}
       </tr>
 
-      <input type="checkbox" id={`detail-modal-${item.id}`} className="modal-toggle" />
+      <input
+        type="checkbox"
+        id={`detail-modal-${item.id}`}
+        className="modal-toggle"
+      />
       <div className="modal">
         <div className="modal-box min-w-9/12 overflow-auto">
           <div className="modal-action">
-            <label htmlFor={`detail-modal-${item.id}`} className="btn btn-sm btn-circle absolute right-2 top-2">
+            <label
+              htmlFor={`detail-modal-${item.id}`}
+              className="btn btn-sm btn-circle absolute right-2 top-2"
+            >
               ✕
             </label>
           </div>
           <div className="flex justify-between my-3 items-center">
             <h3 className="text-lg font-bold mb-3">Detail Transaction</h3>
-            <div className="font-semibold text-lg text-red-400 flex justify-end bg-red-50 py-2 px-3 rounded-md">Rp. {rendTotal()}</div>
+            <div className="font-semibold text-lg text-red-400 flex justify-end bg-red-50 py-2 px-3 rounded-md">
+              Rp. {rendTotal()}
+            </div>
           </div>
           {item.paymentproof?.path ? (
             <div className="flex flex-col justify-center py-4">
-              <span className="font-semibold mb-4 w-28 border-b-2 border-primary">Payment Proof</span>
-              <img src={`${API_URL}/public/${item.paymentproof?.path}`} alt="proof of payment" />
+              <span className="font-semibold mb-4 w-28 border-b-2 border-primary">
+                Payment Proof
+              </span>
+              <img
+                src={`${API_URL}/public/${item.paymentproof?.path}`}
+                alt="proof of payment"
+              />
             </div>
           ) : (
-            <div className="font-semibold mb-4 text-center bg-gray-100 p-6 roundedn-md">Payment proof not available</div>
+            <div className="font-semibold mb-4 text-center bg-gray-100 p-6 roundedn-md">
+              Payment proof not available
+            </div>
           )}
-          <span className="font-semibold mb-4 pt-9 w-28 border-b-2 border-primary">Order Items</span>
+          <span className="font-semibold mb-4 pt-9 w-28 border-b-2 border-primary">
+            Order Items
+          </span>
           {rendDetail()}
         </div>
       </div>
