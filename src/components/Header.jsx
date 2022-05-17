@@ -20,12 +20,12 @@ const Header = () => {
     // header
     <header className="py-2 lg:py-4 shadow-sm bg-gray-50">
       <div className="px-3 lg:px-1 xl:container flex items-center justify-around xl:justify-between">
-        <h1
+        <div
           onClick={() => navigate('/')}
           className="hidden md:block text-lg font-bold text-slate-600 hover:brightness-110 transition cursor-pointer"
         >
-          <img src='/logo.png' width='250px' alt='logo heizenberg' />
-        </h1>
+          <img src="/logo.png" alt="logo heizenberg" className="w-36 lg:w-40 xl:w-44 2xl:w-[250px]" />
+        </div>
         <UserSidebar />
         {/* Searchbar */}
         <form

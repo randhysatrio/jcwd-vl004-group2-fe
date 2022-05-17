@@ -89,7 +89,7 @@ function Payment() {
       if (addFile) {
         let formData = new FormData();
 
-        formData.append('data', JSON.stringify({ invoiceheaderId: paymentData.invoice }));
+        formData.append('data', JSON.stringify({ invoiceheaderId: paymentData.id }));
         formData.append('file', addFile);
 
         await axios.post(`${API_URL}/checkout/proof`, formData, {
