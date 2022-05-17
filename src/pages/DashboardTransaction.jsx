@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { FaArrowLeft, FaArrowRight, FaSearch } from 'react-icons/fa';
 import { AiOutlineClose } from 'react-icons/ai';
 import { FiCalendar, FiMinus, FiFilter } from 'react-icons/fi';
@@ -25,14 +25,12 @@ const DashboardTransaction = () => {
   const [totalPage, setTotalPage] = useState(1);
   const [currentSortDate, setCurrentSortDate] = useState('');
   const [currentSortStatus, setCurrentSortStatus] = useState('');
-  const [paymentProof, setPaymentProof] = useState('');
   const { pathname } = useLocation();
   const [loading, setLoading] = useState(false);
   const [keyword, setKeyword] = useState('');
   const [startDate, setStartDate] = useState(format(startOfDay(Date.now()), 'yyyy-MM-dd'));
   const [endDate, setEndDate] = useState(format(endOfDay(Date.now()), 'yyyy-MM-dd'));
   const adminToken = localStorage.getItem('adminToken');
-  const [searchParams] = useSearchParams();
   const { search } = useLocation();
   const [ranges, setRanges] = useState([
     {
@@ -42,7 +40,7 @@ const DashboardTransaction = () => {
     },
   ]);
   const [selectedDates, setSelectedDates] = useState({});
-  const limit = 7;
+  const limit = 6;
 
   console.log(selectedDates.startDate);
 
@@ -68,10 +66,6 @@ const DashboardTransaction = () => {
 
   const debouncedSearch = useDebounce(keyword, 1000);
 
-  const loadingFalse = () => {
-    setLoading(false);
-  };
-
   useEffect(() => {
     dispatch({ type: 'ALERT_CLEAR', payload: 'history' });
 
@@ -87,9 +81,9 @@ const DashboardTransaction = () => {
             page: activePage,
             startDate: selectedDates.startDate,
             endDate: selectedDates.endDate,
-            // search: searchParams.get("keyword"),
             sort: currentSortDate,
             status: currentSortStatus,
+            limit,
           },
           {
             headers: {
@@ -98,13 +92,11 @@ const DashboardTransaction = () => {
           }
         );
 
-        if (activePage > response.data.totalPage) setActivePage(1);
         if (response.data.data.length === 0) setProductNotFound(true);
-
         setTransactions(response.data.data);
         setTotalPage(response.data.totalPage);
         setStartNumber(response.data.startNumber);
-        setTimeout(loadingFalse, 500);
+        setTimeout(setLoading(false), 500);
       } catch (error) {
         toast.error(error.response.data.message);
       }
@@ -125,7 +117,7 @@ const DashboardTransaction = () => {
     return () => {
       dispatch({ type: 'ALERT_CLEAR', payload: 'history' });
     };
-  }, [activePage, search, currentSortDate, startDate, endDate, selectedDates, debouncedSearch, currentSortStatus]);
+  }, [activePage, search, currentSortDate, startDate, endDate, selectedDates, debouncedSearch, currentSortStatus, socket]);
 
   useEffect(() => {
     if (!search) {
