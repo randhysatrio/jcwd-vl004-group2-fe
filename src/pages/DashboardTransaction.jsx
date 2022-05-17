@@ -12,12 +12,13 @@ import { startOfDay, endOfDay, format } from "date-fns";
 import { DateRangePicker } from "react-date-range";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
-
+import Swal from "sweetalert2";
 import TransactionTable from "../components/TransactionTable";
 
 const DashboardTransaction = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [productNotFound, setProductNotFound] = useState(false);
   const [transactions, setTransactions] = useState();
   const [activePage, setActivePage] = useState(1);
   const [startNumber, setStartNumber] = useState(1);
@@ -98,13 +99,16 @@ const DashboardTransaction = () => {
             },
           }
         );
+        console.log(selectedDates.startDate);
+        console.log(selectedDates.endDate);
 
         if (activePage > response.data.totalPage) setActivePage(1);
+        if (response.data.data.length === 0) setProductNotFound(true);
 
         setTransactions(response.data.data);
         setTotalPage(response.data.totalPage);
         setStartNumber(response.data.startNumber);
-        setTimeout(loadingFalse, 1000);
+        setTimeout(loadingFalse, 500);
       } catch (error) {
         toast.error(error.response.data.message);
       }
@@ -145,6 +149,36 @@ const DashboardTransaction = () => {
         socket={socket}
       />
     ));
+  };
+
+  const renderAlert = () => {
+    Swal.fire({
+      text: "Product Not Found!",
+      icon: "question",
+      confirmButtonColor: "#3085d6",
+      confirmButtonText: "Okay",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        try {
+          setProductNotFound(false);
+          // go back to current url i intended to delete all the params in the url
+          setKeyword("");
+          navigate(pathname);
+          if (selectedDates.startDate !== undefined) {
+            setRanges([
+              {
+                ...ranges[0],
+                startDate: new Date(),
+                endDate: new Date(),
+              },
+            ]);
+            setSelectedDates({});
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    });
   };
 
   const renderPages = () => {
@@ -200,6 +234,7 @@ const DashboardTransaction = () => {
           />
         </div>
       </div>
+
       <div className="flex items-center justify-between py-7 px-10">
         <div>
           <h1 className="text-3xl text-gray-700 font-bold">Transactions</h1>
@@ -222,12 +257,12 @@ const DashboardTransaction = () => {
                   : "Select Date"}
               </span>
             </div>
-            <div className="w-max p-3 flex flex-col rounded-lg bg-gray-300 bg-opacity-60 backdrop-blur-sm absolute z-[40] right-3 md:right-11 top-8 opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all shadow-lg">
+            <div className="w-max p-3 flex flex-col rounded-lg bg-gray-300 backdrop-blur-sm absolute z-[40] right-3 md:right-11 top-8 opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all shadow-lg">
               <DateRangePicker
                 className="rounded-lg overflow-hidden"
                 onChange={(date) => setRanges([date.selection])}
                 showSelectionPreview={true}
-                months={2}
+                months={1}
                 ranges={ranges}
                 direction="horizontal"
                 // preventSnapRefocus={true}
@@ -279,8 +314,8 @@ const DashboardTransaction = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white shadow-sm p-5">
-        <div className="overflow-x-auto">
+      {loading ? (
+        <div className="bg-white shadow-sm p-5">
           <table className="w-full">
             <thead>
               <tr>
@@ -297,7 +332,62 @@ const DashboardTransaction = () => {
                 <th className="bg-white border-b border-gray-200">Actions</th>
               </tr>
             </thead>
-            <tbody>{renderTransactions()}</tbody>
+          </table>
+          <div class="flex h-screen w-full items-center justify-center">
+            <button
+              type="button"
+              class="flex items-center rounded-lg bg-primary px-4 py-2 text-white"
+              disabled
+            >
+              <svg
+                class="mr-3 h-5 w-5 animate-spin text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              <span class="font-medium"> Processing... </span>
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="bg-white shadow-sm p-5">
+          <table className="w-full">
+            <thead>
+              <tr>
+                <th className="bg-white border-b border-gray-200">No</th>
+                <th className="bg-white border-b border-gray-200">User Name</th>
+                <th className="bg-white border-b border-gray-200">Address</th>
+                <th className="bg-white border-b border-gray-200">Delivery</th>
+                <th className="bg-white border-b border-gray-200">Notes</th>
+                <th className="bg-white border-b border-gray-200">
+                  Invoice Date
+                </th>
+                <th className="bg-white border-b border-gray-200">Details</th>
+                <th className="bg-white border-b border-gray-200">Status</th>
+                <th className="bg-white border-b border-gray-200">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {productNotFound ? (
+                <>{renderAlert()}</>
+              ) : (
+                <>{renderTransactions()}</>
+              )}
+            </tbody>
           </table>
           <div className="mt-3 flex justify-center items-center gap-4 pt-3">
             <button onClick={prevPageHandler}>
@@ -320,7 +410,7 @@ const DashboardTransaction = () => {
             </button>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

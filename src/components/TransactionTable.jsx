@@ -76,7 +76,8 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
               },
             }
           );
-
+          Swal.fire("Updated!", response.data.message, "success");
+          setLoadingRej(false);
           setEnabled(false);
           setStatus('rejected');
           socket.emit('userPayment', response.data.userId);
@@ -121,8 +122,10 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
     <>
       <tr className="text-sm border-b border-gray-200" key={item.id}>
         <th>{startNumber + i + 1}</th>
-        <td className="max-w-sm whitespace-normal">{item.user.name}</td>
-        <td className="max-w-md whitespace-normal">
+        <td className="justify-center items-center text-center p-4">
+          {item.user.name}
+        </td>
+        <td className="justify-center items-center text-center p-4">
           {item.address.address}, {item.address.city}, {item.address.province}
         </td>
         <td className="justify-center items-center text-center p-4">

@@ -75,6 +75,7 @@ const Dashboard = () => {
           // keyword: searchParams.get("keyword"),
         }
       );
+
       if (productList.data.products.length) {
         const categoryList = await axios.get(`${API_URL}/category/all`);
         setCategories(categoryList.data);
@@ -82,18 +83,20 @@ const Dashboard = () => {
         setProducts(productList.data.products);
         setItemsPerPage(productList.data.products.length);
         setMaxPage(Math.ceil(productList.data.length / 5));
-        setPage(1);
         // i need to use a function to use setTimeout
-        setTimeout(loadingFalse, 1000);
+        setTimeout(loadingFalse, 500);
       } else {
         setTimeout(loadingFalse, 1000);
         setProductNotFound(true);
       }
     };
-    // setTimeout(setLoading(false), 500);
     fetchData();
-    // dependency uses state outside useEffect
+    // dependency uses state outside useEffect otherwise infinite loop will occur
     window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [debouncedSearch, debouncedCategory, debouncedSortPrice, page]);
+
+  useEffect(() => {
+    setPage(1);
   }, [debouncedSearch, debouncedCategory, debouncedSortPrice]);
 
   const renderProducts = () => {
@@ -164,10 +167,7 @@ const Dashboard = () => {
       pagination.push(i);
     }
     return pagination.map((value) => {
-      return (
-        // <AdminPagination key={value} pagination={value} setPage={setPage} />
-        <option key={value}>{value}</option>
-      );
+      return <option key={value}>{value}</option>;
     });
   };
 
@@ -185,12 +185,12 @@ const Dashboard = () => {
       if (result.isConfirmed) {
         try {
           setProductNotFound(false);
-          // go back to current url i intended to delete all the params in the url
+          // go back to current url i intended to delete all the params in the url when usings params
+          setKeyword("");
           navigate(pathname);
         } catch (error) {
           console.log(error);
         }
-        // fetchProducts();
       }
     });
   };

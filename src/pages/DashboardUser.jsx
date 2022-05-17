@@ -69,7 +69,7 @@ const Dashboard = () => {
   };
 
   const debouncedSearch = useDebounce(keyword, 1000);
-  const debouncedStatus = useDebounce(status, 1000);
+  const debouncedStatus = useDebounce(status, 0);
 
   const loadingFalse = () => {
     setLoading(false);
@@ -87,14 +87,17 @@ const Dashboard = () => {
       if (userList.data.length) {
         setUsers(userList.data.users);
         setMaxPage(Math.ceil(userList.data.length / 5));
-        setPage(1);
-        setTimeout(loadingFalse, 1000);
+        setTimeout(loadingFalse, 500);
       } else {
         setTimeout(loadingFalse, 1000);
         setUserNotFound(true);
       }
     };
     fetchUsers();
+  }, [debouncedSearch, debouncedStatus, page]);
+
+  useEffect(() => {
+    setPage(1);
   }, [debouncedSearch, debouncedStatus]);
 
   const renderUsers = () => {
@@ -162,7 +165,8 @@ const Dashboard = () => {
       if (result.isConfirmed) {
         try {
           setUserNotFound(false);
-          // go back to current url i intended to delete all the params in the url
+          // go back to current url i intended to delete all the params in the url when using params
+          setKeyword("");
           navigate(pathname);
         } catch (error) {
           console.log(error);
