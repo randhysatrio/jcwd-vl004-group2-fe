@@ -9,7 +9,7 @@ import { toast } from 'react-toastify';
 import DeleteReviewModal from './DeleteReviewModal';
 import EditReviewModal from './EditReviewModal';
 
-const ReviewCard = ({ data, userId, setTotalReviews, setAvgRating, setReviews, setCurrentPage, setMaxPage, limit }) => {
+const ReviewCard = ({ data, userId, setTotalReviews, setAvgRating, setReviews, setMaxPage, currentPage, limit }) => {
   const [review, setReview] = useState(data);
   const [likes, setLikes] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
@@ -123,7 +123,7 @@ const ReviewCard = ({ data, userId, setTotalReviews, setAvgRating, setReviews, s
               setAvgRating={setAvgRating}
               setReviews={setReviews}
               setMaxPage={setMaxPage}
-              setCurrentPage={setCurrentPage}
+              currentPage={currentPage}
               limit={limit}
             />
           </div>

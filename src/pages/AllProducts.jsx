@@ -373,7 +373,7 @@ const AllProducts = () => {
             ) : null}
             <div className="w-full p-4 flex items-center border-b-2 border-slate-100">
               <span className="text-3xl font-bold w-max bg-gradient-to-r mr-auto from-sky-500 to-sky-300 bg-clip-text text-transparent">
-                Products
+                {val === 'all' ? 'Products' : val}
               </span>
               <div className="flex items-center justify-center">
                 <label htmlFor="showperpage" className="font-semibold text-slate-400 mr-1 cursor-pointer">

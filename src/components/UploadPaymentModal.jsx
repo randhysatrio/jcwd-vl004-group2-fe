@@ -84,7 +84,7 @@ const UploadPaymentModal = ({ invoiceId, setInvoices, setMaxPage, setTotalData, 
           >
             <div className="w-[70%] sm:w-2/3 lg:w-1/2 xl:w-1/3 z-10 flex flex-col items-center bg-gray-50 rounded-lg shadow-md">
               <div className="w-full flex justify-center pt-8">
-                <span className="text-xl font-bold">Upload Payment Proof for Invoice #7</span>
+                <span className="text-[18px] lg:text-xl font-bold">Upload Payment Proof for Invoice #7</span>
               </div>
               <div className="h-9 w-[80%] flex justify-end items-center">
                 <div

@@ -144,14 +144,14 @@ const MessagesModal = ({ message, currentPage, limit, setMessages, setMaxPage, s
             leaveFrom="opacity-100 translate-y-0"
             leaveTo="opacity-90 -translate-y-2"
           >
-            <div className="w-[65%] md:w-[60%] lg:w-[55%] xl:w-[40%] bg-gray-50 rounded-lg fixed z-20 shadow">
+            <div className="w-[70%] sm:w-[65%] md:w-[60%] lg:w-[55%] xl:w-[40%] bg-gray-50 rounded-lg fixed z-20 shadow">
               <div className="flex flex-col px-5 p-2">
                 <div className="w-full flex flex-col">
-                  <span className="text-xl font-bold text-gray-600 my-[2px]">{message.header}</span>
+                  <span className="text-base lg:text-xl font-bold text-gray-600 my-[2px]">{message.header}</span>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center text-sm">
                       <IoIosSend className="text-emerald-300" />:
-                      <span className="text-gray-800 font-semibold ml-1">
+                      <span className="text-gray-800 font-semibold ml-1 text-sm lg:text-base">
                         {message.to === 'user' ? 'Heizen Berg Admin Team' : `ID #${message.userId} (${message.user?.name})`}
                       </span>
                     </div>
@@ -160,8 +160,8 @@ const MessagesModal = ({ message, currentPage, limit, setMessages, setMaxPage, s
                 </div>
                 <div className="w-full h-[1px] my-1 bg-gradient-to-r from-sky-400 to-emerald-400 mx-auto" />
               </div>
-              <div className="w-full h-60 xl:h-56 px-4 pb-3">
-                <div className="w-full h-full rounded-xl p-3 bg-gray-200 bg-opacity-80 text-sm">
+              <div className="w-full h-56 px-4 pb-3">
+                <div className="w-full h-full rounded-xl p-3 bg-gray-200 bg-opacity-80 text-xs md:text-sm">
                   <div className="flex flex-col">{renderContent()}</div>
                   {message.to === 'user' && (
                     <div className="flex items-center">

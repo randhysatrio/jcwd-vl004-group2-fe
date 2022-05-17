@@ -49,7 +49,7 @@ const Address = () => {
     if (currentPage === 1) {
       return;
     } else if (totalAddress <= limit * currentPage - limit) {
-      setCurrentPage(currentPage - 1 || 1);
+      setCurrentPage(currentPage - 1);
     }
   }, [totalAddress]);
 

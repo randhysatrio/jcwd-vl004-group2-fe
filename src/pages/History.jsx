@@ -74,7 +74,7 @@ const History = () => {
     };
     fetchInvoices();
 
-    socket.on('newUserPayment', () => {
+    socket?.on('newUserPayment', () => {
       fetchInvoices();
       return;
     });
