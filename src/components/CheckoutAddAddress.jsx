@@ -1,14 +1,10 @@
 import axios from 'axios';
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { API_URL } from '../assets/constants';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
-function CheckoutAddAddress({ onClick }) {
-  const [isLoading, setIsLoading] = useState(false);
-  const userGlobal = useSelector((state) => state.user);
+function CheckoutAddAddress({ setAddress, setAddressList, setIsLoading, isLoading }) {
   const userToken = localStorage.getItem('userToken');
 
   const formik = useFormik({
@@ -40,7 +36,6 @@ function CheckoutAddAddress({ onClick }) {
             province: values.province,
             country: values.country,
             postalcode: values.postalcode,
-            userId: userGlobal.id,
           },
           {
             headers: {
@@ -49,9 +44,14 @@ function CheckoutAddAddress({ onClick }) {
           }
         );
 
-        onClick();
         resetForm();
         setIsLoading(false);
+        setAddressList(response.data.data)
+        setAddress(
+          response.data.data.find((item) => {
+            return item.is_default === true ? item : response.data.data[0];
+          })
+        );
         document.getElementById('close-btn').click();
         toast.success(response.data.message);
       } catch (error) {

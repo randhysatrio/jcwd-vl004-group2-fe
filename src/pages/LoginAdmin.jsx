@@ -42,7 +42,7 @@ const LoginAdmin = () => {
         });
 
         localStorage.setItem('adminToken', response.data.token);
-        localStorage.setItem('dataAdmin', response.data.data);
+        localStorage.setItem('dataAdmin', JSON.stringify(response.data.data));
 
         dispatch({ type: 'AUTH_ADMIN', payload: response.data.data });
         dispatch({
