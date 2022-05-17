@@ -71,7 +71,6 @@ const Dashboard = () => {
   };
 
   const debouncedSearch = useDebounce(keyword, 1000);
-  const debouncedStatus = useDebounce(status, 0);
 
   const loadingFalse = () => {
     setLoading(false);
@@ -83,7 +82,7 @@ const Dashboard = () => {
       const userList = await axios.post(
         `${API_URL}/user/query?keyword=${debouncedSearch}`,
         {
-          active: debouncedStatus,
+          active: status,
         }
       );
       if (userList.data.length) {
@@ -96,11 +95,11 @@ const Dashboard = () => {
       }
     };
     fetchUsers();
-  }, [debouncedSearch, debouncedStatus, page]);
+  }, [debouncedSearch, page]);
 
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearch, debouncedStatus]);
+  }, [debouncedSearch]);
 
   const renderUsers = () => {
     const beginningIndex = (page - 1) * 5;
