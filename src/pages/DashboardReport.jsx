@@ -182,7 +182,9 @@ const DashboardReport = () => {
                   <>
                     <tr key={item.id}>
                       <th>{startNumber + i + 1}</th>
-                      <td>{item.name}</td>
+                      <td className="max-w-md whitespace-normal">
+                        {item.name}
+                      </td>
                       <td>
                         Rp. {parseInt(item.price).toLocaleString('id')}/
                         {item.unit}
@@ -293,7 +295,7 @@ const DashboardReport = () => {
       {/* detail statistic */}
       <input type="checkbox" id="detail-modal" className="modal-toggle" />
       <div className="modal">
-        <div className="modal-box min-w-9/12 bg-gray-100 overflow-auto">
+        <div className="modal-box w-max max-w-full bg-gray-100 overflow-auto">
           <div className="modal-action">
             <label
               htmlFor="detail-modal"
@@ -304,7 +306,7 @@ const DashboardReport = () => {
           </div>
           <div className="flex flex-col items-center gap-3 w-full">
             {/* data */}
-            <div className="stats shadow w-11/12 overflow-x-hidden">
+            <div className="stats shadow w-full overflow-x-hidden">
               <div className="stat">
                 <div className="stat-title text-xs">Capital</div>
                 <div className="stat-value text-xl">
@@ -318,7 +320,7 @@ const DashboardReport = () => {
                 </div>
               </div>
             </div>
-            <div className="flex w-11/12 gap-3 justify-between">
+            <div className="flex gap-3 w-full justify-between">
               <div className="stats shadow">
                 <div className="stat">
                   <div className="stat-title">Revenue</div>
@@ -336,12 +338,12 @@ const DashboardReport = () => {
                 </div>
               </div>
             </div>
-            <div className="flex flex-col w-11/12 gap-3 shadow">
+            <div className="flex flex-col w-full gap-3">
               <div className="flex flex-row items-center gap-2 mt-4 pl-2">
                 <span className="font-semibold text-lg">Top 3 Most Sold</span>
                 <FiAward size={24} className="text-yellow-500" />
               </div>
-              <ul className="bg-white py-2 px-2 rounded-2xl">
+              <ul className="bg-white py-2 px-2 rounded-2xl shadow">
                 {mostSold &&
                   mostSold.map((item, i) => {
                     return (

@@ -44,8 +44,6 @@ const LoginAdmin = () => {
         localStorage.setItem('adminToken', response.data.token);
         localStorage.setItem('dataAdmin', response.data.data);
 
-        console.log(response.data);
-
         dispatch({ type: 'AUTH_ADMIN', payload: response.data.data });
         dispatch({
           type: 'SET_SOCKET',

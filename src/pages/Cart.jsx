@@ -23,7 +23,11 @@ const Cart = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    getCart();
+    if (userToken) {
+      getCart();
+    } else {
+      navigate('/login', { replace: true });
+    }
   }, [page]);
 
   const getCart = async () => {
