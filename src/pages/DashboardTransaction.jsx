@@ -128,6 +128,10 @@ const DashboardTransaction = () => {
     socket,
   ]);
 
+  useEffect(() => {
+    setActivePage(1);
+  }, [debouncedSearch]);
+
   const renderTransactions = () => {
     return transactions?.map((item, i) => (
       <TransactionTable

@@ -74,10 +74,8 @@ const Dashboard = () => {
           category: debouncedCategory,
           sort: debouncedSortPrice,
           limit: 5,
-          // keyword: searchParams.get("keyword"),
         }
       );
-
       const categoryList = await axios.get(`${API_URL}/category/all`);
       setCategories(categoryList.data);
       // nested objects
