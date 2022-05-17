@@ -26,7 +26,7 @@ const Dashboard = () => {
   const { pathname } = useLocation();
 
   const [users, setUsers] = useState([]);
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
 
   const useDebounce = (value, delay) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
@@ -46,7 +46,9 @@ const Dashboard = () => {
 
   const handleSort = async (e) => {
     let query = e.target.value;
-    const res = await axios.get(`httphttp://localhost:5000/product/sortprice/?q=${query}`);
+    const res = await axios.get(
+      `httphttp://localhost:5000/product/sortprice/?q=${query}`
+    );
     setUsers(res.data);
   };
 
@@ -104,7 +106,13 @@ const Dashboard = () => {
     const beginningIndex = (page - 1) * 5;
     const currentData = users.slice(beginningIndex, beginningIndex + 5);
     return currentData.map((value) => {
-      return <UserTable key={value.id} user={value} handleStatusClick={handleStatusClick} />;
+      return (
+        <UserTable
+          key={value.id}
+          user={value}
+          handleStatusClick={handleStatusClick}
+        />
+      );
     });
   };
 
@@ -135,13 +143,13 @@ const Dashboard = () => {
 
   const handleStatusClick = (id) => {
     Swal.fire({
-      title: 'Are you sure?',
+      title: "Are you sure?",
       text: "You won't be able to revert this!",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, Change it!',
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Change it!",
     }).then((result) => {
       if (result.isConfirmed) {
         try {
@@ -149,7 +157,7 @@ const Dashboard = () => {
         } catch (error) {
           console.log(error);
         }
-        Swal.fire('Changed!', 'Status has been changed!', 'success');
+        Swal.fire("Changed!", "Status has been changed!", "success");
         fetchUsers();
       }
     });
@@ -167,6 +175,7 @@ const Dashboard = () => {
           setUserNotFound(false);
           // go back to current url i intended to delete all the params in the url when using params
           setKeyword("");
+          setStatus("");
           navigate(pathname);
         } catch (error) {
           console.log(error);

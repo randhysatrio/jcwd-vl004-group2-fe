@@ -24,6 +24,7 @@ const DashboardTransaction = () => {
   const [startNumber, setStartNumber] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [currentSortDate, setCurrentSortDate] = useState("");
+  const [currentSortStatus, setCurrentSortStatus] = useState("");
   const [paymentProof, setPaymentProof] = useState("");
   const { pathname } = useLocation();
   const [loading, setLoading] = useState(false);
@@ -92,6 +93,7 @@ const DashboardTransaction = () => {
             endDate: selectedDates.endDate,
             // search: searchParams.get("keyword"),
             sort: currentSortDate,
+            status: currentSortStatus,
           },
           {
             headers: {
@@ -99,8 +101,6 @@ const DashboardTransaction = () => {
             },
           }
         );
-        console.log(selectedDates.startDate);
-        console.log(selectedDates.endDate);
 
         if (activePage > response.data.totalPage) setActivePage(1);
         if (response.data.data.length === 0) setProductNotFound(true);
@@ -116,20 +116,29 @@ const DashboardTransaction = () => {
 
     getTransaction();
 
-    socket?.on('newTransactionNotif', () => {
+    socket?.on("newTransactionNotif", () => {
       getTransaction();
       return;
     });
 
-    socket?.on('newPaymentNotif', () => {
+    socket?.on("newPaymentNotif", () => {
       getTransaction();
       return;
     });
 
     return () => {
-      dispatch({ type: 'ALERT_CLEAR', payload: 'history' });
+      dispatch({ type: "ALERT_CLEAR", payload: "history" });
     };
-  }, [activePage, search, currentSortDate, startDate, endDate, selectedDates]);
+  }, [
+    activePage,
+    search,
+    currentSortDate,
+    startDate,
+    endDate,
+    selectedDates,
+    debouncedSearch,
+    currentSortStatus,
+  ]);
 
   useEffect(() => {
     if (!search) {
@@ -164,6 +173,7 @@ const DashboardTransaction = () => {
           // go back to current url i intended to delete all the params in the url
           setKeyword("");
           navigate(pathname);
+          setCurrentSortStatus("");
           if (selectedDates.startDate !== undefined) {
             setRanges([
               {
@@ -307,9 +317,26 @@ const DashboardTransaction = () => {
               className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl"
             >
               {/* updatedAt vs createdAt */}
-              <option value="">Sort by Invoice Date</option>
+              <option value="" selected>
+                Sort by Invoice Date
+              </option>
               <option value="createdAt,ASC">Oldest Transaction</option>
               <option value="createdAt,DESC">Latest Transaction</option>
+            </select>
+          </div>
+          <div>
+            <select
+              name=""
+              id="statusSelector"
+              onChange={(e) => setCurrentSortStatus(e.target.value)}
+              className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl"
+            >
+              {/* updatedAt vs createdAt */}
+              <option value="">Sort by Status</option>
+              <option value="approved">Approved</option>
+              <option value="pending">Pending</option>
+              <option value="rejected">Rejected</option>
+              <option value="awaiting">Awaiting Payment</option>
             </select>
           </div>
         </div>

@@ -186,6 +186,7 @@ const Dashboard = () => {
         try {
           setProductNotFound(false);
           // go back to current url i intended to delete all the params in the url when usings params
+          setCurrentCategory("");
           setKeyword("");
           navigate(pathname);
         } catch (error) {

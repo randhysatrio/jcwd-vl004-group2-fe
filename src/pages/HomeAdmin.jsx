@@ -40,8 +40,9 @@ const HomeAdmin = () => {
   let month = months[fullDate.getMonth()];
   let year = fullDate.getFullYear();
   let day = days[fullDate.getDay()];
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
+  const [activePage, setActivePage] = useState(1);
   const [products, setProducts] = useState([]);
   const [productsLength, setProductLength] = useState(0);
   const [users, setUsers] = useState(0);
@@ -73,7 +74,9 @@ const HomeAdmin = () => {
       const transactionList = await axios.post(
         // bug fixed add {} between url and header
         `${API_URL}/admin/transaction/get`,
-        {},
+        {
+          page: activePage,
+        },
         {
           headers: {
             Authorization: `Bearer ${adminToken}`,
@@ -81,6 +84,7 @@ const HomeAdmin = () => {
         }
       );
       setTransactions(transactionList.data.data);
+      console.log(transactionList.data.data);
     };
     fetchTransactions();
     const fetchProducts = async () => {
@@ -171,7 +175,7 @@ const HomeAdmin = () => {
       <div className="grid grid-cols-4 gap-4 justify-between py-7 px-10 ">
         <div className="w-full justify-between flex flex-col col-span-3 shadow-md bg-white rounded-md">
           <div className="flex-col">
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center my-3">
               <div className="text-xl mt-3 ml-8">Recent Transactions</div>
               <div className="mt-6 mr-8">
                 <button
@@ -182,24 +186,24 @@ const HomeAdmin = () => {
                 </button>
               </div>
             </div>
-            <div className="mt-3 ml-8">
+            <div className="m-auto">
               <table className="w-full">
                 <thead>
-                  <tr>
-                    <th className="bg-white border-b border-gray-200">No</th>
-                    <th className="bg-white border-b border-gray-200">
+                  <tr className="bg-gray-100 rounded-lg">
+                    <th className="bg-gray-100 rounded-lg font-normal">No</th>
+                    <th className="bg-gray-100 rounded-lg font-normal">
                       Username
                     </th>
-                    <th className="bg-white border-b border-gray-200">
+                    <th className="bg-gray-100 rounded-lg font-normal">
                       Address
                     </th>
-                    <th className="bg-white border-b border-gray-200">
+                    <th className="bg-gray-100 rounded-lg font-normal">
                       Delivery
                     </th>
-                    <th className="bg-white border-b border-gray-200">
+                    <th className="bg-gray-100 rounded-lg font-normal">
                       Invoice Date
                     </th>
-                    <th className="bg-white border-b border-gray-200">
+                    <th className="bg-gray-100 rounded-lg font-normal">
                       Status
                     </th>
                   </tr>
@@ -208,7 +212,9 @@ const HomeAdmin = () => {
                   {transactions?.map((item, i) => {
                     return (
                       <tr key={item.id}>
-                        <th>{i + 1}</th>
+                        <td className="justify-center items-center text-center p-4">
+                          {i + 1}
+                        </td>
                         <td className="justify-center items-center text-center p-4">
                           {item.user.name}
                         </td>
