@@ -24,7 +24,7 @@ const Header = () => {
           onClick={() => navigate('/')}
           className="hidden md:block text-lg font-bold text-slate-600 hover:brightness-110 transition cursor-pointer"
         >
-          Heizen Berg Co.
+          <img src='/logo.png' width='250px' alt='logo heizenberg' />
         </h1>
         <UserSidebar />
         {/* Searchbar */}

@@ -22,7 +22,7 @@ function CartCard({
   const [quantity, setQuantity] = useState(item.quantity);
 
   const changeQty = useCallback(
-    debounce(1000, async (t) => {
+    debounce(1000, async (quantity) => {
       try {
         setIsLoading(true);
 

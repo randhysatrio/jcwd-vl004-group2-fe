@@ -1,6 +1,11 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import {
+  Link,
+  useNavigate,
+  useSearchParams,
+  useLocation,
+} from 'react-router-dom';
 
 import { AiOutlineClose } from 'react-icons/ai';
 import { FaBell, FaSearch, FaUserAlt } from 'react-icons/fa';
@@ -13,6 +18,7 @@ const NavbarDashboard = ({ onChange, value, onClick }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [keyword, setKeyword] = useState('');
   const { pathname } = useLocation();
+  const dataAdmin = JSON.parse(localStorage.getItem('dataAdmin'));
 
   return (
     <div className="h-16 bg-white shadow-sm pl-80 pr-8 fixed z-[3] w-full top-0 left-0 flex items-center">
@@ -41,10 +47,14 @@ const NavbarDashboard = ({ onChange, value, onClick }) => {
       </div>
 
       <div className="ml-auto flex items-center">
+        {dataAdmin && <span className="mr-3">Halo, {dataAdmin.name}</span>}
+
         <Link to="/dashboard/notification">
           <div className="relative">
             <FaBell className="w-6 cursor-pointer hover:text-primary" />
-            {notification && <span className="h-2 w-2 top-0 right-[3px] rounded-full bg-red-500 absolute"></span>}
+            {notification && (
+              <span className="h-2 w-2 top-0 right-[3px] rounded-full bg-red-500 absolute"></span>
+            )}
           </div>
         </Link>
 
@@ -53,7 +63,10 @@ const NavbarDashboard = ({ onChange, value, onClick }) => {
             <FaUserAlt className="h-4 w-4 cursor-pointer object-cover hover:text-primary" />
           </label>
 
-          <ul tabIndex={0} className="dropdown-content menu bg-gray-50 shadow-md px-1 rounded-lg w-32 divide-y">
+          <ul
+            tabIndex={0}
+            className="dropdown-content menu bg-gray-50 shadow-md px-1 rounded-lg w-32 divide-y"
+          >
             {/* link to admin profile here */}
             <Link to="/">
               <li className="py-1 font-semibold text-gray-600 group">
@@ -73,7 +86,9 @@ const NavbarDashboard = ({ onChange, value, onClick }) => {
               }}
               className="py-1 font-semibold text-rose-600 group"
             >
-              <div className="w-full h-8 rounded-lg group-hover:bg-red-50 group-hover:text-rose-400 transition font-semibold">Logout</div>
+              <div className="w-full h-8 rounded-lg group-hover:bg-red-50 group-hover:text-rose-400 transition font-semibold">
+                Logout
+              </div>
             </li>
           </ul>
         </div>

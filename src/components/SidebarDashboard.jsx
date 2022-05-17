@@ -32,7 +32,10 @@ const SidebarDashboard = () => {
   return (
     <div className="fixed left-0 top-0 w-40 h-full bg-gray-800 shadow-md z-10">
       <Link to="/">
-        <div className="text-white font-bold text-base p-5 bg-gray-900">Heisen Berg Co.</div>
+        <div className="text-white font-bold text-base p-5 bg-gray-900 flex flex-col items-center gap-3">
+          <img src='/IlLogoWhite.png' width='80px' alt='Il Logo Heizenberg' />
+          Heisen Berg Co.
+        </div>
       </Link>
       <div className="py-5">
         <DashboardLink icon={<FaHome />} to={'/dashboard'} end>

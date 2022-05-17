@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
