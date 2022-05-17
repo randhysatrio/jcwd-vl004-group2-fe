@@ -11,6 +11,7 @@ import {
 } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 import { API_URL } from '../assets/constants';
+import Swal from 'sweetalert2';
 
 const DashboardReport = () => {
   const [report, setReport] = useState();
