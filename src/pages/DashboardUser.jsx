@@ -175,8 +175,8 @@ const Dashboard = () => {
           setUserNotFound(false);
           // go back to current url i intended to delete all the params in the url when using params
           setKeyword("");
-          setStatus("");
           navigate(pathname);
+          setStatus("");
         } catch (error) {
           console.log(error);
         }
@@ -294,7 +294,13 @@ const Dashboard = () => {
             </tbody>
           </table>
           <div className="mt-3 flex justify-center items-center gap-4 pt-3">
-            <button onClick={prevPageHandler}>
+            <button
+              onClick={prevPageHandler}
+              className={
+                page === 1 ? `hover:cursor-not-allowed` : `hover:cursor-pointer`
+              }
+              disabled={page === 1}
+            >
               <FaArrowLeft />
             </button>
             <div>
@@ -310,7 +316,15 @@ const Dashboard = () => {
               </select>{" "}
               of {maxPage}
             </div>
-            <button onClick={nextPageHandler}>
+            <button
+              onClick={nextPageHandler}
+              className={
+                page === maxPage
+                  ? `hover:cursor-not-allowed`
+                  : `hover:cursor-pointer`
+              }
+              disabled={page === maxPage}
+            >
               <FaArrowRight />
             </button>
           </div>

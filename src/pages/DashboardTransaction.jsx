@@ -417,7 +417,15 @@ const DashboardTransaction = () => {
             </tbody>
           </table>
           <div className="mt-3 flex justify-center items-center gap-4 pt-3">
-            <button onClick={prevPageHandler}>
+            <button
+              onClick={prevPageHandler}
+              className={
+                activePage === 1
+                  ? `hover:cursor-not-allowed`
+                  : `hover:cursor-pointer`
+              }
+              disabled={activePage === 1}
+            >
               <FaArrowLeft />
             </button>
             <div>
@@ -432,7 +440,15 @@ const DashboardTransaction = () => {
               </select>{" "}
               of {totalPage}
             </div>
-            <button onClick={nextPageHandler}>
+            <button
+              onClick={nextPageHandler}
+              className={
+                activePage === totalPage
+                  ? `hover:cursor-not-allowed`
+                  : `hover:cursor-pointer`
+              }
+              disabled={activePage === totalPage}
+            >
               <FaArrowRight />
             </button>
           </div>
