@@ -31,7 +31,6 @@ const DashboardTransaction = () => {
   const [startDate, setStartDate] = useState(format(startOfDay(Date.now()), 'yyyy-MM-dd'));
   const [endDate, setEndDate] = useState(format(endOfDay(Date.now()), 'yyyy-MM-dd'));
   const adminToken = localStorage.getItem('adminToken');
-  const { search } = useLocation();
   const [ranges, setRanges] = useState([
     {
       startDate: new Date(),
@@ -117,15 +116,7 @@ const DashboardTransaction = () => {
     return () => {
       dispatch({ type: 'ALERT_CLEAR', payload: 'history' });
     };
-  }, [activePage, search, currentSortDate, startDate, endDate, selectedDates, debouncedSearch, currentSortStatus, socket]);
-
-  useEffect(() => {
-    if (!search) {
-      return;
-    } else {
-      setActivePage(1);
-    }
-  }, [search]);
+  }, [activePage, currentSortDate, startDate, endDate, selectedDates, debouncedSearch, currentSortStatus, socket]);
 
   const renderTransactions = () => {
     return transactions?.map((item, i) => <TransactionTable key={item.id} item={item} i={i} startNumber={startNumber} socket={socket} />);

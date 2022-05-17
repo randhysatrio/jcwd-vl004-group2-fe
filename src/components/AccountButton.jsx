@@ -47,7 +47,7 @@ const AccountButton = ({ children }) => {
 
   return (
     <>
-      <Menu as="div">
+      <Menu as="div" className="relative">
         <Menu.Button as="div" className="flex flex-col items-center text-gray-700 hover:text-sky-500 transition cursor-pointer">
           <div className="relative">
             <FaUserAlt className="md:text-2xl mb-1" />
@@ -66,7 +66,7 @@ const AccountButton = ({ children }) => {
         >
           <Menu.Items
             as="div"
-            className="rounded-lg absolute z-10 top-[5%] md:top-[6%] lg:top-[8%] 2xl:top-[10%] md:right-[8%] lg:right-[6%] 2xl:right-[12%] overflow-hidden focus:outline-none shadow-lg"
+            className="rounded-lg absolute z-10 top-6 right-4 md:top-8 md:right-5 overflow-hidden focus:outline-none shadow-lg"
           >
             <div className="w-full sm:hidden flex flex-col">
               <MenuLink icon={<FaShoppingBag />} to="/cart">
