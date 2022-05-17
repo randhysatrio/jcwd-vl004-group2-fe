@@ -98,7 +98,7 @@ const HistoryCard = ({ invoice, userId }) => {
     <div className="w-full border rounded-lg flex flex-col items-center overflow-hidden shadow">
       <div className="w-full py-2 px-4 text-sm font-semibold text-gray-500 flex items-center">
         <span className="mr-auto">#{invoice.id}</span>
-        <span>{format(new Date(invoice.createdAt), 'ccc, MMM do yyyy - pp')}</span>
+        <span>{format(new Date(invoice.createdAt), 'PPPpp')}</span>
         {invoice.status === 'pending' && <span className="py-1 px-3 rounded-lg bg-sky-200 text-sky-600 font-semibold ml-3">Pending</span>}
         {invoice.status === 'rejected' && (
           <span className="py-1 px-3 rounded-lg bg-rose-200 text-rose-600 font-semibold ml-3">Rejected</span>

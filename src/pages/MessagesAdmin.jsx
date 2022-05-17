@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useEffect, useState, useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import Axios from 'axios';
 import { API_URL } from '../assets/constants';
@@ -17,6 +17,11 @@ const MessagesAdmin = () => {
   const [maxPage, setMaxPage] = useState(0);
   const [totalMsg, setTotalMsg] = useState(0);
   const limit = 7;
+
+  const socket = useCallback(
+    useSelector((state) => state.socket.instance),
+    []
+  );
 
   useEffect(() => {
     dispatch({
@@ -43,6 +48,16 @@ const MessagesAdmin = () => {
     };
     fetchAdminMsg();
 
+    socket?.on('newAdminNotif', () => {
+      fetchAdminMsg();
+      return;
+    });
+
+    socket?.on('newPaymentNotif', () => {
+      fetchAdminMsg();
+      return;
+    });
+
     return async () => {
       try {
         dispatch({
@@ -54,7 +69,7 @@ const MessagesAdmin = () => {
         toast.error('Unable to update messages status!', { position: 'bottom-left', theme: 'colored' });
       }
     };
-  }, [currentPage, search]);
+  }, [currentPage, search, socket]);
 
   useEffect(() => {
     if (currentPage === 1) {

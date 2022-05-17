@@ -1,36 +1,25 @@
-import {
-  FaSearch,
-  FaBell,
-  FaUserAlt,
-  FaHome,
-  FaBars,
-  FaShoppingBag,
-  FaArrowLeft,
-  FaArrowRight,
-} from "react-icons/fa";
-import { AiOutlineClose } from "react-icons/ai";
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
-import axios from "axios";
-import UserTable from "../components/UserTable";
-import Pagination from "../components/Pagination";
-import Swal from "sweetalert2";
-import { useLocation, useSearchParams } from "react-router-dom";
-import { API_URL } from "../assets/constants";
-import AdminPagination from "../components/AdminPagination";
+import { FaSearch, FaBell, FaUserAlt, FaHome, FaBars, FaShoppingBag, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { AiOutlineClose } from 'react-icons/ai';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router';
+import axios from 'axios';
+import UserTable from '../components/UserTable';
+import Pagination from '../components/Pagination';
+import Swal from 'sweetalert2';
+import { useLocation, useSearchParams } from 'react-router-dom';
+import { API_URL } from '../assets/constants';
+import AdminPagination from '../components/AdminPagination';
 
 const Dashboard = () => {
-  const Swal = require("sweetalert2");
+  const Swal = require('sweetalert2');
   const navigate = useNavigate();
 
   const [users, setUsers] = useState([]);
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('');
 
   const handleSort = async (e) => {
     let query = e.target.value;
-    const res = await axios.get(
-      `httphttp://localhost:5000/product/sortprice/?q=${query}`
-    );
+    const res = await axios.get(`httphttp://localhost:5000/product/sortprice/?q=${query}`);
     setUsers(res.data);
   };
 
@@ -50,7 +39,7 @@ const Dashboard = () => {
     const fetchUsers = async () => {
       const userList = await axios.post(`${API_URL}/user/query`, {
         active: status,
-        keyword: searchParams.get("keyword"),
+        keyword: searchParams.get('keyword'),
       });
       setUsers(userList.data.users);
       setMaxPage(Math.ceil(userList.data.length / 5));
@@ -59,19 +48,11 @@ const Dashboard = () => {
     fetchUsers();
   }, [search, status]);
 
-  console.log(users);
-
   const renderUsers = () => {
     const beginningIndex = (page - 1) * 5;
     const currentData = users.slice(beginningIndex, beginningIndex + 5);
     return currentData.map((value) => {
-      return (
-        <UserTable
-          key={value.id}
-          user={value}
-          handleStatusClick={handleStatusClick}
-        />
-      );
+      return <UserTable key={value.id} user={value} handleStatusClick={handleStatusClick} />;
     });
   };
 
@@ -81,9 +62,7 @@ const Dashboard = () => {
       pagination.push(i);
     }
     return pagination.map((value) => {
-      return (
-        <AdminPagination key={value} pagination={value} setPage={setPage} />
-      );
+      return <AdminPagination key={value} pagination={value} setPage={setPage} />;
     });
   };
 
@@ -101,13 +80,13 @@ const Dashboard = () => {
 
   const handleStatusClick = (id) => {
     Swal.fire({
-      title: "Are you sure?",
+      title: 'Are you sure?',
       text: "You won't be able to revert this!",
-      icon: "warning",
+      icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, Change it!",
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, Change it!',
     }).then((result) => {
       if (result.isConfirmed) {
         try {
@@ -115,7 +94,7 @@ const Dashboard = () => {
         } catch (error) {
           console.log(error);
         }
-        Swal.fire("Changed!", "Status has been changed!", "success");
+        Swal.fire('Changed!', 'Status has been changed!', 'success');
         fetchUsers();
       }
     });

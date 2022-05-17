@@ -68,6 +68,8 @@ function App() {
           type: 'SET_SOCKET',
           payload: io(SOCKET_URL),
         });
+
+        return;
       } else if (userToken) {
         response = await Axios.get(`${API_URL}/auth/persistent`, {
           headers: {
@@ -108,6 +110,15 @@ function App() {
 
       socket?.on('newUserNotif', (totalNotif) => {
         dispatch({ type: 'ALERT_NEW', payload: 'alert' });
+        toast.info(`You have ${totalNotif} new notification(s)`, {
+          position: 'top-center',
+          theme: 'colored',
+        });
+      });
+
+      socket?.on('newUserPayment', (totalNotif) => {
+        dispatch({ type: 'ALERT_NEW', payload: 'alert' });
+        dispatch({ type: 'ALERT_NEW', payload: 'history' });
         toast.info(`You have ${totalNotif} new notification(s)`, {
           position: 'top-center',
           theme: 'colored',

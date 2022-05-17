@@ -24,17 +24,14 @@ const DashboardTransaction = () => {
   const [searchParams] = useSearchParams();
   const { search } = useLocation();
 
-  const socket = useCallback(
-    useSelector((state) => state.socket.instance),
-    []
-  );
+  const socket = useSelector((state) => state.socket.instance);
 
   useEffect(() => {
     dispatch({ type: 'ALERT_CLEAR', payload: 'history' });
 
     const getTransaction = async () => {
       try {
-        if (activePage > totalPage || activePage < 1) {
+        if (activePage > totalPage || !activePage) {
           return;
         }
 
@@ -63,10 +60,28 @@ const DashboardTransaction = () => {
     };
 
     getTransaction();
+
+    socket?.on('newTransactionNotif', () => {
+      getTransaction();
+      return;
+    });
+
+    socket?.on('newPaymentNotif', () => {
+      getTransaction();
+      return;
+    });
+
+    return () => {
+      dispatch({ type: 'ALERT_CLEAR', payload: 'history' });
+    };
   }, [activePage, search, currentSortDate, startDate, endDate]);
 
   useEffect(() => {
-    setActivePage(1);
+    if (!search) {
+      return;
+    } else {
+      setActivePage(1);
+    }
   }, [search]);
 
   const renderTransactions = () => {
@@ -154,7 +169,7 @@ const DashboardTransaction = () => {
                 type="number"
                 className="mx-2 text-center focus:outline-none w-10 bg-gray-100"
                 value={activePage}
-                onChange={(e) => e.target.value <= totalPage && setActivePage(e.target.value)}
+                onChange={(e) => setActivePage(parseInt(e.target.value))}
               />{' '}
               of {totalPage}
             </div>

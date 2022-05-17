@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { API_URL } from '../assets/constants';
 import { format } from 'date-fns';
@@ -9,10 +9,15 @@ import { FaSearchPlus } from 'react-icons/fa';
 
 const TransactionTable = ({ item, startNumber, i, socket }) => {
   const adminToken = localStorage.getItem('adminToken');
-  const [status, setStatus] = useState(item.status);
-  const [enabled, setEnabled] = useState(item.status === 'pending');
+  const [status, setStatus] = useState('');
+  const [enabled, setEnabled] = useState(false);
   const [loadingApp, setLoadingApp] = useState(false);
   const [loadingRej, setLoadingRej] = useState(false);
+
+  useEffect(() => {
+    setStatus(item.status);
+    setEnabled(item.status === 'pending');
+  }, [item]);
 
   const handleApprovedClick = (id) => {
     Swal.fire({
@@ -36,9 +41,10 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
               },
             }
           );
+
           setEnabled(false);
           setStatus('approved');
-          socket.emit('userNotif', response.data.userId);
+          socket.emit('userPayment', response.data.userId);
           Swal.fire('Updated!', response.data.message, 'success');
           setLoadingApp(false);
         } catch (error) {
@@ -73,7 +79,7 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
 
           setEnabled(false);
           setStatus('rejected');
-          socket.emit('userNotif', response.data.userId);
+          socket.emit('userPayment', response.data.userId);
           Swal.fire('Updated!', response.data.message, 'success');
           setLoadingRej(false);
         } catch (error) {
@@ -87,20 +93,14 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
     return item.invoiceitems.map((item) => {
       return (
         <div key={item.id} className="flex gap-3 border-b mb-2 py-2">
-          <img
-            src={`${API_URL}/${item.product.image}`}
-            className="h-24"
-            alt="cart product"
-          />
+          <img src={`${API_URL}/${item.product.image}`} className="h-24" alt="cart product" />
           <div className="flex flex-col py-1">
             <h2 className="text-sm font-semibold mb-2">{item.product.name}</h2>
             <div className="flex gap-4">
               <span>Price : Rp. {item.price?.toLocaleString()}</span>
               <span>Qty: {item.quantity?.toLocaleString()}</span>
             </div>
-            <span>
-              Subtotal : Rp. {(item.quantity * item.price).toLocaleString()}
-            </span>
+            <span>Subtotal : Rp. {(item.quantity * item.price).toLocaleString()}</span>
           </div>
         </div>
       );
@@ -139,87 +139,75 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
         </td>
         <td>
           <div
-            className={`badge p-3 ${status === 'pending' && 'badge-warning'} ${
-              status === 'approved' && 'badge-success'
-            } ${status === 'rejected' && 'badge-error'} gap-2 `}
+            className={`badge p-3 ${status === 'pending' && 'badge-warning'} ${status === 'approved' && 'badge-success'} ${
+              status === 'rejected' && 'badge-error'
+            } gap-2 `}
           >
             {status}
           </div>
         </td>
-        <td className="flex gap-3 items-center text-center ">
-          <button
-            disabled={!enabled || loadingApp || loadingRej}
-            type="button"
-            className="py-3 w-36 text-white disabled:bg-gray-400 bg-primary hover:bg-blue-400' rounded-xl flex justify-center items-center gap-2"
-            onClick={() => handleApprovedClick(item.id)}
-          >
-            {loadingApp ? (
-              <>
-                <AiOutlineLoading3Quarters className="animate-spin" />
-                Updating..
-              </>
-            ) : (
-              'Approve'
-            )}
-            {/* Approve */}
-          </button>
-          <button
-            disabled={!enabled || loadingRej || loadingApp}
-            type="button"
-            className={`py-3 w-36 text-white disabled:bg-gray-400 bg-red-500 hover:bg-red-400 rounded-xl flex justify-center items-center gap-2`}
-            onClick={() => handleRejectedClick(item.id)}
-          >
-            {loadingRej ? (
-              <>
-                <AiOutlineLoading3Quarters className="animate-spin" />
-                Updating..
-              </>
-            ) : (
-              'Reject'
-            )}
-          </button>
-        </td>
+        {item.status === 'awaiting' ? (
+          <td className="flex items-center text-center ">
+            <span className="font-semibold text-xl">Awaiting Payment..</span>
+          </td>
+        ) : (
+          <td className="flex gap-3 items-center text-center ">
+            <button
+              disabled={!enabled || loadingApp || loadingRej}
+              type="button"
+              className="py-3 w-36 text-white disabled:bg-gray-400 bg-primary hover:bg-blue-400' rounded-xl flex justify-center items-center gap-2"
+              onClick={() => handleApprovedClick(item.id)}
+            >
+              {loadingApp ? (
+                <>
+                  <AiOutlineLoading3Quarters className="animate-spin" />
+                  Updating..
+                </>
+              ) : (
+                'Approve'
+              )}
+              {/* Approve */}
+            </button>
+            <button
+              disabled={!enabled || loadingRej || loadingApp}
+              type="button"
+              className={`py-3 w-36 text-white disabled:bg-gray-400 bg-red-500 hover:bg-red-400 rounded-xl flex justify-center items-center gap-2`}
+              onClick={() => handleRejectedClick(item.id)}
+            >
+              {loadingRej ? (
+                <>
+                  <AiOutlineLoading3Quarters className="animate-spin" />
+                  Updating..
+                </>
+              ) : (
+                'Reject'
+              )}
+            </button>
+          </td>
+        )}
       </tr>
 
-      <input
-        type="checkbox"
-        id={`detail-modal-${item.id}`}
-        className="modal-toggle"
-      />
+      <input type="checkbox" id={`detail-modal-${item.id}`} className="modal-toggle" />
       <div className="modal">
         <div className="modal-box min-w-9/12 overflow-auto">
           <div className="modal-action">
-            <label
-              htmlFor={`detail-modal-${item.id}`}
-              className="btn btn-sm btn-circle absolute right-2 top-2"
-            >
+            <label htmlFor={`detail-modal-${item.id}`} className="btn btn-sm btn-circle absolute right-2 top-2">
               ✕
             </label>
           </div>
           <div className="flex justify-between my-3 items-center">
             <h3 className="text-lg font-bold mb-3">Detail Transaction</h3>
-            <div className="font-semibold text-lg text-red-400 flex justify-end bg-red-50 py-2 px-3 rounded-md">
-              Rp. {rendTotal()}
-            </div>
+            <div className="font-semibold text-lg text-red-400 flex justify-end bg-red-50 py-2 px-3 rounded-md">Rp. {rendTotal()}</div>
           </div>
           {item.paymentproof?.path ? (
             <div className="flex flex-col justify-center py-4">
-              <span className="font-semibold mb-4 w-28 border-b-2 border-primary">
-                Payment Proof
-              </span>
-              <img
-                src={`${API_URL}/public/${item.paymentproof?.path}`}
-                alt="proof of payment"
-              />
+              <span className="font-semibold mb-4 w-28 border-b-2 border-primary">Payment Proof</span>
+              <img src={`${API_URL}/public/${item.paymentproof?.path}`} alt="proof of payment" />
             </div>
           ) : (
-            <div className="font-semibold mb-4 text-center bg-gray-100 p-6 roundedn-md">
-              Payment proof not available
-            </div>
+            <div className="font-semibold mb-4 text-center bg-gray-100 p-6 roundedn-md">Payment proof not available</div>
           )}
-          <span className="font-semibold mb-4 pt-9 w-28 border-b-2 border-primary">
-            Order Items
-          </span>
+          <span className="font-semibold mb-4 pt-9 w-28 border-b-2 border-primary">Order Items</span>
           {rendDetail()}
         </div>
       </div>

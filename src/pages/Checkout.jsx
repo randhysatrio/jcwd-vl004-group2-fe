@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { FiEdit, FiMapPin, FiPhone, FiSave, FiUser, FiXSquare } from 'react-icons/fi';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -31,6 +31,7 @@ function Checkout() {
   const dispatch = useDispatch();
   const userToken = localStorage.getItem('userToken');
   const userGlobal = useSelector((state) => state.user);
+  const socket = useSelector((state) => state.socket.instance);
 
   const payments = [
     {
@@ -186,8 +187,7 @@ function Checkout() {
         paymentData[0].createdAt = response.data.createdAt;
 
         // set invoice data
-        let data = localStorage.getItem('payment-data');
-        data = JSON.parse(data);
+        let data = JSON.parse(localStorage.getItem('payment-data'));
         if (data) paymentData.push(...data);
 
         localStorage.removeItem('checkout-data');
@@ -199,12 +199,12 @@ function Checkout() {
           payload: response.data.cartTotal,
         });
         dispatch({ type: 'ALERT_NEW', payload: 'awaiting' });
+        socket?.emit('newTransaction');
 
         setIsLoading(false);
         toast.success(response.data.message);
         return navigate(`/payment/${response.data.invoice}`, { replace: true });
       }
-      setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
       toast.error(error.response.data.message);
@@ -241,12 +241,7 @@ function Checkout() {
                         className="input input-bordered input-sm w-36 max-w-xs mr-4"
                         onChange={(e) => setPhone(e.target.value)}
                       />
-                      <FiSave
-                        size={24}
-                        color="#0EA5E9"
-                        className="hover:cursor-pointer"
-                        onClick={() => handEditPhone(phone)}
-                      />
+                      <FiSave size={24} color="#0EA5E9" className="hover:cursor-pointer" onClick={() => handEditPhone(phone)} />
                       <FiXSquare
                         size={24}
                         color="red"
@@ -270,8 +265,7 @@ function Checkout() {
                     <div className="flex justify-start w-full">
                       {address ? (
                         <span className="flex flex-wrap">
-                          {address.address}, {address.city}, {address.province},{' '}
-                          {address.country}, {address.postalcode}
+                          {address.address}, {address.city}, {address.province}, {address.country}, {address.postalcode}
                         </span>
                       ) : (
                         <label
@@ -287,19 +281,11 @@ function Checkout() {
                   </div>
                   {address && (
                     <div className="flex gap-3">
-                      <label
-                        htmlFor="modal-add-address"
-                        href="#modal-add-address"
-                        className="btn btn-sm"
-                      >
+                      <label htmlFor="modal-add-address" href="#modal-add-address" className="btn btn-sm">
                         Add Address
                       </label>
 
-                      <label
-                        htmlFor="modal-change-address"
-                        href="#modal-change-address"
-                        className="btn btn-sm"
-                      >
+                      <label htmlFor="modal-change-address" href="#modal-change-address" className="btn btn-sm">
                         Change Address
                       </label>
                     </div>
@@ -341,14 +327,7 @@ function Checkout() {
             </div>
             <div className="divider" />
             {orderItems.map((item) => {
-              return (
-                <CartCard
-                  key={item.id}
-                  item={item}
-                  checkout
-                  setIsLoading={setIsLoading}
-                />
-              );
+              return <CartCard key={item.id} item={item} checkout setIsLoading={setIsLoading} />;
             })}
           </div>
         </div>
@@ -368,9 +347,7 @@ function Checkout() {
             <div className="divider"></div>
             <div className="flex justify-between">
               <span className="font-bold text-lg">TOTAL</span>
-              <span className="font-bold text-lg">
-                Rp. {(subtotal + costDelivery).toLocaleString('id')}
-              </span>
+              <span className="font-bold text-lg">Rp. {(subtotal + costDelivery).toLocaleString('id')}</span>
             </div>
           </div>
           <label htmlFor="modal-payment" className="h-20 bg-gray-200 rounded-md flex justify-center items-center hover:cursor-pointer">
