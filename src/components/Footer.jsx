@@ -11,13 +11,19 @@ const Footer = () => {
         <div className="min-w-[8rem] lg:pl-10">
           <h6 className="font-bold uppercase pt-2">Products</h6>
           <ul>
-            <li onClick={() => navigate('/products?category=1')} className="py-1 hover:brightness-110 transition cursor-pointer">
+            <li
+              onClick={() => navigate('/products/Pharmaceutical%20Intermediate')}
+              className="py-1 hover:brightness-110 transition cursor-pointer"
+            >
               Pharmaceutical Intermediate
             </li>
-            <li onClick={() => navigate('/products?category=2')} className="py-1 hover:brightness-110 transition cursor-pointer">
+            <li
+              onClick={() => navigate('/products/Pharmaceutical%20Chemical')}
+              className="py-1 hover:brightness-110 transition cursor-pointer"
+            >
               Pharmaceutical Chemical
             </li>
-            <li onClick={() => navigate('/products?category=3')} className="py-1 hover:brightness-110 transition cursor-pointer">
+            <li onClick={() => navigate('/products/Biochemical')} className="py-1 hover:brightness-110 transition cursor-pointer">
               Biochemical
             </li>
             {/* <li className='py-1'>Cloud</li> */}

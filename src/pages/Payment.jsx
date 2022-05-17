@@ -40,14 +40,11 @@ function Payment() {
 
   const getAwaiting = async () => {
     try {
-      const response = await axios.get(
-        `${API_URL}/checkout/awaiting/${params.id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-          },
-        }
-      );
+      const response = await axios.get(`${API_URL}/checkout/awaiting/${params.id}`, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
       console.log(response);
 
       if (response.data.data) {
@@ -92,10 +89,7 @@ function Payment() {
       if (addFile) {
         let formData = new FormData();
 
-        formData.append(
-          'data',
-          JSON.stringify({ invoiceheaderId: paymentData.invoice })
-        );
+        formData.append('data', JSON.stringify({ invoiceheaderId: paymentData.invoice }));
         formData.append('file', addFile);
 
         await axios.post(`${API_URL}/checkout/proof`, formData, {
@@ -105,7 +99,8 @@ function Payment() {
         });
 
         setIsLoading(false);
-        socket.emit('newPayment');
+        localStorage.removeItem('payment-data');
+        socket?.emit('newPayment');
         dispatch({ type: 'ALERT_CLEAR', payload: 'awaiting' });
         dispatch({ type: 'ALERT_NEW', payload: 'history' });
 
@@ -130,21 +125,10 @@ function Payment() {
       <Navbar />
       <div className="flex flex-col items-center m-auto mt-20 pb-7 w-11/12">
         <div className="flex flex-col items-center justify-center w-full">
-          <h2 className="text-3xl font-semibold mb-3">
-            {isExpired
-              ? 'Your transaction cannot continue'
-              : 'Please pay your bill'}
-          </h2>
-          <span className="text-md">
-            {isExpired ? 'this bill expired at' : 'this bill will be expire at'}
-          </span>
-          <span
-            className={`${
-              isExpired ? 'text-red-400' : null
-            } font-semibold text-xl`}
-          >
-            {paymentData?.createdAt &&
-              format(addDays(new Date(paymentData?.createdAt), 1), 'PPPpp')}
+          <h2 className="text-3xl font-semibold mb-3">{isExpired ? 'Your transaction cannot continue' : 'Please pay your bill'}</h2>
+          <span className="text-md">{isExpired ? 'this bill expired at' : 'this bill will be expire at'}</span>
+          <span className={`${isExpired ? 'text-red-400' : null} font-semibold text-xl`}>
+            {paymentData?.createdAt && format(addDays(new Date(paymentData?.createdAt), 1), 'PPPpp')}
           </span>
         </div>
         <div className="border-gray-300 border rounded-md mt-10 mb-7 py-4 px-3 min-h-48 w-4/6">
@@ -152,8 +136,7 @@ function Payment() {
             <h3 className="text-xl">Payment Method</h3>
             <div className="flex items-center gap-3">
               <h3 className="text-xl font-semibold">
-                {paymentData?.paymentmethod.type} -{' '}
-                {paymentData?.paymentmethod.bankname}
+                {paymentData?.paymentmethod.type} - {paymentData?.paymentmethod.bankname}
               </h3>
               <FiCreditCard size={24} />
             </div>
@@ -162,9 +145,7 @@ function Payment() {
           <div className="flex flex-col gap-6 px-5">
             <div className="flex flex-col">
               <span className="text-lg text-gray-500">Account Name</span>
-              <span className="text-xl font-semibold">
-                {paymentData?.paymentmethod.name}
-              </span>
+              <span className="text-xl font-semibold">{paymentData?.paymentmethod.name}</span>
             </div>
             <div className="flex items-center gap-8">
               <div className="flex flex-col">
@@ -173,12 +154,7 @@ function Payment() {
                   {paymentData?.paymentmethod.number}
                 </span>
               </div>
-              <FiCopy
-                size={28}
-                color="#0EA5E9"
-                className="hover:cursor-pointer"
-                onClick={handCopy}
-              />
+              <FiCopy size={28} color="#0EA5E9" className="hover:cursor-pointer" onClick={handCopy} />
             </div>
           </div>
           <div className="divider" />
@@ -186,25 +162,17 @@ function Payment() {
             <div className="flex flex-col">
               <span className="text-lg text-gray-500">Total Bill</span>
               <span className="text-xl font-semibold">
-                Rp.{' '}
-                {(
-                  parseInt(paymentData?.total) +
-                  paymentData?.deliveryoption.cost
-                ).toLocaleString('id')}
+                Rp. {(parseInt(paymentData?.total) + paymentData?.deliveryoption.cost).toLocaleString('id')}
               </span>
             </div>
           </div>
           <div className="divider" />
           <div className="flex justify-between px-5 pb-3">
             {isExpired ? (
-              <span className="font-bold">
-                you can't upload your payment proof
-              </span>
+              <span className="font-bold">you can't upload your payment proof</span>
             ) : (
               <div className="flex flex-col gap-2">
-                <span className="text-lg text-gray-500">
-                  Upload proof of payment here
-                </span>
+                <span className="text-lg text-gray-500">Upload proof of payment here</span>
                 <label className="block">
                   <span className="sr-only">Choose profile photo</span>
                   <input
@@ -218,11 +186,7 @@ function Payment() {
           </div>
         </div>
         <div className="flex justify-end w-4/6">
-          <button
-            disabled={isLoading || isExpired || !addFile}
-            className="btn btn-primary"
-            onClick={handUpload}
-          >
+          <button disabled={isLoading || isExpired || !addFile} className="btn btn-primary" onClick={handUpload}>
             Confirm Payment
           </button>
         </div>

@@ -85,14 +85,14 @@ const ProductReview = ({ productId, totalReviews, setTotalReviews, setAvgRating 
               <button
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage(currentPage - 1)}
-                className="disabled:text-gray-300 active:scale-95 hover:brightness-110 disabled:hover:brightness-100 transition"
+                className="disabled:text-gray-300 active:scale-95 hover:brightness-110 disabled:hover:brightness-100 disabled:active-100 transition"
               >
                 <FaChevronLeft />
               </button>
               <button
                 disabled={currentPage === maxPage}
                 onClick={() => setCurrentPage(currentPage + 1)}
-                className="disabled:text-gray-300 active:scale-95 hover:brightness-110 disabled:hover:brightness-100 transition"
+                className="disabled:text-gray-300 active:scale-95 hover:brightness-110 disabled:hover:brightness-100 disabled:active-100 transition"
               >
                 <FaChevronRight />
               </button>

@@ -18,6 +18,7 @@ const AwaitingPayment = () => {
   const [totalData, setTotalData] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [maxPage, setMaxPage] = useState(1);
+  const [sort, setSort] = useState('createdAt,DESC');
   const limit = 5;
 
   useEffect(() => {
@@ -30,6 +31,7 @@ const AwaitingPayment = () => {
           {
             limit,
             currentPage,
+            sort,
           },
           {
             headers: {
@@ -51,7 +53,7 @@ const AwaitingPayment = () => {
       }
     };
     fetchAwaiting();
-  }, [currentPage]);
+  }, [currentPage, sort]);
 
   useEffect(() => {
     if (currentPage === 1) {
@@ -79,10 +81,23 @@ const AwaitingPayment = () => {
   return (
     <div className="h-full flex justify-center py-3 lg:py-5">
       <div className="h-full w-[90%] sm:w-[85%] md:w-[90%] lg:w-[80%] flex flex-col items-center">
-        <div className="w-full flex items-center py-2">
+        <div className="w-full flex items-center justify-between py-2">
           <span className="text-3xl font-semibold leading-10 bg-gradient-to-r from-sky-400 to-emerald-400 bg-clip-text text-transparent">
             Awaiting Payment
           </span>
+          <div className="flex items-center gap-2">
+            <label htmlFor="sort-transaction" className="font-semibold text-md lg:text-base cursor-pointer">
+              Sort:
+            </label>
+            <select
+              id="sort-transaction"
+              onChange={(e) => setSort(e.target.value)}
+              className="bg-gray-200 rounded-lg p-1 font-semibold focus:outline-sky-400 transition cursor-pointer"
+            >
+              <option value="createdAt,DESC">Latest Transaction</option>
+              <option value="createdAt,ASC">Oldest Transaction</option>
+            </select>
+          </div>
         </div>
         <div className="h-px w-full bg-gray-100" />
         {expInvoices ? (
