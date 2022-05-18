@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import Swal from 'sweetalert2';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import { FaSearchPlus } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 const TransactionTable = ({ item, startNumber, i, socket }) => {
   const adminToken = localStorage.getItem('adminToken');
@@ -42,11 +43,18 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
             }
           );
 
-          setEnabled(false);
-          setStatus('approved');
-          socket.emit('userPayment', response.data.userId);
-          Swal.fire('Updated!', response.data.message, 'success');
-          setLoadingApp(false);
+          if (response.data.conflict) {
+            setEnabled(false);
+            setStatus(response.data.status);
+            toast.error(response.data.message, { position: 'top-center', theme: 'colored' });
+            setLoadingApp(false);
+          } else {
+            setEnabled(false);
+            setStatus('approved');
+            socket.emit('userPayment', response.data.userId);
+            Swal.fire('Updated!', response.data.message, 'success');
+            setLoadingApp(false);
+          }
         } catch (error) {
           console.log(error);
         }
@@ -76,13 +84,23 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
               },
             }
           );
-          Swal.fire('Updated!', response.data.message, 'success');
-          setLoadingRej(false);
-          setEnabled(false);
-          setStatus('rejected');
-          socket.emit('userPayment', response.data.userId);
-          Swal.fire('Updated!', response.data.message, 'success');
-          setLoadingRej(false);
+
+          console.log(response.data);
+
+          if (response.data.conflict) {
+            setEnabled(false);
+            setStatus(response.data.status);
+            toast.error(response.data.message, { position: 'top-center', theme: 'colored' });
+            setLoadingRej(false);
+          } else {
+            Swal.fire('Updated!', response.data.message, 'success');
+            setLoadingRej(false);
+            setEnabled(false);
+            setStatus('rejected');
+            socket.emit('userPayment', response.data.userId);
+            Swal.fire('Updated!', response.data.message, 'success');
+            setLoadingRej(false);
+          }
         } catch (error) {
           console.log(error);
         }
@@ -139,13 +157,13 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
           </label>
         </td>
         <td className="justify-center items-center text-center p-4">
-          <div
+          <span
             className={`badge p-3 ${status === 'pending' && 'badge-warning'} ${status === 'approved' && 'badge-success'} ${
               status === 'rejected' && 'badge-error'
             } gap-2 `}
           >
             {status}
-          </div>
+          </span>
         </td>
         {item.status === 'awaiting' ? (
           <td className="flex items-center justify-center p-4">

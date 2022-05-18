@@ -1,39 +1,18 @@
-import { useSelector } from "react-redux";
-import { API_URL } from "../assets/constants";
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { FaRegUser } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-import money from "../assets/images/money-back.svg";
-import truck from "../assets/images/delivery-van.svg";
-import { GiMedicines } from "react-icons/gi";
+import { useSelector } from 'react-redux';
+import { API_URL } from '../assets/constants';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { FaRegUser } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import money from '../assets/images/money-back.svg';
+import truck from '../assets/images/delivery-van.svg';
+import { GiMedicines } from 'react-icons/gi';
 
 const HomeAdmin = () => {
   const adminGlobal = useSelector((state) => state.adminReducer);
   const socket = useSelector((state) => state.socket.instance);
-  const days = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ];
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
+  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
   let fullDate = new Date();
   let date = `${fullDate.getDate()}`;
@@ -48,7 +27,7 @@ const HomeAdmin = () => {
   const [users, setUsers] = useState(0);
   const [transactions, setTransactions] = useState([]);
   const [statistic, setStatistic] = useState();
-  const adminToken = localStorage.getItem("adminToken");
+  const adminToken = localStorage.getItem('adminToken');
 
   useEffect(() => {
     const fetchReports = async () => {
@@ -76,6 +55,7 @@ const HomeAdmin = () => {
         `${API_URL}/admin/transaction/get`,
         {
           page: activePage,
+          limit: 6,
         },
         {
           headers: {
@@ -87,6 +67,7 @@ const HomeAdmin = () => {
       console.log(transactionList.data.data);
     };
     fetchTransactions();
+
     const fetchProducts = async () => {
       const productList = await axios.post(`${API_URL}/product/query`, {
         limit: 5,
@@ -95,13 +76,18 @@ const HomeAdmin = () => {
       setProductLength(productList.data.length);
     };
     fetchProducts();
-  }, []);
+
+    socket?.on('newTransactionNotif', () => {
+      fetchTransactions();
+      return;
+    });
+  }, [socket]);
 
   const toIDR = (number) => {
     number = parseInt(number);
-    return number.toLocaleString("id-ID", {
-      style: "currency",
-      currency: "IDR",
+    return number.toLocaleString('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
       minimumFractionDigits: 0,
     });
   };
@@ -150,9 +136,7 @@ const HomeAdmin = () => {
         </div>
         <div className="w-full justify-between items-center flex flex-col-3 shadow-md bg-white rounded-md">
           <div className="flex-col">
-            <div className="font-bold text-3xl mt-3 ml-8">
-              {statistic ? statistic.sales : 0}
-            </div>
+            <div className="font-bold text-3xl mt-3 ml-8">{statistic ? statistic.sales : 0}</div>
             <div className="mb-3 ml-8">Sales</div>
           </div>
           <div className="m-8">
@@ -161,9 +145,7 @@ const HomeAdmin = () => {
         </div>
         <div className="w-full justify-between items-center flex flex-col-4 shadow-md bg-white rounded-md">
           <div className="flex-col">
-            <div className="font-bold text-3xl mt-3 ml-8">
-              Rp. {statistic?.profit.toLocaleString("id")}
-            </div>
+            <div className="font-bold text-3xl mt-3 ml-8">Rp. {statistic?.profit.toLocaleString('id')}</div>
             <div className="mb-3 ml-8">Profits</div>
           </div>
           <div className="m-8">
@@ -178,10 +160,7 @@ const HomeAdmin = () => {
             <div className="flex justify-between items-center my-3">
               <div className="text-xl mt-3 ml-8">Recent Transactions</div>
               <div className="mt-6 mr-8">
-                <button
-                  className="hover:bg-gray-100 transition rounded-xl items-center"
-                  onClick={() => navigate("/dashboard/transaction")}
-                >
+                <button className="hover:bg-gray-100 transition rounded-xl items-center" onClick={() => navigate('/dashboard/transaction')}>
                   See All
                 </button>
               </div>
@@ -191,53 +170,30 @@ const HomeAdmin = () => {
                 <thead>
                   <tr className="bg-gray-100 rounded-lg">
                     <th className="bg-gray-100 rounded-lg font-normal">No</th>
-                    <th className="bg-gray-100 rounded-lg font-normal">
-                      Username
-                    </th>
-                    <th className="bg-gray-100 rounded-lg font-normal">
-                      Address
-                    </th>
-                    <th className="bg-gray-100 rounded-lg font-normal">
-                      Delivery
-                    </th>
-                    <th className="bg-gray-100 rounded-lg font-normal">
-                      Invoice Date
-                    </th>
-                    <th className="bg-gray-100 rounded-lg font-normal">
-                      Status
-                    </th>
+                    <th className="bg-gray-100 rounded-lg font-normal">Username</th>
+                    <th className="bg-gray-100 rounded-lg font-normal">Address</th>
+                    <th className="bg-gray-100 rounded-lg font-normal">Delivery</th>
+                    <th className="bg-gray-100 rounded-lg font-normal">Invoice Date</th>
+                    <th className="bg-gray-100 rounded-lg font-normal">Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {transactions?.map((item, i) => {
                     return (
                       <tr key={item.id}>
+                        <td className="justify-center items-center text-center p-4">{i + 1}</td>
+                        <td className="justify-center items-center text-center p-4">{item.user.name}</td>
                         <td className="justify-center items-center text-center p-4">
-                          {i + 1}
+                          {item.address.address}, {item.address.city}, {item.address.province}
                         </td>
-                        <td className="justify-center items-center text-center p-4">
-                          {item.user.name}
-                        </td>
-                        <td className="justify-center items-center text-center p-4">
-                          {item.address.address}, {item.address.city},{" "}
-                          {item.address.province}
-                        </td>
-                        <td className="justify-center items-center text-center p-4">
-                          {item.deliveryoption.name}
-                        </td>
+                        <td className="justify-center items-center text-center p-4">{item.deliveryoption.name}</td>
 
-                        <td className="justify-center items-center text-center p-4">
-                          {dateLocal(item.createdAt)}
-                        </td>
+                        <td className="justify-center items-center text-center p-4">{dateLocal(item.createdAt)}</td>
                         <td className="justify-center items-center text-center p-4">
                           <div
-                            className={`badge ${
-                              item.status === "pending" && "badge-warning"
-                            } ${
-                              item.status === "approved" && "badge-success"
-                            } ${
-                              item.status === "rejected" && "badge-error"
-                            } gap-2 `}
+                            className={`badge ${item.status === 'pending' && 'badge-warning'} ${
+                              item.status === 'approved' && 'badge-success'
+                            } ${item.status === 'rejected' && 'badge-error'} gap-2 `}
                           >
                             {item.status}
                           </div>
@@ -255,10 +211,7 @@ const HomeAdmin = () => {
             <div className="flex justify-between items-center">
               <div className="mt-3 text-xl ml-8">Latest Products</div>
               <div className="mt-5 mr-8">
-                <button
-                  className="hover:bg-gray-100 transition rounded-xl items-center"
-                  onClick={() => navigate("/dashboard/product")}
-                >
+                <button className="hover:bg-gray-100 transition rounded-xl items-center" onClick={() => navigate('/dashboard/product')}>
                   See All
                 </button>
               </div>
@@ -271,9 +224,7 @@ const HomeAdmin = () => {
                     return (
                       <tr key={item.id}>
                         <th className="justify-center p-4 text-sm">{i + 1}</th>
-                        <td className="justify-center p-4 text-sm">
-                          {item.name}
-                        </td>
+                        <td className="justify-center p-4 text-sm">{item.name}</td>
                       </tr>
                     );
                   })}

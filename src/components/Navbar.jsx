@@ -5,38 +5,7 @@ import Axios from 'axios';
 import { API_URL } from '../assets/constants';
 
 import { FaBars } from 'react-icons/fa';
-import styled from 'styled-components';
 import { toast } from 'react-toastify';
-
-const Links = styled.a`
-  position: relative;
-  font-size: 16px; // 14px/ 16px of height in figma ??
-  color: white;
-  transition: color 300ms ease-in-out;
-  cursor: pointer;
-
-  &::before {
-    content: "";
-    display: block;
-    position: absolute;
-    height: 5px;
-    left: 0;
-    right: 0;
-    bottom: -16px;
-    background-color: #0EA5E9;
-    ); // bottom line in nav
-    opacity: 0;
-    transition: opacity 300ms ease-in-out;  
-  }
-
-  &:hover {
-    color: $darkBlue;
-
-    &::before {
-      opacity: 1;
-    }
-  }
-`;
 
 const NavbarLink = ({ children, path }) => {
   return (
