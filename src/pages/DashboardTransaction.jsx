@@ -22,6 +22,7 @@ const DashboardTransaction = () => {
   const [transactions, setTransactions] = useState();
   const [activePage, setActivePage] = useState(1);
   const [startNumber, setStartNumber] = useState(1);
+  const [maxPage, setMaxPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [currentSortDate, setCurrentSortDate] = useState("");
   const [currentSortStatus, setCurrentSortStatus] = useState("");
@@ -67,6 +68,14 @@ const DashboardTransaction = () => {
   };
 
   const debouncedSearch = useDebounce(keyword, 1000);
+  const debouncedDate = useDebounce(currentSortDate, 0);
+  const debouncedStatus = useDebounce(currentSortStatus, 0);
+
+  const loadingFalse = () => {
+    setLoading(false);
+  };
+
+  const limit = 5;
 
   useEffect(() => {
     dispatch({ type: "ALERT_CLEAR", payload: "history" });
@@ -83,15 +92,22 @@ const DashboardTransaction = () => {
             page: activePage,
             startDate: selectedDates.startDate,
             endDate: selectedDates.endDate,
-            sort: currentSortDate,
-            status: currentSortStatus,
-            limit: 5,
+            sort: debouncedDate,
+            status: debouncedStatus,
+            limit,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${adminToken}`,
+            },
           }
         );
+        console.log(currentSortStatus);
+        setMaxPage(response.data.data.length);
         setTransactions(response.data.data);
         setTotalPage(response.data.totalPage);
         setStartNumber(response.data.startNumber);
-        setTimeout(setLoading(false), 500);
+        setTimeout(loadingFalse, 500);
       } catch (error) {
         toast.error(error.response.data.message);
       }
@@ -114,12 +130,12 @@ const DashboardTransaction = () => {
     };
   }, [
     activePage,
-    currentSortDate,
     startDate,
     endDate,
     selectedDates,
     debouncedSearch,
-    currentSortStatus,
+    debouncedStatus,
+    debouncedDate,
     socket,
   ]);
 
@@ -127,7 +143,7 @@ const DashboardTransaction = () => {
 
   useEffect(() => {
     setActivePage(1);
-  }, [debouncedSearch]);
+  }, [debouncedSearch, debouncedStatus, debouncedDate, selectedDates]);
 
   const renderTransactions = () => {
     return transactions?.map((item, i) => (
@@ -139,37 +155,6 @@ const DashboardTransaction = () => {
         socket={socket}
       />
     ));
-  };
-
-  const renderAlert = () => {
-    Swal.fire({
-      text: "Product Not Found!",
-      icon: "question",
-      confirmButtonColor: "#3085d6",
-      confirmButtonText: "Okay",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        try {
-          setProductNotFound(false);
-          // go back to current url i intended to delete all the params in the url
-          setKeyword("");
-          navigate(pathname);
-          setCurrentSortStatus("");
-          if (selectedDates.startDate !== undefined) {
-            setRanges([
-              {
-                ...ranges[0],
-                startDate: new Date(),
-                endDate: new Date(),
-              },
-            ]);
-            setSelectedDates({});
-          }
-        } catch (error) {
-          console.log(error);
-        }
-      }
-    });
   };
 
   const renderPages = () => {
@@ -308,6 +293,7 @@ const DashboardTransaction = () => {
           <div>
             <select
               name=""
+              value={currentSortStatus}
               id="statusSelector"
               onChange={(e) => setCurrentSortStatus(e.target.value)}
               className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl"
@@ -390,8 +376,32 @@ const DashboardTransaction = () => {
               </tr>
             </thead>
             <tbody>
-              {productNotFound ? (
-                <>{renderAlert()}</>
+              {maxPage === 0 ? (
+                <tr className="text-sm font-medium text-gray-700 border-b border-gray-200">
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <td>
+                    <div class="flex h-screen w-full items-center justify-center">
+                      <button
+                        type="button"
+                        class="flex items-center rounded-lg bg-warning px-4 py-2 text-white"
+                        disabled
+                      >
+                        <span class="font-medium">Transaction Not Found!</span>
+                      </button>
+                    </div>
+                  </td>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                </tr>
               ) : (
                 <>{renderTransactions()}</>
               )}

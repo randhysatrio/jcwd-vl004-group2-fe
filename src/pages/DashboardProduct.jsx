@@ -6,7 +6,6 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import CategoryList from "../components/CategoryList";
 import { API_URL } from "../assets/constants";
-import { set } from "date-fns";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -43,14 +42,11 @@ const Dashboard = () => {
   const debouncedCategory = useDebounce(currentCategory, 0);
   const debouncedSortPrice = useDebounce(currentSortPrice, 0);
 
-  const [searchParams] = useSearchParams();
-  const { search } = useLocation();
-
   const fetchProducts = async () => {
     const productList = await axios.post(`${API_URL}/product/query`, {
       category: currentCategory,
       sort: currentSortPrice,
-      keyword: searchParams.get('keyword'),
+      limit,
     });
     const categoryList = await axios.get(`${API_URL}/category/all`);
     setCategories(categoryList.data);
@@ -65,9 +61,7 @@ const Dashboard = () => {
     setLoading(false);
   };
 
-  const productnotFound = () => {
-    setProductNotFound(true);
-  };
+  const limit = 4;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -78,7 +72,7 @@ const Dashboard = () => {
           activePage: page,
           category: debouncedCategory,
           sort: debouncedSortPrice,
-          limit: 5,
+          limit,
         },
         {
           headers: {
@@ -88,7 +82,6 @@ const Dashboard = () => {
       );
       console.log(productList.data.products.length);
 
-      // if (productList.data.products.length) {
       const categoryList = await axios.get(`${API_URL}/category/all`);
       setCategories(categoryList.data);
       // nested objects
@@ -164,27 +157,6 @@ const Dashboard = () => {
     navigate(`editproduct/${id}`);
   };
 
-  const renderAlert = () => {
-    Swal.fire({
-      text: 'Product Not Found!',
-      icon: 'question',
-      confirmButtonColor: '#3085d6',
-      confirmButtonText: 'Okay',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        try {
-          setProductNotFound(false);
-          // go back to current url i intended to delete all the params in the url when usings params
-          setCurrentCategory('');
-          setKeyword('');
-          navigate(pathname);
-        } catch (error) {
-          console.log(error);
-        }
-      }
-    });
-  };
-
   const handleAddProduct = async (event, value) => {
     navigate(`addproduct`);
   };
@@ -208,6 +180,8 @@ const Dashboard = () => {
           console.log(error);
         }
       }
+      fetchProducts();
+      setKeyword("");
     });
   };
 
@@ -353,7 +327,7 @@ const Dashboard = () => {
                     <div class="flex h-screen w-full items-center justify-center">
                       <button
                         type="button"
-                        class="flex items-center rounded-lg bg-primary px-4 py-2 text-white"
+                        class="flex items-center rounded-lg bg-warning px-4 py-2 text-white"
                         disabled
                       >
                         <span class="font-medium"> Product Not Found! </span>

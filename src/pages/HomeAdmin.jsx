@@ -55,7 +55,7 @@ const HomeAdmin = () => {
         `${API_URL}/admin/transaction/get`,
         {
           page: activePage,
-          limit: 6,
+          limit: 5,
         },
         {
           headers: {
@@ -77,7 +77,7 @@ const HomeAdmin = () => {
     };
     fetchProducts();
 
-    socket?.on('newTransactionNotif', () => {
+    socket?.on("newTransactionNotif", () => {
       fetchTransactions();
       return;
     });
