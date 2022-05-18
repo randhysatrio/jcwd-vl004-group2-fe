@@ -1,11 +1,12 @@
-import { FaArrowLeft, FaArrowRight, FaSearch } from 'react-icons/fa';
-import { AiOutlineClose } from 'react-icons/ai';
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
-import axios from 'axios';
-import Swal from 'sweetalert2';
-import CategoryList from '../components/CategoryList';
-import { API_URL } from '../assets/constants';
+import { FaArrowLeft, FaArrowRight, FaSearch } from "react-icons/fa";
+import { AiOutlineClose } from "react-icons/ai";
+import { useState, useEffect, useRef } from "react";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
+import axios from "axios";
+import Swal from "sweetalert2";
+import CategoryList from "../components/CategoryList";
+import { API_URL } from "../assets/constants";
+import { set } from "date-fns";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -64,6 +65,10 @@ const Dashboard = () => {
     setLoading(false);
   };
 
+  const productnotFound = () => {
+    setProductNotFound(true);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -74,8 +79,16 @@ const Dashboard = () => {
           category: debouncedCategory,
           sort: debouncedSortPrice,
           limit: 5,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${adminToken}`,
+          },
         }
       );
+      console.log(productList.data.products.length);
+
+      // if (productList.data.products.length) {
       const categoryList = await axios.get(`${API_URL}/category/all`);
       setCategories(categoryList.data);
       // nested objects
@@ -327,7 +340,37 @@ const Dashboard = () => {
                 <th className="py-4 px-4 text-center">Actions</th>
               </tr>
             </thead>
-            <tbody>{productNotFound ? <>{renderAlert()}</> : <>{renderProducts()}</>}</tbody>
+            <tbody>
+              {maxPage === 0 ? (
+                <tr className="text-sm font-medium text-gray-700 border-b border-gray-200">
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <td>
+                    <div class="flex h-screen w-full items-center justify-center">
+                      <button
+                        type="button"
+                        class="flex items-center rounded-lg bg-primary px-4 py-2 text-white"
+                        disabled
+                      >
+                        <span class="font-medium"> Product Not Found! </span>
+                      </button>
+                    </div>
+                  </td>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                </tr>
+              ) : (
+                <>{renderProducts()}</>
+              )}
+            </tbody>
           </table>
           <div className="mt-3 flex justify-center items-center gap-4 pt-3">
             <button

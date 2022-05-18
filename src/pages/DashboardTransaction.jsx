@@ -86,11 +86,6 @@ const DashboardTransaction = () => {
             sort: currentSortDate,
             status: currentSortStatus,
             limit: 5,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${adminToken}`,
-            },
           }
         );
         setTransactions(response.data.data);
@@ -127,6 +122,8 @@ const DashboardTransaction = () => {
     currentSortStatus,
     socket,
   ]);
+
+  console.log(transactions);
 
   useEffect(() => {
     setActivePage(1);
