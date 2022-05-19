@@ -106,7 +106,7 @@ const EditProduct = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="h-full w-full bg-gray-100">
       <div className="flex items-center justify-between py-7 px-10">
         <h1 className="text-3xl text-gray-700 font-bold">Edit Product</h1>
       </div>

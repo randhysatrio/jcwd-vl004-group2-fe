@@ -20,7 +20,10 @@ const Dashboard = () => {
   const [itemsPerPage, setItemsPerPage] = useState(0);
   const [pagination, setPagination] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [keyword, setKeyword] = useState('');
+  const [keyword, setKeyword] = useState("");
+  const adminToken = localStorage.getItem("adminToken");
+  const [limit, setLimit] = useState(4);
+  const [search, setSearch] = useState("");
 
   const useDebounce = (value, delay) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
@@ -38,16 +41,19 @@ const Dashboard = () => {
     return debouncedValue;
   };
 
-  const debouncedSearch = useDebounce(keyword, 1000);
+  const debouncedSearch = useDebounce(search, 1000);
   const debouncedCategory = useDebounce(currentCategory, 0);
   const debouncedSortPrice = useDebounce(currentSortPrice, 0);
 
   const fetchProducts = async () => {
-    const productList = await axios.post(`${API_URL}/product/query`, {
-      category: currentCategory,
-      sort: currentSortPrice,
-      limit,
-    });
+    const productList = await axios.post(
+      `${API_URL}/product/query?search=${debouncedSearch}`,
+      {
+        category: currentCategory,
+        sort: currentSortPrice,
+        limit,
+      }
+    );
     const categoryList = await axios.get(`${API_URL}/category/all`);
     setCategories(categoryList.data);
     // nested objects
@@ -61,15 +67,13 @@ const Dashboard = () => {
     setLoading(false);
   };
 
-  const limit = 4;
-
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       const productList = await axios.post(
-        `${API_URL}/product/query?keyword=${debouncedSearch}`,
+        `${API_URL}/product/query?search=${debouncedSearch}`,
         {
-          activePage: page,
+          offset: page * limit - limit,
           category: debouncedCategory,
           sort: debouncedSortPrice,
           limit,
@@ -210,16 +214,16 @@ const Dashboard = () => {
           />
           <input
             type="text"
-            value={keyword}
+            value={search}
             id="myInput"
             placeholder="Search..."
-            onChange={(e) => setKeyword(e.target.value)}
+            onChange={(e) => setSearch(e.target.value)}
             className="search block w-72 shadow border-none rounded-3x1 focus:outline-none py-2 bg-gray-100 text-base text-gray-600 pl-11 pr-7"
           />
 
           <AiOutlineClose
             onClick={() => {
-              setKeyword('');
+              setSearch("");
               navigate(pathname);
             }}
             className="hover:brightness-110 cursor-pointer absolute right-2"
