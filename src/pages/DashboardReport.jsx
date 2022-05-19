@@ -1,18 +1,18 @@
-import axios from "axios";
-import { useCallback, useEffect, useState } from "react";
-import { DateRangePicker } from "react-date-range";
-import { AiOutlineClose } from "react-icons/ai";
-import { FaArrowLeft, FaArrowRight, FaSearch } from "react-icons/fa";
+import axios from 'axios';
+import { useCallback, useEffect, useState } from 'react';
+import { DateRangePicker } from 'react-date-range';
+import { AiOutlineClose } from 'react-icons/ai';
+import { FaArrowLeft, FaArrowRight, FaSearch } from 'react-icons/fa';
 import {
   FiAward,
   FiCalendar,
   FiFilter,
   FiMoreHorizontal,
-} from "react-icons/fi";
-import { toast } from "react-toastify";
-import Swal from "sweetalert2";
-import { debounce } from "throttle-debounce";
-import { API_URL } from "../assets/constants";
+} from 'react-icons/fi';
+import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
+import { debounce } from 'throttle-debounce';
+import { API_URL } from '../assets/constants';
 
 const DashboardReport = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -59,8 +59,8 @@ const DashboardReport = () => {
       if (
         (response.data.data.length === 0 && isDefaultDate() === false) ||
         (response.data.data.length === 0 && keyword)
-      )
-        setIsReportNull(true);
+      ) setIsReportNull(true);
+      
       setReport(response.data.data);
       setMostSold(response.data.mostSold);
       setStatistic({
@@ -113,17 +113,17 @@ const DashboardReport = () => {
     if (activePage > 1) {
       return setActivePage(1);
     } else if (keyword) {
-      return setKeyword("");
+      return setKeyword('');
     }
     getReport(startDate, endDate);
   };
 
   const renderAlert = () => {
     Swal.fire({
-      text: "Data Not Found!",
-      icon: "question",
-      confirmButtonColor: "#3085d6",
-      confirmButtonText: "Okay",
+      text: 'Data Not Found!',
+      icon: 'question',
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: 'Okay',
     }).then((result) => {
       if (result.isConfirmed) {
         try {
@@ -152,7 +152,7 @@ const DashboardReport = () => {
           />
           <AiOutlineClose
             onClick={() => {
-              setKeyword("");
+              setKeyword('');
             }}
             className="hover:brightness-110 cursor-pointer absolute right-2"
           />
@@ -284,24 +284,24 @@ const DashboardReport = () => {
                           {item.name}
                         </td>
                         <td>
-                          Rp. {parseInt(item.price).toLocaleString("id")}/
+                          Rp. {parseInt(item.price).toLocaleString('id')}/
                           {item.unit}
                         </td>
                         <td>{item.total_sales} sales</td>
                         <td>
-                          {parseInt(item.sold_volume).toLocaleString("id")}{" "}
+                          {parseInt(item.sold_volume).toLocaleString('id')}{' '}
                           {item.unit}
                         </td>
                         <td>
-                          Rp. {parseInt(item.capital).toLocaleString("id")}
+                          Rp. {parseInt(item.capital).toLocaleString('id')}
                         </td>
                         <td>
-                          Rp. {parseInt(item.total_bill).toLocaleString("id")}
+                          Rp. {parseInt(item.total_bill).toLocaleString('id')}
                         </td>
                         <td>
-                          Rp.{" "}
+                          Rp.{' '}
                           {(item.total_bill - item.capital).toLocaleString(
-                            "id"
+                            'id'
                           )}
                         </td>
                       </tr>
