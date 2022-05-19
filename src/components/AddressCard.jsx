@@ -223,7 +223,7 @@ const AddressCard = ({ addressData, setAddresses, currentPage, setCurrentPage, s
         </div>
         <div className="w-full flex flex-col">
           <span className="text-sm font-bold text-sky-500 text-opacity-60">City:</span>
-          <span className="text-slate-700 font-semibold">{address.city}</span>
+          <span className="text-slate-700 font-semibold line-clamp-1">{address.city}</span>
         </div>
         <div>
           {address.is_default && (
@@ -234,7 +234,7 @@ const AddressCard = ({ addressData, setAddresses, currentPage, setCurrentPage, s
       <div className="h-full w-[25%] flex flex-col border-l pl-5 justify-center relative">
         <div className="w-full flex flex-col">
           <span className="text-sm font-bold text-sky-500 text-opacity-60">Province:</span>
-          <span className="text-slate-700 font-semibold">{address.province}</span>
+          <span className="text-slate-700 font-semibold line-clamp-1">{address.province}</span>
         </div>
         <div className="w-full flex flex-col">
           <span className="text-sm font-bold text-sky-500 text-opacity-60">Country:</span>

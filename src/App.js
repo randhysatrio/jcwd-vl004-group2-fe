@@ -84,6 +84,8 @@ function App() {
 
       if (response.data.ignore) {
         return;
+      } else if (response.data.conflict) {
+        toast.warning(response.data.message, { position: 'top-center', theme: 'colored' });
       } else {
         localStorage.setItem('userToken', response.data.token);
 

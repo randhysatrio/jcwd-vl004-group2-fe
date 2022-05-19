@@ -60,7 +60,7 @@ const Footer = () => {
           </div>
         </div>
         <div className="w-full md:w-1/2 flex justify-center items-center mt-6 md:mt-0">
-          <img src={logo} alt="heizenberg logo" className="w-56 md:w-72" />
+          <img src={logo} alt="heizenberg logo" className="w-56 md:w-60 lg:w-72" />
         </div>
       </div>
 

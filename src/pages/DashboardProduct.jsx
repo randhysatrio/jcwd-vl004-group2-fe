@@ -1,26 +1,26 @@
-import { FaArrowLeft, FaArrowRight, FaSearch } from "react-icons/fa";
-import { AiOutlineClose } from "react-icons/ai";
-import { useState, useEffect, useRef } from "react";
-import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
-import axios from "axios";
-import Swal from "sweetalert2";
-import CategoryList from "../components/CategoryList";
-import { API_URL } from "../assets/constants";
+import { FaArrowLeft, FaArrowRight, FaSearch } from 'react-icons/fa';
+import { AiOutlineClose } from 'react-icons/ai';
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
+import axios from 'axios';
+import Swal from 'sweetalert2';
+import CategoryList from '../components/CategoryList';
+import { API_URL } from '../assets/constants';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [productNotFound, setProductNotFound] = useState(false);
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [currentCategory, setCurrentCategory] = useState("");
-  const [currentSortPrice, setCurrentSortPrice] = useState("");
+  const [currentCategory, setCurrentCategory] = useState('');
+  const [currentSortPrice, setCurrentSortPrice] = useState('');
   const { pathname } = useLocation();
   const [page, setPage] = useState(1);
   const [maxPage, setMaxPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(0);
   const [pagination, setPagination] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [keyword, setKeyword] = useState("");
+  const [keyword, setKeyword] = useState('');
 
   const useDebounce = (value, delay) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
@@ -49,7 +49,7 @@ const Dashboard = () => {
     const productList = await axios.post(`${API_URL}/product/query`, {
       category: currentCategory,
       sort: currentSortPrice,
-      keyword: searchParams.get("keyword"),
+      keyword: searchParams.get('keyword'),
     });
     const categoryList = await axios.get(`${API_URL}/category/all`);
     setCategories(categoryList.data);
@@ -67,14 +67,11 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      const productList = await axios.post(
-        `${API_URL}/product/query?keyword=${debouncedSearch}`,
-        {
-          category: debouncedCategory,
-          sort: debouncedSortPrice,
-          // keyword: searchParams.get("keyword"),
-        }
-      );
+      const productList = await axios.post(`${API_URL}/product/query?keyword=${debouncedSearch}`, {
+        category: debouncedCategory,
+        sort: debouncedSortPrice,
+        // keyword: searchParams.get("keyword"),
+      });
 
       if (productList.data.products.length) {
         const categoryList = await axios.get(`${API_URL}/category/all`);
@@ -92,7 +89,7 @@ const Dashboard = () => {
     };
     fetchData();
     // dependency uses state outside useEffect otherwise infinite loop will occur
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [debouncedSearch, debouncedCategory, debouncedSortPrice, page]);
 
   useEffect(() => {
@@ -113,33 +110,15 @@ const Dashboard = () => {
               className="w-40 aspect-[3/2] rounded-lg border object-cover border-gray-200 m-auto"
             />
           </td>
-          <td className="justify-center items-center text-center p-4">
-            {product.name}
-          </td>
-          <td className="justify-center items-center text-center p-4">
-            Rp. {product.price_buy?.toLocaleString("id")}
-          </td>
-          <td className="justify-center items-center text-center p-4">
-            Rp. {product?.price_sell.toLocaleString("id")}
-          </td>
-          <td className="justify-center items-center text-center p-4">
-            {product.stock?.toLocaleString("id")}
-          </td>
-          <td className="justify-center items-center text-center p-4">
-            {product.unit}
-          </td>
-          <td className="justify-center items-center text-center p-4">
-            {product.volume?.toLocaleString("id")}
-          </td>
-          <td className="justify-center items-center text-center p-4">
-            {product.stock_in_unit?.toLocaleString("id")}
-          </td>
-          <td className="justify-center items-center text-center p-4">
-            {product.appearance}
-          </td>
-          <td className="justify-center items-center text-center p-4">
-            {product.category?.name}
-          </td>
+          <td className="justify-center items-center text-center p-4">{product.name}</td>
+          <td className="justify-center items-center text-center p-4">Rp. {product.price_buy?.toLocaleString('id')}</td>
+          <td className="justify-center items-center text-center p-4">Rp. {product?.price_sell.toLocaleString('id')}</td>
+          <td className="justify-center items-center text-center p-4">{product.stock?.toLocaleString('id')}</td>
+          <td className="justify-center items-center text-center p-4">{product.unit}</td>
+          <td className="justify-center items-center text-center p-4">{product.volume?.toLocaleString('id')}</td>
+          <td className="justify-center items-center text-center p-4">{product.stock_in_unit?.toLocaleString('id')}</td>
+          <td className="justify-center items-center text-center p-4">{product.appearance}</td>
+          <td className="justify-center items-center text-center p-4">{product.category?.name}</td>
           <td className="justify-center items-center text-center p-4">
             <button
               type="button"
@@ -177,17 +156,17 @@ const Dashboard = () => {
 
   const renderAlert = () => {
     Swal.fire({
-      text: "Product Not Found!",
-      icon: "question",
-      confirmButtonColor: "#3085d6",
-      confirmButtonText: "Okay",
+      text: 'Product Not Found!',
+      icon: 'question',
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: 'Okay',
     }).then((result) => {
       if (result.isConfirmed) {
         try {
           setProductNotFound(false);
           // go back to current url i intended to delete all the params in the url when usings params
-          setCurrentCategory("");
-          setKeyword("");
+          setCurrentCategory('');
+          setKeyword('');
           navigate(pathname);
         } catch (error) {
           console.log(error);
@@ -202,18 +181,18 @@ const Dashboard = () => {
 
   const handleDeleteClick = (id) => {
     Swal.fire({
-      title: "Are you sure?",
+      title: 'Are you sure?',
       text: "You won't be able to revert this!",
-      icon: "warning",
+      icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
           await axios.delete(`${API_URL}/product/delete/${id}`);
-          Swal.fire("Deleted!", "Your file has been deleted.", "success");
+          Swal.fire('Deleted!', 'Your file has been deleted.', 'success');
           fetchProducts();
         } catch (error) {
           console.log(error);
@@ -256,7 +235,7 @@ const Dashboard = () => {
 
           <AiOutlineClose
             onClick={() => {
-              setKeyword("");
+              setKeyword('');
               navigate(pathname);
             }}
             className="hover:brightness-110 cursor-pointer absolute right-2"
@@ -293,10 +272,7 @@ const Dashboard = () => {
               <option value="price_sell,DESC">Highest Price</option>
             </select>
           </div>
-          <button
-            className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl"
-            onClick={handleAddProduct}
-          >
+          <button className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl" onClick={handleAddProduct}>
             Add a Product
           </button>
         </div>
@@ -322,25 +298,9 @@ const Dashboard = () => {
             </thead>
           </table>
           <div class="flex h-screen w-full items-center justify-center">
-            <button
-              type="button"
-              class="flex items-center rounded-lg bg-primary px-4 py-2 text-white"
-              disabled
-            >
-              <svg
-                class="mr-3 h-5 w-5 animate-spin text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  class="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  stroke-width="4"
-                ></circle>
+            <button type="button" class="flex items-center rounded-lg bg-primary px-4 py-2 text-white" disabled>
+              <svg class="mr-3 h-5 w-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path
                   class="opacity-75"
                   fill="currentColor"
@@ -370,39 +330,26 @@ const Dashboard = () => {
                 <th className="py-4 px-4 text-center">Actions</th>
               </tr>
             </thead>
-            <tbody>
-              {productNotFound ? <>{renderAlert()}</> : <>{renderProducts()}</>}
-            </tbody>
+            <tbody>{productNotFound ? <>{renderAlert()}</> : <>{renderProducts()}</>}</tbody>
           </table>
           <div className="mt-3 flex justify-center items-center gap-4 pt-3">
             <button
               onClick={prevPageHandler}
-              className={
-                page === 1 ? `hover:cursor-not-allowed` : `hover:cursor-pointer`
-              }
+              className={page === 1 ? `hover:cursor-not-allowed` : `hover:cursor-pointer`}
               disabled={page === 1}
             >
               <FaArrowLeft />
             </button>
             <div>
-              Page{" "}
-              <select
-                type="number"
-                className="bg-gray-100"
-                value={page}
-                onChange={(e) => setPage(+e.target.value)}
-              >
+              Page{' '}
+              <select type="number" className="bg-gray-100" value={page} onChange={(e) => setPage(+e.target.value)}>
                 {renderPages()}
-              </select>{" "}
+              </select>{' '}
               of {maxPage}
             </div>
             <button
               onClick={nextPageHandler}
-              className={
-                page === maxPage
-                  ? `hover:cursor-not-allowed`
-                  : `hover:cursor-pointer`
-              }
+              className={page === maxPage ? `hover:cursor-not-allowed` : `hover:cursor-pointer`}
               disabled={page === maxPage}
             >
               <FaArrowRight />

@@ -13,7 +13,7 @@ const AwaitingPayment = () => {
   const dispatch = useDispatch();
   const userToken = localStorage.getItem('userToken');
   const socket = useSelector((state) => state.socket.instance);
-  const [expInvoices, setExpInvoices] = useState(0);
+  const [expInvoices, setExpInvoices] = useState('');
   const [invoices, setInvoices] = useState([]);
   const [totalData, setTotalData] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -104,7 +104,7 @@ const AwaitingPayment = () => {
           <div className="w-full flex items-start py-4">
             <div className="flex items-center gap-2 p-4 rounded-xl bg-gray-100 font-semibold">
               <IoWarningOutline className="text-amber-400" />
-              <span>We have cancelled {expInvoices} transaction(s) due to expiry date</span>
+              <span>{expInvoices}</span>
               <button
                 onClick={() => setExpInvoices(0)}
                 className="text-sky-400 hover:text-green-400 transition cursor-pointer active:scale-95"
