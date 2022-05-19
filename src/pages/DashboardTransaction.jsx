@@ -18,7 +18,7 @@ import TransactionTable from "../components/TransactionTable";
 const DashboardTransaction = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [productNotFound, setProductNotFound] = useState(false);
+  const [limit, setLimit] = useState(5);
   const [transactions, setTransactions] = useState();
   const [activePage, setActivePage] = useState(1);
   const [startNumber, setStartNumber] = useState(1);
@@ -73,8 +73,6 @@ const DashboardTransaction = () => {
     setLoading(false);
   };
 
-  const limit = 5;
-
   useEffect(() => {
     dispatch({ type: "ALERT_CLEAR", payload: "history" });
 
@@ -87,7 +85,7 @@ const DashboardTransaction = () => {
         const response = await axios.post(
           `${API_URL}/admin/transaction/get?keyword=${debouncedSearch}`,
           {
-            page: activePage,
+            offset: activePage * limit - limit,
             startDate: selectedDates.startDate,
             endDate: selectedDates.endDate,
             sort: debouncedDate,
@@ -221,15 +219,15 @@ const DashboardTransaction = () => {
             )}
           </div>
           <div className="relative ml-auto group">
-            <div className="p-2 rounded-lg text-white bg-primary flex items-center cursor-pointer group">
+            <div className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl cursor-pointer group">
               <span
                 className={`font-semibold flex items-center gap-2 text-sm ${
                   selectedDates.gte && selectedDates.lte
                     ? "text-sky-500"
-                    : "text-white group-hover:hover:text-sky-600"
+                    : "text-white group-hover:hover:text-white"
                 } transition`}
               >
-                <FiFilter className="text-white" />
+                <FiCalendar size={24} className="text-white" />
                 {selectedDates.gte && selectedDates.lte
                   ? `${selectedDates.gte.toLocaleDateString(
                       "id"
@@ -245,10 +243,7 @@ const DashboardTransaction = () => {
                 months={1}
                 ranges={ranges}
                 direction="horizontal"
-                // preventSnapRefocus={true}
-                // calendarFocus="backwards"
               />
-
               <div className="w-full mt-2 flex justify-center gap-3">
                 <button
                   className="w-24 py-2 rounded-2xl text-white font-bold bg-warning hover:brightness-110 active:scale-95 transition"
@@ -284,7 +279,7 @@ const DashboardTransaction = () => {
               name=""
               id=""
               onChange={(e) => setCurrentSortDate(e.target.value)}
-              className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl"
+              className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 cursor-pointer transition rounded-xl"
             >
               {/* updatedAt vs createdAt */}
               <option value="" selected>
@@ -300,7 +295,7 @@ const DashboardTransaction = () => {
               value={currentSortStatus}
               id="statusSelector"
               onChange={(e) => setCurrentSortStatus(e.target.value)}
-              className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl"
+              className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 cursor-pointer transition rounded-xl"
             >
               {/* updatedAt vs createdAt */}
               <option value="">Sort by Status</option>
