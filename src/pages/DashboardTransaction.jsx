@@ -29,10 +29,10 @@ const DashboardTransaction = () => {
   const { pathname } = useLocation();
   const [loading, setLoading] = useState(false);
   const [keyword, setKeyword] = useState("");
-  const [startDate, setStartDate] = useState(
+  const [defaultStartDate, setStartDate] = useState(
     format(startOfDay(Date.now()), "yyyy-MM-dd")
   );
-  const [endDate, setEndDate] = useState(
+  const [defaultEndDate, setEndDate] = useState(
     format(endOfDay(Date.now()), "yyyy-MM-dd")
   );
   const adminToken = localStorage.getItem("adminToken");
@@ -44,8 +44,6 @@ const DashboardTransaction = () => {
     },
   ]);
   const [selectedDates, setSelectedDates] = useState({});
-
-  console.log(selectedDates.startDate);
 
   const socket = useSelector((state) => state.socket.instance);
 
@@ -130,16 +128,14 @@ const DashboardTransaction = () => {
     };
   }, [
     activePage,
-    startDate,
-    endDate,
+    defaultStartDate,
+    defaultEndDate,
     selectedDates,
     debouncedSearch,
     debouncedStatus,
     debouncedDate,
     socket,
   ]);
-
-  console.log(transactions);
 
   useEffect(() => {
     setActivePage(1);
@@ -216,6 +212,14 @@ const DashboardTransaction = () => {
           <h1 className="text-3xl text-gray-700 font-bold">Transactions</h1>
         </div>
         <div className="flex justify-between items-center space-x-4">
+          <div className="flex gap-2 items-center mr-5">
+            <FiFilter size={24} />
+            {selectedDates.startDate ? (
+              <span>Filtered Date</span>
+            ) : (
+              <span>All Transactions</span>
+            )}
+          </div>
           <div className="relative ml-auto group">
             <div className="p-2 rounded-lg text-white bg-primary flex items-center cursor-pointer group">
               <span

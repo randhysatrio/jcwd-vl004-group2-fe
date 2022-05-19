@@ -9,18 +9,13 @@ import { API_URL } from "../assets/constants";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [productNotFound, setProductNotFound] = useState(false);
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [currentCategory, setCurrentCategory] = useState('');
-  const [currentSortPrice, setCurrentSortPrice] = useState('');
-  const { pathname } = useLocation();
+  const [currentCategory, setCurrentCategory] = useState("");
+  const [currentSortPrice, setCurrentSortPrice] = useState("");
   const [page, setPage] = useState(1);
   const [maxPage, setMaxPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(0);
-  const [pagination, setPagination] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [keyword, setKeyword] = useState("");
   const adminToken = localStorage.getItem("adminToken");
   const [limit, setLimit] = useState(4);
   const [search, setSearch] = useState("");
@@ -46,21 +41,30 @@ const Dashboard = () => {
   const debouncedSortPrice = useDebounce(currentSortPrice, 0);
 
   const fetchProducts = async () => {
+    setLoading(true);
     const productList = await axios.post(
       `${API_URL}/product/query?search=${debouncedSearch}`,
       {
-        category: currentCategory,
-        sort: currentSortPrice,
+        offset: page * limit - limit,
+        category: debouncedCategory,
+        sort: debouncedSortPrice,
         limit,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${adminToken}`,
+        },
       }
     );
+    console.log(productList.data.products.length);
+
     const categoryList = await axios.get(`${API_URL}/category/all`);
     setCategories(categoryList.data);
     // nested objects
     setProducts(productList.data.products);
-    setItemsPerPage(productList.data.products.length);
-    setMaxPage(Math.ceil(productList.data.length / 5));
-    setPage(1);
+    setMaxPage(Math.ceil(productList.data.length / limit));
+    // i need to use a function to use setTimeout
+    setTimeout(loadingFalse, 500);
   };
 
   const loadingFalse = () => {
@@ -68,34 +72,7 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      const productList = await axios.post(
-        `${API_URL}/product/query?search=${debouncedSearch}`,
-        {
-          offset: page * limit - limit,
-          category: debouncedCategory,
-          sort: debouncedSortPrice,
-          limit,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${adminToken}`,
-          },
-        }
-      );
-      console.log(productList.data.products.length);
-
-      const categoryList = await axios.get(`${API_URL}/category/all`);
-      setCategories(categoryList.data);
-      // nested objects
-      setProducts(productList.data.products);
-      setItemsPerPage(productList.data.products.length);
-      setMaxPage(Math.ceil(productList.data.length / 5));
-      // i need to use a function to use setTimeout
-      setTimeout(loadingFalse, 500);
-    };
-    fetchData();
+    fetchProducts();
     // dependency uses state outside useEffect otherwise infinite loop will occur
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [debouncedSearch, debouncedCategory, debouncedSortPrice, page]);
@@ -185,7 +162,7 @@ const Dashboard = () => {
         }
       }
       fetchProducts();
-      setKeyword("");
+      setSearch("");
     });
   };
 
@@ -220,11 +197,9 @@ const Dashboard = () => {
             onChange={(e) => setSearch(e.target.value)}
             className="search block w-72 shadow border-none rounded-3x1 focus:outline-none py-2 bg-gray-100 text-base text-gray-600 pl-11 pr-7"
           />
-
           <AiOutlineClose
             onClick={() => {
               setSearch("");
-              navigate(pathname);
             }}
             className="hover:brightness-110 cursor-pointer absolute right-2"
           />

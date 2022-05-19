@@ -20,12 +20,9 @@ import noAvatar from "../assets/images/noAvatar.png";
 const Dashboard = () => {
   const [loading, setLoading] = useState(false);
   const [keyword, setKeyword] = useState("");
-  const Swal = require("sweetalert2");
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
+  const [limit, setLimit] = useState(5);
 
   const [users, setUsers] = useState([]);
-  const [query, setQuery] = useState("");
 
   const useDebounce = (value, delay) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
@@ -46,18 +43,20 @@ const Dashboard = () => {
   const [page, setPage] = useState(1);
   const [maxPage, setMaxPage] = useState(0);
   const [status, setStatus] = useState();
-  const [userNotFound, setUserNotFound] = useState(false);
-
-  const limit = 5;
 
   const fetchUsers = async () => {
-    const userList = await axios.post(`${API_URL}/user/query`, {
-      activePage: page,
-      active: debouncedStatus,
-      limit,
-    });
+    setLoading(true);
+    const userList = await axios.post(
+      `${API_URL}/user/query?keyword=${debouncedSearch}`,
+      {
+        offset: page * limit - limit,
+        active: debouncedStatus,
+        limit,
+      }
+    );
     setUsers(userList.data.users);
-    setMaxPage(Math.ceil(userList.data.length / 5));
+    setMaxPage(Math.ceil(userList.data.length / limit));
+    setTimeout(loadingFalse, 500);
   };
 
   const debouncedSearch = useDebounce(keyword, 1000);
@@ -68,21 +67,8 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      setLoading(true);
-      const userList = await axios.post(
-        `${API_URL}/user/query?keyword=${debouncedSearch}`,
-        {
-          activePage: page,
-          active: debouncedStatus,
-          limit,
-        }
-      );
-      setUsers(userList.data.users);
-      setMaxPage(Math.ceil(userList.data.length / 5));
-      setTimeout(loadingFalse, 500);
-    };
     fetchUsers();
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, [debouncedSearch, debouncedStatus, page]);
 
   console.log(users);
@@ -219,7 +205,6 @@ const Dashboard = () => {
           <AiOutlineClose
             onClick={() => {
               setKeyword("");
-              navigate(pathname);
             }}
             className="hover:brightness-110 cursor-pointer absolute right-2"
           />

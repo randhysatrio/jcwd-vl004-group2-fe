@@ -45,7 +45,6 @@ function Payment() {
           Authorization: `Bearer ${userToken}`,
         },
       });
-      console.log(response);
 
       if (response.data.data) {
         setPaymentData(response.data.data);
