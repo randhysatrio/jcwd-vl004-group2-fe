@@ -1,0 +1,5 @@
+.addressModalBody {
+  background-color: #ffffff;
+  opacity: 1;
+  background-image: repeating-radial-gradient(circle at 0 0, transparent 0, #ffffff 12px), repeating-linear-gradient(#f4f0f08b, #f4f0f0);
+}
