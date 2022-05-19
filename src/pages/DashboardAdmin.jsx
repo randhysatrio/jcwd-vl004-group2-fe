@@ -1,28 +1,30 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useSelector } from 'react-redux';
-import { useSearchParams, useLocation } from 'react-router-dom';
-import Axios from 'axios';
-import { API_URL } from '../assets/constants';
+import { useState, useEffect, useCallback } from "react";
+import { useSelector } from "react-redux";
+import { useSearchParams, useLocation } from "react-router-dom";
+import Axios from "axios";
+import { API_URL } from "../assets/constants";
 
-import AdminList from '../components/AdminList';
-import { BsArrowDownUp } from 'react-icons/bs';
-import { GoChevronLeft, GoChevronRight } from 'react-icons/go';
-import { RiAdminFill, RiAdminLine } from 'react-icons/ri';
-import { toast } from 'react-toastify';
-import NewAdminModal from '../components/NewAdminModal';
-import { AiOutlineLoading3Quarters } from 'react-icons/ai';
+import AdminList from "../components/AdminList";
+import { BsArrowDownUp } from "react-icons/bs";
+import { GoChevronLeft, GoChevronRight } from "react-icons/go";
+import { RiAdminFill, RiAdminLine } from "react-icons/ri";
+import { toast } from "react-toastify";
+import NewAdminModal from "../components/NewAdminModal";
+import { AiOutlineLoading3Quarters, AiOutlineClose } from "react-icons/ai";
+import { FaArrowLeft, FaArrowRight, FaSearch } from "react-icons/fa";
 
 const DashboardAdmin = () => {
   const socket = useSelector((state) => state.socket.instance);
   const { search } = useLocation();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [onlineAdmins, setOnlineAdmins] = useState([]);
   const [admins, setAdmins] = useState([]);
   const [totalAdmins, setTotalAdmins] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [maxPage, setMaxPage] = useState(0);
-  const [sort, setSort] = useState('');
+  const [sort, setSort] = useState("");
+  const [keyword, setKeyword] = useState("");
   const limit = 10;
 
   useEffect(() => {
@@ -38,8 +40,8 @@ const DashboardAdmin = () => {
           return;
         }
 
-        if (searchParams.get('keyword')) {
-          query.keyword = searchParams.get('keyword');
+        if (searchParams.get("keyword")) {
+          query.keyword = searchParams.get("keyword");
         }
 
         if (sort) {
@@ -48,7 +50,10 @@ const DashboardAdmin = () => {
 
         setLoading(true);
 
-        const response = await Axios.post(`${API_URL}/admin/account/all`, query);
+        const response = await Axios.post(
+          `${API_URL}/admin/account/all?keyword=${keyword}`,
+          query
+        );
 
         setAdmins(response.data.rows);
         setMaxPage(response.data.maxPage || 1);
@@ -57,24 +62,27 @@ const DashboardAdmin = () => {
       } catch (err) {
         setLoading(false);
 
-        toast.error('Unable to fetch Admins!', { position: 'bottom-left', theme: 'colored' });
+        toast.error("Unable to fetch Admins!", {
+          position: "bottom-left",
+          theme: "colored",
+        });
       }
     };
     fetchAdmins();
-  }, [currentPage, search, sort]);
+  }, [currentPage, search, sort, keyword]);
 
   useEffect(() => {
-    socket?.emit('getOnlineAdmin');
+    socket?.emit("getOnlineAdmin");
 
-    socket?.on('onlineAdminData', ({ data }) => {
+    socket?.on("onlineAdminData", ({ data }) => {
       setOnlineAdmins(data);
     });
 
-    socket?.on('newOnlineAdmin', ({ data }) => {
+    socket?.on("newOnlineAdmin", ({ data }) => {
       setOnlineAdmins(data);
     });
 
-    socket?.on('offlineAdmin', ({ data }) => {
+    socket?.on("offlineAdmin", ({ data }) => {
       setOnlineAdmins(data);
     });
   }, [socket]);
@@ -95,6 +103,30 @@ const DashboardAdmin = () => {
 
   return (
     <div className="h-full flex flex-col px-10">
+      <div className="h-16 bg-white shadow-sm pl-80 pr-8 fixed z-[3] w-10 top-0 left-0 flex items-center">
+        <div className="flex justify-center items-center relative">
+          <FaSearch
+            // onClick={() => {
+            //   setSearchParams({ keyword }, { replace: true });
+            // }}
+            className="absolute left-2 text-gray-400 bg-gray-100 cursor-pointer active:scale-95 transition"
+          />
+          <input
+            type="text"
+            id="myInput"
+            value={keyword}
+            placeholder="Search..."
+            onChange={(e) => setKeyword(e.target.value)}
+            className="search block w-72 shadow border-none rounded-3x1 focus:outline-none py-2 bg-gray-100 text-base text-gray-600 pl-11 pr-7"
+          />
+          <AiOutlineClose
+            onClick={() => {
+              setKeyword("");
+            }}
+            className="hover:brightness-110 cursor-pointer absolute right-2"
+          />
+        </div>
+      </div>
       <div className="flex flex-col justify-center py-4">
         <span className="text-3xl font-bold leading-10 bg-gradient-to-r from-sky-400 to-emerald-300 bg-clip-text text-transparent mb-1">
           Admins
@@ -109,10 +141,10 @@ const DashboardAdmin = () => {
                 <span className="text-sm font-semibold">ID</span>
                 <BsArrowDownUp
                   onClick={() => {
-                    if (sort === 'id,asc') {
-                      setSort('id,desc');
+                    if (sort === "id,asc") {
+                      setSort("id,desc");
                     } else {
-                      setSort('id,asc');
+                      setSort("id,asc");
                     }
                   }}
                   className="text-xs hover:text-sky-300 transition cursor-pointer active:scale-95"
@@ -122,10 +154,10 @@ const DashboardAdmin = () => {
                 <span className="text-sm font-semibold">Name</span>
                 <BsArrowDownUp
                   onClick={() => {
-                    if (sort === 'name,asc') {
-                      setSort('name,desc');
+                    if (sort === "name,asc") {
+                      setSort("name,desc");
                     } else {
-                      setSort('name,asc');
+                      setSort("name,asc");
                     }
                   }}
                   className="text-xs hover:text-sky-300 transition cursor-pointer active:scale-95"
@@ -135,10 +167,10 @@ const DashboardAdmin = () => {
                 <span className="text-sm font-semibold">Email</span>
                 <BsArrowDownUp
                   onClick={() => {
-                    if (sort === 'email,asc') {
-                      setSort('email,desc');
+                    if (sort === "email,asc") {
+                      setSort("email,desc");
                     } else {
-                      setSort('email,asc');
+                      setSort("email,asc");
                     }
                   }}
                   className="text-xs hover:text-sky-300 transition cursor-pointer active:scale-95"
@@ -148,10 +180,10 @@ const DashboardAdmin = () => {
                 <span className="text-sm font-semibold">Username</span>
                 <BsArrowDownUp
                   onClick={() => {
-                    if (sort === 'username,asc') {
-                      setSort('username,desc');
+                    if (sort === "username,asc") {
+                      setSort("username,desc");
                     } else {
-                      setSort('username,asc');
+                      setSort("username,asc");
                     }
                   }}
                   className="text-xs hover:text-sky-300 transition cursor-pointer active:scale-95"
@@ -179,7 +211,9 @@ const DashboardAdmin = () => {
               renderAdmins()
             ) : (
               <div className="h-96 flex justify-center items-center">
-                <span className="text-2xl font-thin text-slate-800">You currently don't have any admin</span>
+                <span className="text-2xl font-thin text-slate-800">
+                  You currently don't have any admin
+                </span>
               </div>
             )}
           </div>
@@ -239,7 +273,12 @@ const DashboardAdmin = () => {
               </div>
             </div>
             <div className="w-full pb-4">
-              <NewAdminModal setAdmins={setAdmins} setMaxPage={setMaxPage} setTotalAdmins={setTotalAdmins} limit={limit} />
+              <NewAdminModal
+                setAdmins={setAdmins}
+                setMaxPage={setMaxPage}
+                setTotalAdmins={setTotalAdmins}
+                limit={limit}
+              />
             </div>
           </div>
         </div>

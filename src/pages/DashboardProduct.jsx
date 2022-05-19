@@ -1,26 +1,24 @@
-import { FaArrowLeft, FaArrowRight, FaSearch } from 'react-icons/fa';
-import { AiOutlineClose } from 'react-icons/ai';
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
-import axios from 'axios';
-import Swal from 'sweetalert2';
-import CategoryList from '../components/CategoryList';
-import { API_URL } from '../assets/constants';
+import { FaArrowLeft, FaArrowRight, FaSearch } from "react-icons/fa";
+import { AiOutlineClose } from "react-icons/ai";
+import { useState, useEffect, useRef } from "react";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
+import axios from "axios";
+import Swal from "sweetalert2";
+import CategoryList from "../components/CategoryList";
+import { API_URL } from "../assets/constants";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [productNotFound, setProductNotFound] = useState(false);
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [currentCategory, setCurrentCategory] = useState('');
-  const [currentSortPrice, setCurrentSortPrice] = useState('');
-  const { pathname } = useLocation();
+  const [currentCategory, setCurrentCategory] = useState("");
+  const [currentSortPrice, setCurrentSortPrice] = useState("");
   const [page, setPage] = useState(1);
   const [maxPage, setMaxPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(0);
-  const [pagination, setPagination] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [keyword, setKeyword] = useState('');
+  const adminToken = localStorage.getItem("adminToken");
+  const [limit, setLimit] = useState(4);
+  const [search, setSearch] = useState("");
 
   const useDebounce = (value, delay) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
@@ -38,26 +36,35 @@ const Dashboard = () => {
     return debouncedValue;
   };
 
-  const debouncedSearch = useDebounce(keyword, 1000);
+  const debouncedSearch = useDebounce(search, 1000);
   const debouncedCategory = useDebounce(currentCategory, 0);
   const debouncedSortPrice = useDebounce(currentSortPrice, 0);
 
-  const [searchParams] = useSearchParams();
-  const { search } = useLocation();
-
   const fetchProducts = async () => {
-    const productList = await axios.post(`${API_URL}/product/query`, {
-      category: currentCategory,
-      sort: currentSortPrice,
-      keyword: searchParams.get('keyword'),
-    });
+    setLoading(true);
+    const productList = await axios.post(
+      `${API_URL}/product/query?search=${debouncedSearch}`,
+      {
+        offset: page * limit - limit,
+        category: debouncedCategory,
+        sort: debouncedSortPrice,
+        limit,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${adminToken}`,
+        },
+      }
+    );
+    console.log(productList.data.products.length);
+
     const categoryList = await axios.get(`${API_URL}/category/all`);
     setCategories(categoryList.data);
     // nested objects
     setProducts(productList.data.products);
-    setItemsPerPage(productList.data.products.length);
-    setMaxPage(Math.ceil(productList.data.length / 5));
-    setPage(1);
+    setMaxPage(Math.ceil(productList.data.length / limit));
+    // i need to use a function to use setTimeout
+    setTimeout(loadingFalse, 500);
   };
 
   const loadingFalse = () => {
@@ -65,29 +72,7 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      const productList = await axios.post(`${API_URL}/product/query?keyword=${debouncedSearch}`, {
-        category: debouncedCategory,
-        sort: debouncedSortPrice,
-        // keyword: searchParams.get("keyword"),
-      });
-
-      if (productList.data.products.length) {
-        const categoryList = await axios.get(`${API_URL}/category/all`);
-        setCategories(categoryList.data);
-        // nested objects
-        setProducts(productList.data.products);
-        setItemsPerPage(productList.data.products.length);
-        setMaxPage(Math.ceil(productList.data.length / 5));
-        // i need to use a function to use setTimeout
-        setTimeout(loadingFalse, 500);
-      } else {
-        setTimeout(loadingFalse, 1000);
-        setProductNotFound(true);
-      }
-    };
-    fetchData();
+    fetchProducts();
     // dependency uses state outside useEffect otherwise infinite loop will occur
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [debouncedSearch, debouncedCategory, debouncedSortPrice, page]);
@@ -98,8 +83,7 @@ const Dashboard = () => {
 
   const renderProducts = () => {
     const beginningIndex = (page - 1) * 5;
-    const currentData = products.slice(beginningIndex, beginningIndex + 5);
-    return currentData.map((product, i) => {
+    return products.map((product, i) => {
       return (
         <tr className="text-sm border-b border-gray-200" key={product.id}>
           <th>{beginningIndex + i + 1}</th>
@@ -154,27 +138,6 @@ const Dashboard = () => {
     navigate(`editproduct/${id}`);
   };
 
-  const renderAlert = () => {
-    Swal.fire({
-      text: 'Product Not Found!',
-      icon: 'question',
-      confirmButtonColor: '#3085d6',
-      confirmButtonText: 'Okay',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        try {
-          setProductNotFound(false);
-          // go back to current url i intended to delete all the params in the url when usings params
-          setCurrentCategory('');
-          setKeyword('');
-          navigate(pathname);
-        } catch (error) {
-          console.log(error);
-        }
-      }
-    });
-  };
-
   const handleAddProduct = async (event, value) => {
     navigate(`addproduct`);
   };
@@ -198,6 +161,8 @@ const Dashboard = () => {
           console.log(error);
         }
       }
+      fetchProducts();
+      setSearch("");
     });
   };
 
@@ -226,17 +191,15 @@ const Dashboard = () => {
           />
           <input
             type="text"
-            value={keyword}
+            value={search}
             id="myInput"
             placeholder="Search..."
-            onChange={(e) => setKeyword(e.target.value)}
+            onChange={(e) => setSearch(e.target.value)}
             className="search block w-72 shadow border-none rounded-3x1 focus:outline-none py-2 bg-gray-100 text-base text-gray-600 pl-11 pr-7"
           />
-
           <AiOutlineClose
             onClick={() => {
-              setKeyword('');
-              navigate(pathname);
+              setSearch("");
             }}
             className="hover:brightness-110 cursor-pointer absolute right-2"
           />
@@ -330,7 +293,37 @@ const Dashboard = () => {
                 <th className="py-4 px-4 text-center">Actions</th>
               </tr>
             </thead>
-            <tbody>{productNotFound ? <>{renderAlert()}</> : <>{renderProducts()}</>}</tbody>
+            <tbody>
+              {maxPage === 0 ? (
+                <tr className="text-sm font-medium text-gray-700 border-b border-gray-200">
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <td>
+                    <div class="flex h-screen w-full items-center justify-center">
+                      <button
+                        type="button"
+                        class="flex items-center rounded-lg bg-warning px-4 py-2 text-white"
+                        disabled
+                      >
+                        <span class="font-medium"> Product Not Found! </span>
+                      </button>
+                    </div>
+                  </td>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                </tr>
+              ) : (
+                <>{renderProducts()}</>
+              )}
+            </tbody>
           </table>
           <div className="mt-3 flex justify-center items-center gap-4 pt-3">
             <button

@@ -12,21 +12,17 @@ import { AiOutlineClose } from "react-icons/ai";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import axios from "axios";
-import UserTable from "../components/UserTable";
-import Pagination from "../components/Pagination";
 import Swal from "sweetalert2";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { API_URL } from "../assets/constants";
+import noAvatar from "../assets/images/noAvatar.png";
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(false);
   const [keyword, setKeyword] = useState("");
-  const Swal = require("sweetalert2");
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
+  const [limit, setLimit] = useState(5);
 
   const [users, setUsers] = useState([]);
-  const [query, setQuery] = useState("");
 
   const useDebounce = (value, delay) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
@@ -44,73 +40,96 @@ const Dashboard = () => {
     return debouncedValue;
   };
 
-  const handleSort = async (e) => {
-    let query = e.target.value;
-    const res = await axios.get(
-      `httphttp://localhost:5000/product/sortprice/?q=${query}`
-    );
-    setUsers(res.data);
-  };
-
   const [page, setPage] = useState(1);
   const [maxPage, setMaxPage] = useState(0);
   const [status, setStatus] = useState();
-  const [userNotFound, setUserNotFound] = useState(false);
-
-  const [searchParams] = useSearchParams();
-  const { search } = useLocation();
 
   const fetchUsers = async () => {
-    const userList = await axios.post(`${API_URL}/user/query`, {
-      active: status,
-      keyword: searchParams.get("keyword"),
-    });
+    setLoading(true);
+    const userList = await axios.post(
+      `${API_URL}/user/query?keyword=${debouncedSearch}`,
+      {
+        offset: page * limit - limit,
+        active: debouncedStatus,
+        limit,
+      }
+    );
     setUsers(userList.data.users);
-    setMaxPage(Math.ceil(userList.data.length / 5));
-    setPage(1);
+    setMaxPage(Math.ceil(userList.data.length / limit));
+    setTimeout(loadingFalse, 500);
   };
 
   const debouncedSearch = useDebounce(keyword, 1000);
+  const debouncedStatus = useDebounce(status, 0);
 
   const loadingFalse = () => {
     setLoading(false);
   };
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      setLoading(true);
-      const userList = await axios.post(
-        `${API_URL}/user/query?keyword=${debouncedSearch}`,
-        {
-          active: status,
-        }
-      );
-      if (userList.data.length) {
-        setUsers(userList.data.users);
-        setMaxPage(Math.ceil(userList.data.length / 5));
-        setTimeout(loadingFalse, 500);
-      } else {
-        setTimeout(loadingFalse, 1000);
-        setUserNotFound(true);
-      }
-    };
     fetchUsers();
-  }, [debouncedSearch, page]);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [debouncedSearch, debouncedStatus, page]);
+
+  console.log(users);
 
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearch]);
+  }, [debouncedSearch, debouncedStatus]);
 
   const renderUsers = () => {
     const beginningIndex = (page - 1) * 5;
-    const currentData = users.slice(beginningIndex, beginningIndex + 5);
-    return currentData.map((value) => {
+    return users.map((user, i) => {
+      let status = user.active;
       return (
-        <UserTable
-          key={value.id}
-          user={value}
-          handleStatusClick={handleStatusClick}
-        />
+        <tr className="border-b border-gray-200">
+          <td className="justify-center items-center text-center p-4">
+            {beginningIndex + i + 1}
+          </td>
+          <td className="justify-center items-center text-center p-4">
+            <img
+              src={noAvatar}
+              className="w-12 m-auto h-12 rounded-full border border-gray-200"
+            />
+          </td>
+          <td className="justify-center items-center text-center p-4">
+            {user.name}
+          </td>
+          <td className="justify-center items-center text-center p-4">
+            {user.email}
+          </td>
+          <td className="justify-center items-center text-center p-4">
+            {user.phone_number}
+          </td>
+          {status ? (
+            <td className="justify-center items-center text-center p-4">
+              <button
+                type="button"
+                className="py-1 px-4 text-white bg-green-500 rounded-xl items-center"
+              >
+                Active
+              </button>
+            </td>
+          ) : (
+            <td className="justify-center items-center text-center p-4">
+              <button
+                type="button"
+                className="py-1 px-3 text-white bg-red-500 rounded-xl items-center"
+              >
+                Inactive
+              </button>
+            </td>
+          )}
+          <td className="justify-center items-center text-center p-4">
+            <button
+              type="button"
+              className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 rounded-xl items-center"
+              onClick={() => handleStatusClick(user.id)}
+            >
+              Change Status
+            </button>
+          </td>
+        </tr>
       );
     });
   };
@@ -157,30 +176,9 @@ const Dashboard = () => {
           console.log(error);
         }
         Swal.fire("Changed!", "Status has been changed!", "success");
-        fetchUsers();
       }
-    });
-  };
-
-  const renderAlert = () => {
-    Swal.fire({
-      text: "User Not Found!",
-      icon: "question",
-      confirmButtonColor: "#3085d6",
-      confirmButtonText: "Okay",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        try {
-          setUserNotFound(false);
-          // go back to current url i intended to delete all the params in the url when using params
-          setKeyword("");
-          navigate(pathname);
-          setStatus("");
-        } catch (error) {
-          console.log(error);
-        }
-        fetchUsers();
-      }
+      fetchUsers();
+      setKeyword("");
     });
   };
 
@@ -207,7 +205,6 @@ const Dashboard = () => {
           <AiOutlineClose
             onClick={() => {
               setKeyword("");
-              navigate(pathname);
             }}
             className="hover:brightness-110 cursor-pointer absolute right-2"
           />
@@ -219,6 +216,7 @@ const Dashboard = () => {
           <select
             name=""
             id=""
+            value={status}
             onChange={(e) => setStatus(e.target.value)}
             className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl"
           >
@@ -234,7 +232,7 @@ const Dashboard = () => {
           <table className="w-full">
             <thead>
               <tr className="text-sm font-medium text-gray-700 border-b border-gray-200">
-                <th className="py-4 px-4 text-center">ID</th>
+                <th className="py-4 px-4 text-center">No</th>
                 <th className="py-4 px-4 text-center">Profile Picture</th>
                 <th className="py-4 px-4 text-center">Name</th>
                 <th className="py-4 px-4 text-center">Email</th>
@@ -279,7 +277,7 @@ const Dashboard = () => {
           <table className="w-full">
             <thead>
               <tr className="text-sm font-medium text-gray-700 border-b border-gray-200">
-                <th className="py-4 px-4 text-center">ID</th>
+                <th className="py-4 px-4 text-center">No</th>
                 <th className="py-4 px-4 text-center">Profile Picture</th>
                 <th className="py-4 px-4 text-center">Name</th>
                 <th className="py-4 px-4 text-center">Email</th>
@@ -289,7 +287,35 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {userNotFound ? <>{renderAlert()}</> : <>{renderUsers()}</>}
+              {maxPage === 0 ? (
+                <tr className="text-sm font-medium text-gray-700 border-b border-gray-200">
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <td>
+                    <div class="flex h-screen w-full items-center justify-center">
+                      <button
+                        type="button"
+                        class="flex items-center rounded-lg bg-warning px-4 py-2 text-white"
+                        disabled
+                      >
+                        <span class="font-medium"> User Not Found! </span>
+                      </button>
+                    </div>
+                  </td>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                  <th className="py-4 px-4 text-center"></th>
+                </tr>
+              ) : (
+                <>{renderUsers()}</>
+              )}
             </tbody>
           </table>
           <div className="mt-3 flex justify-center items-center gap-4 pt-3">

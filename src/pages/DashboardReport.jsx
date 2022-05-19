@@ -1,50 +1,52 @@
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-import { useSearchParams, useLocation } from 'react-router-dom';
-import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
-import { DateRangePicker } from 'react-date-range';
+import axios from "axios";
+import { useCallback, useEffect, useState } from "react";
+import { DateRangePicker } from "react-date-range";
+import { AiOutlineClose } from "react-icons/ai";
+import { FaArrowLeft, FaArrowRight, FaSearch } from "react-icons/fa";
 import {
+  FiAward,
   FiCalendar,
   FiFilter,
   FiMoreHorizontal,
-  FiAward,
-} from 'react-icons/fi';
-import { toast } from 'react-toastify';
-import { API_URL } from '../assets/constants';
-import Swal from 'sweetalert2';
+} from "react-icons/fi";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
+import { debounce } from "throttle-debounce";
+import { API_URL } from "../assets/constants";
 
 const DashboardReport = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [isReportNull, setIsReportNull] = useState();
+  const [keyword, setKeyword] = useState();
   const [report, setReport] = useState();
   const [activePage, setActivePage] = useState(1);
   const [startNumber, setStartNumber] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [statistic, setStatistic] = useState();
   const [mostSold, setMostSold] = useState();
-  const adminToken = localStorage.getItem('adminToken');
+  const adminToken = localStorage.getItem("adminToken");
   const [selectedDates, setSelectedDates] = useState([
     {
       startDate: new Date(new Date().setDate(1)),
       endDate: new Date(),
-      key: 'selection',
+      key: "selection",
     },
   ]);
 
-  const [searchParams] = useSearchParams();
-  const { search } = useLocation();
-
-  const getTransaction = async (stardDate, endDate) => {
+  const getReport = async (stardDate, endDate, keyword) => {
     try {
       // protect pagination
-      if (activePage > totalPage || activePage < 1) {
+      if ((activePage > totalPage && report.length) || activePage < 1) {
         return;
       }
 
+      setIsLoading(true);
       const response = await axios.post(
         `${API_URL}/admin/report/get`,
         {
           startDate: stardDate ? stardDate : selectedDates[0].startDate,
           endDate: endDate ? endDate : selectedDates[0].endDate,
-          search: searchParams.get('keyword'),
+          search: keyword,
           page: activePage,
         },
         {
@@ -54,6 +56,11 @@ const DashboardReport = () => {
         }
       );
 
+      if (
+        (response.data.data.length === 0 && isDefaultDate() === false) ||
+        (response.data.data.length === 0 && keyword)
+      )
+        setIsReportNull(true);
       setReport(response.data.data);
       setMostSold(response.data.mostSold);
       setStatistic({
@@ -64,24 +71,34 @@ const DashboardReport = () => {
       });
       setTotalPage(response.data.totalPage);
       setStartNumber(response.data.startNumber);
+      setIsLoading(false);
     } catch (error) {
+      setIsLoading(false);
       toast.error(error.response.data.message);
     }
   };
 
   useEffect(() => {
-    getTransaction();
-  }, [activePage, search]);
+    getReport(null, null, keyword);
+  }, [activePage]);
+
+  const searchDebounce = useCallback(
+    debounce(1000, (keyword) => getReport(null, null, keyword)),
+    []
+  );
 
   useEffect(() => {
-    setActivePage(1);
-  }, [search]);
+    if (report) {
+      setActivePage(1);
+      searchDebounce(keyword);
+    }
+  }, [keyword]);
 
   const isDefaultDate = () => {
-    let startDate = selectedDates[0].startDate.toLocaleDateString('id');
-    let endDate = selectedDates[0].endDate.toLocaleDateString('id');
-    let firstDate = new Date(new Date().setDate(1)).toLocaleDateString('id');
-    let today = new Date().toLocaleDateString('id');
+    let startDate = selectedDates[0].startDate.toLocaleDateString("id");
+    let endDate = selectedDates[0].endDate.toLocaleDateString("id");
+    let firstDate = new Date(new Date().setDate(1)).toLocaleDateString("id");
+    let today = new Date().toLocaleDateString("id");
 
     if (startDate === firstDate && endDate === today) {
       return true;
@@ -90,15 +107,58 @@ const DashboardReport = () => {
   };
 
   const resetDate = () => {
-    let startDate = new Date();
+    let startDate = new Date(new Date().setDate(1));
     let endDate = new Date();
     setSelectedDates([{ ...selectedDates[0], startDate, endDate }]);
-    setActivePage(1);
-    getTransaction(startDate, endDate);
+    if (activePage > 1) {
+      return setActivePage(1);
+    } else if (keyword) {
+      return setKeyword("");
+    }
+    getReport(startDate, endDate);
+  };
+
+  const renderAlert = () => {
+    Swal.fire({
+      text: "Data Not Found!",
+      icon: "question",
+      confirmButtonColor: "#3085d6",
+      confirmButtonText: "Okay",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        try {
+          setIsReportNull(false);
+          resetDate();
+        } catch (error) {
+          toast.error(error);
+        }
+      }
+    });
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="h-full bg-gray-100">
+      {/* Search Bar */}
+      <div className="h-16 bg-white shadow-sm pl-80 pr-8 fixed z-[3] w-10 top-0 left-0 flex items-center">
+        <div className="flex justify-center items-center relative">
+          <FaSearch className="absolute left-2 text-gray-400 bg-gray-100 active:scale-95 transition" />
+          <input
+            type="text"
+            value={keyword}
+            id="myInput"
+            placeholder="Search..."
+            onChange={(e) => setKeyword(e.target.value)}
+            className="search block w-72 shadow border-none rounded-3x1 focus:outline-none py-2 bg-gray-100 text-base text-gray-600 pl-11 pr-7"
+          />
+          <AiOutlineClose
+            onClick={() => {
+              setKeyword("");
+            }}
+            className="hover:brightness-110 cursor-pointer absolute right-2"
+          />
+        </div>
+      </div>
+
       <div className="flex items-center justify-between py-7 px-10">
         <div>
           <h1 className="text-3xl text-gray-700 font-bold">Report</h1>
@@ -108,15 +168,15 @@ const DashboardReport = () => {
             <FiFilter size={24} />
             {isDefaultDate() ? (
               <span>this month</span>
-            ) : selectedDates[0].startDate.toLocaleDateString('id') ===
-              selectedDates[0].endDate.toLocaleDateString('id') ? (
+            ) : selectedDates[0].startDate.toLocaleDateString("id") ===
+              selectedDates[0].endDate.toLocaleDateString("id") ? (
               <span>{`${selectedDates[0].startDate.toLocaleDateString(
-                'id'
+                "id"
               )}`}</span>
             ) : (
               <span>{`${selectedDates[0].startDate.toLocaleDateString(
-                'id'
-              )} - ${selectedDates[0].endDate.toLocaleDateString('id')}`}</span>
+                "id"
+              )} - ${selectedDates[0].endDate.toLocaleDateString("id")}`}</span>
             )}
           </div>
           <label
@@ -132,7 +192,7 @@ const DashboardReport = () => {
               <div className="stat">
                 <div className="stat-title text-xs">Profit</div>
                 <div className="stat-value text-xl text-primary">
-                  Rp. {statistic ? statistic.profit.toLocaleString('id') : 0}
+                  Rp. {statistic ? statistic.profit.toLocaleString("id") : 0}
                 </div>
               </div>
               <div className="stat">
@@ -158,7 +218,7 @@ const DashboardReport = () => {
       </div>
       <div className="bg-white shadow-sm mt-5 p-5">
         <div className="overflow-x-auto">
-          <table className="table w-full">
+          <table className="table w-full mb-0">
             <thead>
               <tr>
                 <th className="bg-white border-b border-gray-200">No</th>
@@ -178,35 +238,77 @@ const DashboardReport = () => {
               </tr>
             </thead>
             <tbody>
-              {report?.map((item, i) => {
-                return (
-                  <>
-                    <tr key={item.id}>
-                      <th>{startNumber + i + 1}</th>
-                      <td className="max-w-md whitespace-normal">
-                        {item.name}
-                      </td>
-                      <td>
-                        Rp. {parseInt(item.price).toLocaleString('id')}/
-                        {item.unit}
-                      </td>
-                      <td>{item.total_sales} sales</td>
-                      <td>
-                        {parseInt(item.sold_volume).toLocaleString('id')}{' '}
-                        {item.unit}
-                      </td>
-                      <td>Rp. {parseInt(item.capital).toLocaleString('id')}</td>
-                      <td>
-                        Rp. {parseInt(item.total_bill).toLocaleString('id')}
-                      </td>
-                      <td>
-                        Rp.{' '}
-                        {(item.total_bill - item.capital).toLocaleString('id')}
-                      </td>
-                    </tr>
-                  </>
-                );
-              })}
+              {isLoading ? (
+                <tr>
+                  <td colSpan={8}>
+                    <div className="flex h-80 w-full items-center justify-center">
+                      <button
+                        type="button"
+                        className="flex items-center rounded-lg bg-primary px-4 py-2 text-white"
+                        disabled
+                      >
+                        <svg
+                          className="mr-3 h-5 w-5 animate-spin text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            stroke-width="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                        <span className="font-medium"> Processing... </span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ) : isReportNull ? (
+                renderAlert()
+              ) : (
+                report?.map((item, i) => {
+                  return (
+                    <>
+                      <tr key={item.id}>
+                        <td>{startNumber + i + 1}</td>
+                        <td className="max-w-md whitespace-normal">
+                          {item.name}
+                        </td>
+                        <td>
+                          Rp. {parseInt(item.price).toLocaleString("id")}/
+                          {item.unit}
+                        </td>
+                        <td>{item.total_sales} sales</td>
+                        <td>
+                          {parseInt(item.sold_volume).toLocaleString("id")}{" "}
+                          {item.unit}
+                        </td>
+                        <td>
+                          Rp. {parseInt(item.capital).toLocaleString("id")}
+                        </td>
+                        <td>
+                          Rp. {parseInt(item.total_bill).toLocaleString("id")}
+                        </td>
+                        <td>
+                          Rp.{" "}
+                          {(item.total_bill - item.capital).toLocaleString(
+                            "id"
+                          )}
+                        </td>
+                      </tr>
+                    </>
+                  );
+                })
+              )}
             </tbody>
           </table>
           <div className="mt-3 flex justify-center items-center gap-4 border-t pt-3">
@@ -219,11 +321,11 @@ const DashboardReport = () => {
               disabled={activePage === 1}
               onClick={() => activePage > 1 && setActivePage(activePage - 1)}
             >
-              {' '}
+              {" "}
               <FaArrowLeft />
             </button>
             <div>
-              Page{' '}
+              Page{" "}
               <input
                 type="number"
                 className="mx-2 text-center focus:outline-none w-10 bg-gray-100"
@@ -231,7 +333,7 @@ const DashboardReport = () => {
                 onChange={(e) =>
                   e.target.value <= totalPage && setActivePage(e.target.value)
                 }
-              />{' '}
+              />{" "}
               of {totalPage}
             </div>
             <button
@@ -283,7 +385,7 @@ const DashboardReport = () => {
                 htmlFor="date-modal"
                 onClick={() => {
                   setActivePage(1);
-                  getTransaction();
+                  getReport();
                 }}
                 className="btn btn-primary btn-md"
               >
@@ -311,13 +413,13 @@ const DashboardReport = () => {
               <div className="stat">
                 <div className="stat-title text-xs">Capital</div>
                 <div className="stat-value text-xl">
-                  Rp. {statistic ? statistic.capital.toLocaleString('id') : 0}
+                  Rp. {statistic ? statistic.capital.toLocaleString("id") : 0}
                 </div>
               </div>
               <div className="stat">
                 <div className="stat-title text-xs">Profit</div>
                 <div className="stat-value text-xl text-primary">
-                  Rp. {statistic ? statistic.profit.toLocaleString('id') : 0}
+                  Rp. {statistic ? statistic.profit.toLocaleString("id") : 0}
                 </div>
               </div>
             </div>
@@ -326,7 +428,7 @@ const DashboardReport = () => {
                 <div className="stat">
                   <div className="stat-title">Revenue</div>
                   <div className="stat-value">
-                    Rp. {statistic ? statistic.revenue.toLocaleString('id') : 0}
+                    Rp. {statistic ? statistic.revenue.toLocaleString("id") : 0}
                   </div>
                 </div>
               </div>
@@ -351,7 +453,7 @@ const DashboardReport = () => {
                       <li
                         key={item.id}
                         className={`py-3 ${
-                          i === 2 ? null : 'border-b border-gray-200'
+                          i === 2 ? null : "border-b border-gray-200"
                         } flex justify-between px-2 gap-1`}
                       >
                         <span>{item.name}</span>
