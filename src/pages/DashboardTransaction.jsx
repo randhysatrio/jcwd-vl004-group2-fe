@@ -103,7 +103,7 @@ const DashboardTransaction = () => {
         setTransactions(response.data.data);
         setTotalPage(response.data.totalPage);
         setStartNumber(response.data.startNumber);
-        setTimeout(loadingFalse, 500);
+        setTimeout(loadingFalse, 1000);
       } catch (error) {
         toast.error(error.response.data.message);
       }
@@ -308,11 +308,13 @@ const DashboardTransaction = () => {
         </div>
       </div>
       {loading ? (
-        <div className="bg-white shadow-sm p-5">
-          <table className="w-full">
+        <div className="px-5">
+          <table className="table w-full">
             <thead>
               <tr>
-                <th className="bg-white border-b border-gray-200">No</th>
+                <th className="bg-white border-b border-gray-200 shadow-sm">
+                  No
+                </th>
                 <th className="bg-white border-b border-gray-200">User Name</th>
                 <th className="bg-white border-b border-gray-200">Address</th>
                 <th className="bg-white border-b border-gray-200">Delivery</th>
@@ -357,21 +359,37 @@ const DashboardTransaction = () => {
           </div>
         </div>
       ) : (
-        <div className="bg-white shadow-sm p-5">
-          <table className="w-full">
+        <div className="px-5">
+          <table className="table w-full">
             <thead>
               <tr>
-                <th className="bg-white border-b border-gray-200">No</th>
-                <th className="bg-white border-b border-gray-200">User Name</th>
-                <th className="bg-white border-b border-gray-200">Address</th>
-                <th className="bg-white border-b border-gray-200">Delivery</th>
-                <th className="bg-white border-b border-gray-200">Notes</th>
-                <th className="bg-white border-b border-gray-200">
+                <th className="bg-white border-b text-center border-gray-200 shadow-sm">
+                  No
+                </th>
+                <th className="bg-white border-b text-center border-gray-200">
+                  User Name
+                </th>
+                <th className="bg-white border-b text-center border-gray-200">
+                  Address
+                </th>
+                <th className="bg-white border-b text-center border-gray-200">
+                  Delivery
+                </th>
+                <th className="bg-white border-b text-center border-gray-200">
+                  Notes
+                </th>
+                <th className="bg-white border-b text-center border-gray-200">
                   Invoice Date
                 </th>
-                <th className="bg-white border-b border-gray-200">Details</th>
-                <th className="bg-white border-b border-gray-200">Status</th>
-                <th className="bg-white border-b border-gray-200">Actions</th>
+                <th className="bg-white border-b text-center border-gray-200">
+                  Details
+                </th>
+                <th className="bg-white border-b text-center border-gray-200">
+                  Status
+                </th>
+                <th className="bg-white border-b text-center border-gray-200">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -422,7 +440,7 @@ const DashboardTransaction = () => {
               Page{" "}
               <select
                 type="number"
-                className="mx-2 text-center focus:outline-none w-10 bg-gray-100"
+                className="mx-2 text-cente border border-gray-300 rounded-lg bg-white focus:outline-none w-10 hover:border-sky-500 focus:outline-sky-500 transition cursor-pointer"
                 value={activePage}
                 onChange={(e) => setActivePage(+e.target.value)}
               >
