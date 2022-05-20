@@ -61,9 +61,7 @@ const Login = () => {
         if (response.data.conflict) {
           setIsLoading(false);
 
-          toast.warning(response.data.message, { position: 'top-center', theme: 'colored' });
-
-          return navigate('/');
+          return toast.warning(response.data.message, { position: 'top-center', theme: 'colored' });
         }
 
         if (response.data.user) {
