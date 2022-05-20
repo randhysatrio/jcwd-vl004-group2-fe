@@ -95,7 +95,7 @@ const Address = () => {
             renderAddresses()
           ) : (
             <div className="w-full h-[60vh] flex items-center justify-center">
-              <span className="text-3xl font-thin text-sky-300">You havent't filled out your address</span>
+              <span className="text-3xl font-thin text-sky-300">You haven't filled out your address</span>
             </div>
           )}
         </div>
