@@ -12,6 +12,7 @@ import { toast } from 'react-toastify';
 
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { useDispatch } from 'react-redux';
 
 const ProfileMenu = ({ editMode, setEditMode }) => {
   return (
@@ -57,6 +58,7 @@ const ProfileMenu = ({ editMode, setEditMode }) => {
 
 const Profile = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const token = localStorage.getItem('userToken');
   const [editMode, setEditMode] = useState(false);
   const [userData, setUserData] = useState({});
@@ -125,6 +127,8 @@ const Profile = () => {
         if (response.data.conflict) {
           return toast.warning(response.data.message);
         }
+
+        dispatch({ type: 'UPDATE_PHONE', payload: response.data.user.phone_number });
 
         setUserData(response.data.user);
         document.getElementById('profile-picture').src = `${API_URL}/${response.data.user.profile_picture}`;
