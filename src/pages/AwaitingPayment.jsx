@@ -43,6 +43,7 @@ const AwaitingPayment = () => {
         if (response.data.expiredInvoices) {
           setExpInvoices(response.data.expiredInvoices);
         }
+
         setInvoices(response.data.rows);
         setMaxPage(response.data.maxPage);
         setTotalData(response.data.count);

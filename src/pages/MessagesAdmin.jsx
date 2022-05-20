@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import Axios from 'axios';
@@ -18,10 +18,7 @@ const MessagesAdmin = () => {
   const [totalMsg, setTotalMsg] = useState(0);
   const limit = 7;
 
-  const socket = useCallback(
-    useSelector((state) => state.socket.instance),
-    []
-  );
+  const socket = useSelector((state) => state.socket.instance);
 
   useEffect(() => {
     dispatch({

@@ -50,7 +50,6 @@ const NewAdminModal = ({ setAdmins, setMaxPage, setTotalAdmins, limit, currentPa
 
         if (response.data.conflict) {
           setLoading(false);
-          formik.resetForm();
           toast.error(response.data.conflict, { theme: 'colored', position: 'bottom-left' });
         } else {
           setLoading(false);
