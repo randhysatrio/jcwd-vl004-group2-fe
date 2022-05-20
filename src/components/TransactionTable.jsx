@@ -88,8 +88,6 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
             }
           );
 
-          console.log(response.data);
-
           if (response.data.conflict) {
             setEnabled(false);
             setStatus(response.data.status);

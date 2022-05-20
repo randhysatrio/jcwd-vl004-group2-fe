@@ -31,7 +31,7 @@ const SidebarDashboard = () => {
   };
 
   return (
-    <div className="fixed left-0 top-0 w-40 h-full bg-gray-800 shadow-md z-10">
+    <div className="fixed left-0 top-0 w-40 h-full bg-gray-800 shadow-md z-[12]">
       <Link to="/">
         <div className="text-white font-bold text-base p-5 bg-gray-900 flex flex-col items-center gap-3">
           <img src="/IlLogoWhite.png" alt="Il Logo Heizenberg" className="w-16 2xl:w-[80px]" />
