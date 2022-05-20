@@ -44,6 +44,14 @@ const Dashboard = () => {
   const [maxPage, setMaxPage] = useState(0);
   const [status, setStatus] = useState();
 
+  const loadingFalse = () => {
+    setLoading(false);
+  };
+
+  const swalAlert = () => {
+    Swal.fire("Changed!", "Status has been changed!", "success");
+  };
+
   const fetchUsers = async () => {
     setLoading(true);
     const userList = await axios.post(
@@ -56,15 +64,11 @@ const Dashboard = () => {
     );
     setUsers(userList.data.users);
     setMaxPage(Math.ceil(userList.data.length / limit));
-    setTimeout(loadingFalse, 500);
+    setTimeout(loadingFalse, 1000);
   };
 
   const debouncedSearch = useDebounce(keyword, 1000);
   const debouncedStatus = useDebounce(status, 0);
-
-  const loadingFalse = () => {
-    setLoading(false);
-  };
 
   useEffect(() => {
     fetchUsers();
@@ -175,7 +179,7 @@ const Dashboard = () => {
         } catch (error) {
           console.log(error);
         }
-        Swal.fire("Changed!", "Status has been changed!", "success");
+        setTimeout(swalAlert, 1000);
       }
       fetchUsers();
       setKeyword("");
@@ -218,7 +222,7 @@ const Dashboard = () => {
             id=""
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl"
+            className="py-2.5 px-6 text-white bg-primary cursor-pointer hover:bg-blue-400 transition rounded-xl"
           >
             <option value="">Filter by Status</option>
             {/*sequelize uses "1" and "0" as boolean value */}
@@ -228,17 +232,19 @@ const Dashboard = () => {
         </div>
       </div>
       {loading ? (
-        <div className="bg-white shadow-sm p-5">
-          <table className="w-full">
+        <div className="px-5">
+          <table className="table w-full">
             <thead>
               <tr className="text-sm font-medium text-gray-700 border-b border-gray-200">
-                <th className="py-4 px-4 text-center">No</th>
-                <th className="py-4 px-4 text-center">Profile Picture</th>
-                <th className="py-4 px-4 text-center">Name</th>
-                <th className="py-4 px-4 text-center">Email</th>
-                <th className="py-4 px-4 text-center">Phone</th>
-                <th className="py-4 px-4 text-center">Status</th>
-                <th className="py-4 px-4 text-center">Actions</th>
+                <th className="bg-white py-4 px-4 text-center shadow-sm">No</th>
+                <th className="bg-white py-4 px-4 text-center">
+                  Profile Picture
+                </th>
+                <th className="bg-white py-4 px-4 text-center">Name</th>
+                <th className="bg-white py-4 px-4 text-center">Email</th>
+                <th className="bg-white py-4 px-4 text-center">Phone</th>
+                <th className="bg-white py-4 px-4 text-center">Status</th>
+                <th className="bg-white py-4 px-4 text-center">Actions</th>
               </tr>
             </thead>
           </table>
@@ -273,17 +279,19 @@ const Dashboard = () => {
           </div>
         </div>
       ) : (
-        <div className="bg-white shadow-sm p-5">
-          <table className="w-full">
+        <div className="px-5">
+          <table className="table w-full">
             <thead>
               <tr className="text-sm font-medium text-gray-700 border-b border-gray-200">
-                <th className="py-4 px-4 text-center">No</th>
-                <th className="py-4 px-4 text-center">Profile Picture</th>
-                <th className="py-4 px-4 text-center">Name</th>
-                <th className="py-4 px-4 text-center">Email</th>
-                <th className="py-4 px-4 text-center">Phone</th>
-                <th className="py-4 px-4 text-center">Status</th>
-                <th className="py-4 px-4 text-center">Actions</th>
+                <th className="bg-white py-4 px-4 text-center shadow-sm">No</th>
+                <th className="bg-white py-4 px-4 text-center">
+                  Profile Picture
+                </th>
+                <th className="bg-white py-4 px-4 text-center">Name</th>
+                <th className="bg-white py-4 px-4 text-center">Email</th>
+                <th className="bg-white py-4 px-4 text-center">Phone</th>
+                <th className="bg-white py-4 px-4 text-center">Status</th>
+                <th className="bg-white py-4 px-4 text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -333,9 +341,9 @@ const Dashboard = () => {
               {/* eventhough the type is number the value of the option still could be a string make sure add +e.target.value */}
               <select
                 type="number"
-                className="bg-gray-100"
                 value={page}
                 onChange={(e) => setPage(+e.target.value)}
+                className="border border-gray-300 rounded-lg bg-white focus:outline-none w-10 hover:border-sky-500 focus:outline-sky-500 transition cursor-pointer"
               >
                 {renderPages()}
               </select>{" "}

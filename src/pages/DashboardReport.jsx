@@ -1,18 +1,18 @@
-import axios from 'axios';
-import { useCallback, useEffect, useState } from 'react';
-import { DateRangePicker } from 'react-date-range';
-import { AiOutlineClose } from 'react-icons/ai';
-import { FaArrowLeft, FaArrowRight, FaSearch } from 'react-icons/fa';
+import axios from "axios";
+import { useCallback, useEffect, useState } from "react";
+import { DateRangePicker } from "react-date-range";
+import { AiOutlineClose } from "react-icons/ai";
+import { FaArrowLeft, FaArrowRight, FaSearch } from "react-icons/fa";
 import {
   FiAward,
   FiCalendar,
   FiFilter,
   FiMoreHorizontal,
-} from 'react-icons/fi';
-import { toast } from 'react-toastify';
-import Swal from 'sweetalert2';
-import { debounce } from 'throttle-debounce';
-import { API_URL } from '../assets/constants';
+} from "react-icons/fi";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
+import { debounce } from "throttle-debounce";
+import { API_URL } from "../assets/constants";
 
 const DashboardReport = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -59,8 +59,9 @@ const DashboardReport = () => {
       if (
         (response.data.data.length === 0 && isDefaultDate() === false) ||
         (response.data.data.length === 0 && keyword)
-      ) setIsReportNull(true);
-      
+      )
+        setIsReportNull(true);
+
       setReport(response.data.data);
       setMostSold(response.data.mostSold);
       setStatistic({
@@ -113,17 +114,17 @@ const DashboardReport = () => {
     if (activePage > 1) {
       return setActivePage(1);
     } else if (keyword) {
-      return setKeyword('');
+      return setKeyword("");
     }
     getReport(startDate, endDate);
   };
 
   const renderAlert = () => {
     Swal.fire({
-      text: 'Data Not Found!',
-      icon: 'question',
-      confirmButtonColor: '#3085d6',
-      confirmButtonText: 'Okay',
+      text: "Data Not Found!",
+      icon: "question",
+      confirmButtonColor: "#3085d6",
+      confirmButtonText: "Okay",
     }).then((result) => {
       if (result.isConfirmed) {
         try {
@@ -137,7 +138,7 @@ const DashboardReport = () => {
   };
 
   return (
-    <div className="h-full bg-gray-100">
+    <div className="h-full w-full bg-gray-100">
       {/* Search Bar */}
       <div className="h-16 bg-white shadow-sm pl-80 pr-8 fixed z-[3] w-10 top-0 left-0 flex items-center">
         <div className="flex justify-center items-center relative">
@@ -152,7 +153,7 @@ const DashboardReport = () => {
           />
           <AiOutlineClose
             onClick={() => {
-              setKeyword('');
+              setKeyword("");
             }}
             className="hover:brightness-110 cursor-pointer absolute right-2"
           />
@@ -216,9 +217,9 @@ const DashboardReport = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white shadow-sm mt-5 p-5">
+      <div className="px-5">
         <div className="overflow-x-auto">
-          <table className="table w-full mb-0">
+          <table className="table w-full">
             <thead>
               <tr>
                 <th className="bg-white border-b border-gray-200">No</th>
@@ -284,24 +285,24 @@ const DashboardReport = () => {
                           {item.name}
                         </td>
                         <td>
-                          Rp. {parseInt(item.price).toLocaleString('id')}/
+                          Rp. {parseInt(item.price).toLocaleString("id")}/
                           {item.unit}
                         </td>
                         <td>{item.total_sales} sales</td>
                         <td>
-                          {parseInt(item.sold_volume).toLocaleString('id')}{' '}
+                          {parseInt(item.sold_volume).toLocaleString("id")}{" "}
                           {item.unit}
                         </td>
                         <td>
-                          Rp. {parseInt(item.capital).toLocaleString('id')}
+                          Rp. {parseInt(item.capital).toLocaleString("id")}
                         </td>
                         <td>
-                          Rp. {parseInt(item.total_bill).toLocaleString('id')}
+                          Rp. {parseInt(item.total_bill).toLocaleString("id")}
                         </td>
                         <td>
-                          Rp.{' '}
+                          Rp.{" "}
                           {(item.total_bill - item.capital).toLocaleString(
-                            'id'
+                            "id"
                           )}
                         </td>
                       </tr>
@@ -311,7 +312,7 @@ const DashboardReport = () => {
               )}
             </tbody>
           </table>
-          <div className="mt-3 flex justify-center items-center gap-4 border-t pt-3">
+          <div className="mt-3 flex justify-center items-center gap-4 pt-3">
             <button
               className={
                 activePage === 1
@@ -328,7 +329,7 @@ const DashboardReport = () => {
               Page{" "}
               <input
                 type="number"
-                className="mx-2 text-center focus:outline-none w-10 bg-gray-100"
+                className="text-center bg-white focus:outline-none w-10 hover:border-sky-500 focus:outline-sky-500 transition cursor-pointer"
                 value={activePage}
                 onChange={(e) =>
                   e.target.value <= totalPage && setActivePage(e.target.value)
