@@ -77,7 +77,12 @@ const HomeAdmin = () => {
     };
     fetchProducts();
 
-    socket?.on("newTransactionNotif", () => {
+    socket?.on('newTransactionNotif', () => {
+      fetchTransactions();
+      return;
+    });
+
+    socket?.on('newPaymentNotif', () => {
       fetchTransactions();
       return;
     });
