@@ -43,6 +43,10 @@ const NewAddressModal = ({ setAddresses, setMaxPage, setCurrentPage, currentPage
           }
         );
 
+        if (response.data.conflict) {
+          return toast.warning(response.data.conflict, { position: 'bottom-left', theme: 'colored' });
+        }
+
         setAddresses(response.data.rows);
         setMaxPage(response.data.maxPage);
         setTotalAddress(response.data.count);
