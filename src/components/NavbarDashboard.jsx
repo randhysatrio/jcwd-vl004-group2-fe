@@ -69,7 +69,7 @@ const NavbarDashboard = ({ onChange, value, onClick }) => {
             className="dropdown-content menu bg-gray-50 shadow-md px-1 rounded-lg w-32 divide-y"
           >
             {/* link to admin profile here */}
-            <Link to="/">
+            <Link to="/dashboard/admin">
               <li className="py-1 font-semibold text-gray-600 group">
                 <div className="w-full h-8 rounded-lg group-hover:bg-sky-100 group-hover:text-sky-400 transition font-semibold">
                   Profile

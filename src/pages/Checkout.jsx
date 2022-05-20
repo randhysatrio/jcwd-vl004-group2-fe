@@ -50,7 +50,7 @@ function Checkout() {
           Authorization: `Bearer ${userToken}`,
         },
       });
-      
+
       setPayments(response.data.payments);
       setDeliveryOptions(response.data.deliveryoptions);
       setAddressList(response.data.addresses);
@@ -122,7 +122,10 @@ function Checkout() {
     try {
       setIsLoading(true);
       // check delivery and payment
-      if (!address) {
+      if (!phone) {
+        setIsLoading(false);
+        return toast.error('Please add your phone number');
+      } else if (!address) {
         setIsLoading(false);
         return toast.error('Please add your address');
       } else if (!delivery) {
@@ -173,6 +176,10 @@ function Checkout() {
     } catch (error) {
       setIsLoading(false);
       toast.error(error.response.data.message);
+      if (error.response.data.message === 'there are product not available!') {
+        localStorage.removeItem('checkout-data');
+        return navigate('/cart');
+      }
     }
   };
 
