@@ -1,31 +1,31 @@
-import { useState, useEffect, useCallback } from "react";
-import { useSelector } from "react-redux";
-import { useSearchParams, useLocation } from "react-router-dom";
-import Axios from "axios";
-import { API_URL } from "../assets/constants";
+import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { useSearchParams, useLocation, useNavigate } from 'react-router-dom';
+import Axios from 'axios';
+import { API_URL } from '../assets/constants';
 
-import AdminList from "../components/AdminList";
-import { BsArrowDownUp } from "react-icons/bs";
-import { GoChevronLeft, GoChevronRight } from "react-icons/go";
-import { RiAdminFill, RiAdminLine } from "react-icons/ri";
-import { toast } from "react-toastify";
-import NewAdminModal from "../components/NewAdminModal";
-import { AiOutlineLoading3Quarters, AiOutlineClose } from "react-icons/ai";
-import { FaArrowLeft, FaArrowRight, FaSearch } from "react-icons/fa";
+import AdminList from '../components/AdminList';
+import { BsArrowDownUp } from 'react-icons/bs';
+import { GoChevronLeft, GoChevronRight } from 'react-icons/go';
+import { RiAdminFill, RiAdminLine } from 'react-icons/ri';
+import { toast } from 'react-toastify';
+import NewAdminModal from '../components/NewAdminModal';
+import { AiOutlineLoading3Quarters, AiOutlineClose } from 'react-icons/ai';
+import { FaSearch } from 'react-icons/fa';
 
 const DashboardAdmin = () => {
+  const navigate = useNavigate();
+  const dataAdmin = JSON.parse(localStorage.getItem('dataAdmin'));
   const socket = useSelector((state) => state.socket.instance);
-  const { search } = useLocation();
-  const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [onlineAdmins, setOnlineAdmins] = useState([]);
   const [admins, setAdmins] = useState([]);
   const [totalAdmins, setTotalAdmins] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [maxPage, setMaxPage] = useState(0);
-  const [sort, setSort] = useState("");
-  const [keyword, setKeyword] = useState("");
-  const limit = 10;
+  const [sort, setSort] = useState('');
+  const [keyword, setKeyword] = useState('');
+  const limit = 5;
 
   useEffect(() => {
     const fetchAdmins = async () => {
@@ -40,20 +40,13 @@ const DashboardAdmin = () => {
           return;
         }
 
-        if (searchParams.get("keyword")) {
-          query.keyword = searchParams.get("keyword");
-        }
-
         if (sort) {
           query.sort = sort;
         }
 
         setLoading(true);
 
-        const response = await Axios.post(
-          `${API_URL}/admin/account/all?keyword=${keyword}`,
-          query
-        );
+        const response = await Axios.post(`${API_URL}/admin/account/all?keyword=${keyword}`, query);
 
         setAdmins(response.data.rows);
         setMaxPage(response.data.maxPage || 1);
@@ -62,27 +55,40 @@ const DashboardAdmin = () => {
       } catch (err) {
         setLoading(false);
 
-        toast.error("Unable to fetch Admins!", {
-          position: "bottom-left",
-          theme: "colored",
+        toast.error('Unable to fetch Admins!', {
+          position: 'bottom-left',
+          theme: 'colored',
         });
       }
     };
-    fetchAdmins();
-  }, [currentPage, search, sort, keyword]);
+
+    if (!dataAdmin.is_super) {
+      navigate('/dashboard', { replace: true });
+    } else {
+      fetchAdmins();
+    }
+  }, [currentPage, sort, keyword]);
 
   useEffect(() => {
-    socket?.emit("getOnlineAdmin");
+    if (currentPage === 1) {
+      return;
+    } else if (totalAdmins <= currentPage * limit - limit) {
+      setCurrentPage(currentPage - 1);
+    }
+  }, [totalAdmins]);
 
-    socket?.on("onlineAdminData", ({ data }) => {
+  useEffect(() => {
+    socket?.emit('getOnlineAdmin');
+
+    socket?.on('onlineAdminData', ({ data }) => {
       setOnlineAdmins(data);
     });
 
-    socket?.on("newOnlineAdmin", ({ data }) => {
+    socket?.on('newOnlineAdmin', ({ data }) => {
       setOnlineAdmins(data);
     });
 
-    socket?.on("offlineAdmin", ({ data }) => {
+    socket?.on('offlineAdmin', ({ data }) => {
       setOnlineAdmins(data);
     });
   }, [socket]);
@@ -97,6 +103,7 @@ const DashboardAdmin = () => {
         setMaxPage={setMaxPage}
         setTotalAdmins={setTotalAdmins}
         limit={limit}
+        currentPage={currentPage}
       />
     ));
   };
@@ -105,12 +112,7 @@ const DashboardAdmin = () => {
     <div className="h-full flex flex-col px-10">
       <div className="h-16 bg-white shadow-sm pl-80 pr-8 fixed z-[3] w-10 top-0 left-0 flex items-center">
         <div className="flex justify-center items-center relative">
-          <FaSearch
-            // onClick={() => {
-            //   setSearchParams({ keyword }, { replace: true });
-            // }}
-            className="absolute left-2 text-gray-400 bg-gray-100 cursor-pointer active:scale-95 transition"
-          />
+          <FaSearch className="absolute left-2 text-gray-400 bg-gray-100 cursor-pointer active:scale-95 transition" />
           <input
             type="text"
             id="myInput"
@@ -121,7 +123,7 @@ const DashboardAdmin = () => {
           />
           <AiOutlineClose
             onClick={() => {
-              setKeyword("");
+              setKeyword('');
             }}
             className="hover:brightness-110 cursor-pointer absolute right-2"
           />
@@ -141,10 +143,10 @@ const DashboardAdmin = () => {
                 <span className="text-sm font-semibold">ID</span>
                 <BsArrowDownUp
                   onClick={() => {
-                    if (sort === "id,asc") {
-                      setSort("id,desc");
+                    if (sort === 'id,asc') {
+                      setSort('id,desc');
                     } else {
-                      setSort("id,asc");
+                      setSort('id,asc');
                     }
                   }}
                   className="text-xs hover:text-sky-300 transition cursor-pointer active:scale-95"
@@ -154,10 +156,10 @@ const DashboardAdmin = () => {
                 <span className="text-sm font-semibold">Name</span>
                 <BsArrowDownUp
                   onClick={() => {
-                    if (sort === "name,asc") {
-                      setSort("name,desc");
+                    if (sort === 'name,asc') {
+                      setSort('name,desc');
                     } else {
-                      setSort("name,asc");
+                      setSort('name,asc');
                     }
                   }}
                   className="text-xs hover:text-sky-300 transition cursor-pointer active:scale-95"
@@ -167,10 +169,10 @@ const DashboardAdmin = () => {
                 <span className="text-sm font-semibold">Email</span>
                 <BsArrowDownUp
                   onClick={() => {
-                    if (sort === "email,asc") {
-                      setSort("email,desc");
+                    if (sort === 'email,asc') {
+                      setSort('email,desc');
                     } else {
-                      setSort("email,asc");
+                      setSort('email,asc');
                     }
                   }}
                   className="text-xs hover:text-sky-300 transition cursor-pointer active:scale-95"
@@ -180,10 +182,10 @@ const DashboardAdmin = () => {
                 <span className="text-sm font-semibold">Username</span>
                 <BsArrowDownUp
                   onClick={() => {
-                    if (sort === "username,asc") {
-                      setSort("username,desc");
+                    if (sort === 'username,asc') {
+                      setSort('username,desc');
                     } else {
-                      setSort("username,asc");
+                      setSort('username,asc');
                     }
                   }}
                   className="text-xs hover:text-sky-300 transition cursor-pointer active:scale-95"
@@ -211,15 +213,14 @@ const DashboardAdmin = () => {
               renderAdmins()
             ) : (
               <div className="h-96 flex justify-center items-center">
-                <span className="text-2xl font-thin text-slate-800">
-                  You currently don't have any admin
-                </span>
+                <span className="text-2xl font-thin text-slate-800">You currently don't have any admin</span>
               </div>
             )}
           </div>
           <div className="w-full py-2 flex justify-center items-center border-t gap-2 text-gray-600 font-semibold">
             <button
               disabled={currentPage === 1 || !currentPage}
+              onClick={() => setCurrentPage(currentPage - 1)}
               className="hover:text-sky-400 disabled:text-gray-300 active:scale-95 disabled:active:scale-100 transition"
             >
               <GoChevronLeft />
@@ -240,6 +241,7 @@ const DashboardAdmin = () => {
             <span>{maxPage}</span>
             <button
               disabled={currentPage === maxPage || !currentPage}
+              onClick={() => setCurrentPage(currentPage + 1)}
               className="hover:text-sky-400 disabled:text-gray-300 active:scale-95 disabled:active:scale-100 transition"
             >
               <GoChevronRight />
@@ -278,6 +280,7 @@ const DashboardAdmin = () => {
                 setMaxPage={setMaxPage}
                 setTotalAdmins={setTotalAdmins}
                 limit={limit}
+                currentPage={currentPage}
               />
             </div>
           </div>

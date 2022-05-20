@@ -10,7 +10,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { toast } from 'react-toastify';
 
-const NewAdminModal = ({ setAdmins, setMaxPage, setTotalAdmins, limit }) => {
+const NewAdminModal = ({ setAdmins, setMaxPage, setTotalAdmins, limit, currentPage }) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -46,9 +46,11 @@ const NewAdminModal = ({ setAdmins, setMaxPage, setTotalAdmins, limit }) => {
       try {
         setLoading(true);
 
-        const response = await Axios.post(`${API_URL}/admin/account/create`, { data: values, limit });
+        const response = await Axios.post(`${API_URL}/admin/account/create`, { data: values, limit: limit, currentPage: currentPage });
 
         if (response.data.conflict) {
+          setLoading(false);
+          formik.resetForm();
           toast.error(response.data.conflict, { theme: 'colored', position: 'bottom-left' });
         } else {
           setLoading(false);
