@@ -133,7 +133,6 @@ function Checkout() {
 
       if (editPhone) {
         await handEditPhone(phone);
-        dispatch({ type: 'UPDATE_PHONE', payload: phone });
       }
 
       const dataCheckout = {
