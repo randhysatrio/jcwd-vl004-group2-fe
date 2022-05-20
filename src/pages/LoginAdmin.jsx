@@ -42,6 +42,7 @@ const LoginAdmin = () => {
         });
 
         if (response.data.conflict) {
+          setIsLoading(false);
           return toast.error(response.data.message, { position: 'bottom-left', theme: 'colored' });
         }
 
