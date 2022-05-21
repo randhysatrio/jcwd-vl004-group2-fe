@@ -220,7 +220,7 @@ const ProductDetail = () => {
                 </div>
               </div>
               <div className="w-1/2 h-full flex flex-col">
-                <div className="w-full flex items-center justify-between border-b text-sm">
+                <div className="w-full flex items-center justify-between border-b text-xs lg:text-sm">
                   <span className="font-bold">Stock</span>
                   <div className="flex items-center gap-1 font-semibold text-xs lg:text-sm">
                     {productData.stock_in_unit ? (
