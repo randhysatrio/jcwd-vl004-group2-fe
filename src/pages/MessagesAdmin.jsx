@@ -96,7 +96,15 @@ const MessagesAdmin = () => {
         <span className="text-3xl font-thin">Notifications</span>
         <div className="w-full h-[1px] my-1 bg-gray-300"></div>
       </div>
-      <div className="w-full py-5 flex flex-col gap-6 pl-10 mb-auto">{renderMessages()}</div>
+      <div className="w-full py-5 flex flex-col gap-6 pl-10 mb-auto">
+        {messages.length ? (
+          renderMessages()
+        ) : (
+          <div className="w-full h-80 flex items-center justify-center">
+            <span className="text-3xl font-thin">You don't have any notifications</span>
+          </div>
+        )}
+      </div>
       <div className="w-full flex justify-end items-center gap-2 border-t py-2 px-5">
         <span className="text-sm text-gray-400 italic">
           Showing {currentPage * limit - limit + 1} to {currentPage * limit - limit + messages.length} from {totalMsg}
