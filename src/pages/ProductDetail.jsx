@@ -195,8 +195,8 @@ const ProductDetail = () => {
               <div className="w-full py-[2px] flex items-center">
                 <span className="font-bold">Description</span>
               </div>
-              <div className="w-full h-full rounded-lg flex bg-gray-100 p-1">
-                <span className="text-slate-800">{productData.description}</span>
+              <div className="w-full h-full md:h-max lg:h-full rounded-lg flex bg-gray-100 p-1">
+                <span className="text-slate-800 md:line-clamp-6 lg:line-clamp-none">{productData.description}</span>
               </div>
             </div>
             <div className="w-full h-[130px] gap-2 flex items-center">
@@ -222,7 +222,7 @@ const ProductDetail = () => {
               <div className="w-1/2 h-full flex flex-col">
                 <div className="w-full flex items-center justify-between border-b text-sm">
                   <span className="font-bold">Stock</span>
-                  <div className="flex items-center gap-1 font-semibold text-xs xl:text-sm">
+                  <div className="flex items-center gap-1 font-semibold text-xs lg:text-sm">
                     {productData.stock_in_unit ? (
                       productData.stock_in_unit <= 5 * productData.volume ? (
                         <>
@@ -236,7 +236,7 @@ const ProductDetail = () => {
                       ) : (
                         <>
                           <AiOutlineCheckCircle className="text-sky-400" />
-                          <span>Currently in stock!</span>
+                          <span>In stock!</span>
                         </>
                       )
                     ) : (
