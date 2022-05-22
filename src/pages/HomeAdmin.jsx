@@ -71,6 +71,7 @@ const HomeAdmin = () => {
     const fetchProducts = async () => {
       const productList = await axios.post(`${API_URL}/product/query`, {
         limit: 5,
+        fromHomeAdmin: true,
       });
       setProducts(productList.data.products);
       setProductLength(productList.data.length);
