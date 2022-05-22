@@ -1,21 +1,9 @@
-import {
-  FaSearch,
-  FaBell,
-  FaUserAlt,
-  FaHome,
-  FaBars,
-  FaShoppingBag,
-  FaArrowLeft,
-  FaArrowRight,
-} from "react-icons/fa";
+import { FaSearch, FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { AiOutlineClose } from "react-icons/ai";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
 import axios from "axios";
-import Swal from "sweetalert2";
-import { useLocation, useSearchParams } from "react-router-dom";
 import { API_URL } from "../assets/constants";
-import noAvatar from "../assets/images/noAvatar.png";
+import UserTable from "../components/UserTable";
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(false);
@@ -48,10 +36,6 @@ const Dashboard = () => {
     setLoading(false);
   };
 
-  const swalAlert = () => {
-    Swal.fire("Changed!", "Status has been changed!", "success");
-  };
-
   const fetchUsers = async () => {
     setLoading(true);
     const userList = await axios.post(
@@ -82,58 +66,16 @@ const Dashboard = () => {
   }, [debouncedSearch, debouncedStatus]);
 
   const renderUsers = () => {
-    const beginningIndex = (page - 1) * 5;
+    const beginningIndex = (page - 1) * limit;
     return users.map((user, i) => {
-      let status = user.active;
       return (
-        <tr className="border-b border-gray-200">
-          <td className="justify-center items-center text-center p-4">
-            {beginningIndex + i + 1}
-          </td>
-          <td className="justify-center items-center text-center p-4">
-            <img
-              src={noAvatar}
-              className="w-12 m-auto h-12 rounded-full border border-gray-200"
-            />
-          </td>
-          <td className="justify-center items-center text-center p-4">
-            {user.name}
-          </td>
-          <td className="justify-center items-center text-center p-4">
-            {user.email}
-          </td>
-          <td className="justify-center items-center text-center p-4">
-            {user.phone_number}
-          </td>
-          {status ? (
-            <td className="justify-center items-center text-center p-4">
-              <button
-                type="button"
-                className="py-1 px-4 text-white bg-green-500 rounded-xl items-center"
-              >
-                Active
-              </button>
-            </td>
-          ) : (
-            <td className="justify-center items-center text-center p-4">
-              <button
-                type="button"
-                className="py-1 px-3 text-white bg-red-500 rounded-xl items-center"
-              >
-                Inactive
-              </button>
-            </td>
-          )}
-          <td className="justify-center items-center text-center p-4">
-            <button
-              type="button"
-              className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 rounded-xl items-center"
-              onClick={() => handleStatusClick(user.id)}
-            >
-              Change Status
-            </button>
-          </td>
-        </tr>
+        <UserTable
+          key={user.id}
+          user={user}
+          fetchUsers={fetchUsers}
+          setKeyword={setKeyword}
+          beginningIndex={beginningIndex + i}
+        />
       );
     });
   };
@@ -144,10 +86,7 @@ const Dashboard = () => {
       pagination.push(i);
     }
     return pagination.map((value) => {
-      return (
-        // <AdminPagination key={value} pagination={value} setPage={setPage} />
-        <option key={value}>{value}</option>
-      );
+      return <option key={value}>{value}</option>;
     });
   };
 
@@ -163,40 +102,12 @@ const Dashboard = () => {
     }
   };
 
-  const handleStatusClick = (id) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, Change it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        try {
-          axios.patch(`${API_URL}/user/status/${id}`);
-        } catch (error) {
-          console.log(error);
-        }
-        setTimeout(swalAlert, 1000);
-      }
-      fetchUsers();
-      setKeyword("");
-    });
-  };
-
   return (
     <div className="h-full w-full bg-gray-100">
       {/* Search Bar */}
       <div className="h-16 bg-white shadow-sm pl-80 pr-8 fixed z-[3] w-10 top-0 left-0 flex items-center">
         <div className="flex justify-center items-center relative">
-          <FaSearch
-            // onClick={() => {
-            //   setSearchParams({ keyword }, { replace: true });
-            // }}
-            className="absolute left-2 text-gray-400 bg-gray-100 active:scale-95 transition"
-          />
+          <FaSearch className="absolute left-2 text-gray-400 bg-gray-100 active:scale-95 transition" />
           <input
             type="text"
             value={keyword}
