@@ -1,13 +1,6 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import {
-  FiEdit,
-  FiMapPin,
-  FiPhone,
-  FiSave,
-  FiUser,
-  FiXSquare,
-} from 'react-icons/fi';
+import { FiEdit, FiMapPin, FiPhone, FiSave, FiUser, FiXSquare } from 'react-icons/fi';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -56,7 +49,7 @@ function Checkout() {
       setAddressList(response.data.addresses);
       setAddress(
         response.data.addresses.find((item) => {
-          return item.is_default === true ? item : response.data.addresses[0];
+          return item.is_default === true;
         })
       );
       setIsLoading(false);
@@ -215,12 +208,7 @@ function Checkout() {
                         className="input input-bordered input-sm w-36 max-w-xs mr-4"
                         onChange={(e) => setPhone(e.target.value)}
                       />
-                      <FiSave
-                        size={24}
-                        color="#0EA5E9"
-                        className="hover:cursor-pointer"
-                        onClick={() => handEditPhone(phone)}
-                      />
+                      <FiSave size={24} color="#0EA5E9" className="hover:cursor-pointer" onClick={() => handEditPhone(phone)} />
                       <FiXSquare
                         size={24}
                         color="red"
@@ -234,12 +222,7 @@ function Checkout() {
                   ) : (
                     <>
                       <span className="w-36">{phone ? phone : '-'}</span>
-                      <FiEdit
-                        size={24}
-                        color="#0EA5E9"
-                        className="hover:cursor-pointer"
-                        onClick={() => setEditPhone(!editPhone)}
-                      />
+                      <FiEdit size={24} color="#0EA5E9" className="hover:cursor-pointer" onClick={() => setEditPhone(!editPhone)} />
                     </>
                   )}
                 </div>
@@ -249,8 +232,7 @@ function Checkout() {
                     <div className="flex justify-start w-full">
                       {address ? (
                         <span className="flex flex-wrap">
-                          {address.address}, {address.city}, {address.province},{' '}
-                          {address.country}, {address.postalcode}
+                          {address.address}, {address.city}, {address.province}, {address.country}, {address.postalcode}
                         </span>
                       ) : (
                         <label
@@ -266,19 +248,11 @@ function Checkout() {
                   </div>
                   {address && (
                     <div className="flex gap-3">
-                      <label
-                        htmlFor="modal-add-address"
-                        href="#modal-add-address"
-                        className="btn btn-sm"
-                      >
+                      <label htmlFor="modal-add-address" href="#modal-add-address" className="btn btn-sm">
                         Add Address
                       </label>
 
-                      <label
-                        htmlFor="modal-change-address"
-                        href="#modal-change-address"
-                        className="btn btn-sm"
-                      >
+                      <label htmlFor="modal-change-address" href="#modal-change-address" className="btn btn-sm">
                         Change Address
                       </label>
                     </div>
@@ -320,14 +294,7 @@ function Checkout() {
             </div>
             <div className="divider" />
             {orderItems.map((item) => {
-              return (
-                <CartCard
-                  key={item.id}
-                  item={item}
-                  checkout
-                  setIsLoading={setIsLoading}
-                />
-              );
+              return <CartCard key={item.id} item={item} checkout setIsLoading={setIsLoading} />;
             })}
           </div>
         </div>
@@ -336,8 +303,7 @@ function Checkout() {
           <div className="flex flex-col gap-2">
             <div className="flex justify-between">
               <span>
-                Subtotal ({orderItems.length}{' '}
-                {orderItems.length > 1 ? 'items' : 'item'})
+                Subtotal ({orderItems.length} {orderItems.length > 1 ? 'items' : 'item'})
               </span>
               <span>Rp. {subtotal.toLocaleString('id')}</span>
             </div>
@@ -348,61 +314,34 @@ function Checkout() {
             <div className="divider"></div>
             <div className="flex justify-between">
               <span className="font-bold text-lg">TOTAL</span>
-              <span className="font-bold text-lg">
-                Rp. {(subtotal + costDelivery).toLocaleString('id')}
-              </span>
+              <span className="font-bold text-lg">Rp. {(subtotal + costDelivery).toLocaleString('id')}</span>
             </div>
           </div>
-          <label
-            htmlFor="modal-payment"
-            className="h-20 bg-gray-200 rounded-md flex justify-center items-center hover:cursor-pointer"
-          >
+          <label htmlFor="modal-payment" className="h-20 bg-gray-200 rounded-md flex justify-center items-center hover:cursor-pointer">
             {paymentMethod ? (
               <span className="font-semibold text-lg">
                 {paymentMethod.bankname} - {paymentMethod.type}
               </span>
             ) : (
-              <span className="font-semibold text-lg">
-                Select payment method
-              </span>
+              <span className="font-semibold text-lg">Select payment method</span>
             )}
           </label>
-          <textarea
-            className="textarea my-4 h-14 bg-gray-100"
-            placeholder="Write your note"
-            onChange={(e) => setNotes(e.target.value)}
-          />
-          <button
-            disabled={isLoading}
-            className="btn btn-block btn-primary"
-            onClick={handCheckout}
-          >
+          <textarea className="textarea my-4 h-14 bg-gray-100" placeholder="Write your note" onChange={(e) => setNotes(e.target.value)} />
+          <button disabled={isLoading} className="btn btn-block btn-primary" onClick={handCheckout}>
             PLACE ORDER
           </button>
         </div>
       </div>
 
       {/* add address modal */}
-      <CheckoutAddAddress
-        setAddress={setAddress}
-        setAddressList={setAddressList}
-        setIsLoading={setIsLoading}
-        isLoading={isLoading}
-      />
+      <CheckoutAddAddress setAddress={setAddress} setAddressList={setAddressList} setIsLoading={setIsLoading} isLoading={isLoading} />
 
       {/* change addres modal */}
-      <input
-        type="checkbox"
-        id="modal-change-address"
-        className="modal-toggle"
-      />
+      <input type="checkbox" id="modal-change-address" className="modal-toggle" />
       <div className="modal" id="modal-change-address">
         <div className="modal-box">
           <div className="modal-action">
-            <label
-              htmlFor="modal-change-address"
-              className="btn btn-sm btn-circle absolute right-2 top-2"
-            >
+            <label htmlFor="modal-change-address" className="btn btn-sm btn-circle absolute right-2 top-2">
               ✕
             </label>
           </div>
@@ -412,14 +351,11 @@ function Checkout() {
               return (
                 <div
                   key={item.id}
-                  className={`flex justify-between items-center border-b py-4 ${
-                    address === item ? 'text-primary font-semibold' : null
-                  }`}
+                  className={`flex justify-between items-center border-b py-4 ${address === item ? 'text-primary font-semibold' : null}`}
                 >
                   <div className="w-4/5">
                     <span>
-                      {item.address}, {item.city}, {item.province},{' '}
-                      {item.country}, {item.postalcode}
+                      {item.address}, {item.city}, {item.province}, {item.country}, {item.postalcode}
                     </span>
                   </div>
                   <div className="modal-action">
@@ -444,10 +380,7 @@ function Checkout() {
       <div className="modal" id="modal-payment">
         <div className="modal-box">
           <div className="modal-action">
-            <label
-              htmlFor="modal-payment"
-              className="btn btn-sm btn-circle absolute right-2 top-2"
-            >
+            <label htmlFor="modal-payment" className="btn btn-sm btn-circle absolute right-2 top-2">
               ✕
             </label>
           </div>

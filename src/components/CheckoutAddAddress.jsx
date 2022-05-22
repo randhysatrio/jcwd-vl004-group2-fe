@@ -54,7 +54,7 @@ function CheckoutAddAddress({ setAddress, setAddressList, setIsLoading, isLoadin
         setAddressList(response.data.data);
         setAddress(
           response.data.data.find((item) => {
-            return item.is_default === true ? item : response.data.data[0];
+            return item.is_default === true;
           })
         );
         document.getElementById('close-btn').click();
