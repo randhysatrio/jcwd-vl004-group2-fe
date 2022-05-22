@@ -25,7 +25,7 @@ const NewAdminModal = ({ setAdmins, setMaxPage, setTotalAdmins, limit, currentPa
     },
     validationSchema: Yup.object({
       name: Yup.string()
-        .matches(/^[a-zA-Z0-9 ]*$/, 'Name cannot contain special characters')
+        .matches(/^[a-zA-Z. ]*$/, 'Name cannot contain special characters or numbers')
         .required('This field is required'),
       username: Yup.string()
         .matches(/^[a-zA-Z0-9._]*$/, 'Only alphanumeric characters, contain no spaces, (-), (_), and (.) is allowed')
@@ -157,7 +157,7 @@ const NewAdminModal = ({ setAdmins, setMaxPage, setTotalAdmins, limit, currentPa
                         ) : null}
                       </div>
                       {formik.touched.username && formik.errors.username ? (
-                        <span className="pl-1 text-xs leading-tight text-red-400 mt-1 max-w-full">{formik.errors.username}</span>
+                        <span className="pl-1 text-[11px] leading-tight text-red-400 mt-1 max-w-full">{formik.errors.username}</span>
                       ) : null}
                     </div>
                   </div>
