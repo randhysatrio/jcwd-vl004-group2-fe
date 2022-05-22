@@ -200,7 +200,7 @@ const ProductDetail = () => {
               </div>
             </div>
             <div className="w-full h-[130px] gap-2 flex items-center">
-              <div className="w-1/2 h-full flex flex-col text-xs md:text-sm">
+              <div className="w-1/2 h-full flex flex-col text-sm md:text-xs lg:text-sm">
                 <div className="w-full flex items-center border-b mb-1">
                   <span className="font-bold">Details</span>
                 </div>
@@ -220,9 +220,9 @@ const ProductDetail = () => {
                 </div>
               </div>
               <div className="w-1/2 h-full flex flex-col">
-                <div className="w-full flex items-center justify-between border-b text-xs lg:text-sm">
+                <div className="w-full flex items-center justify-between border-b text-sm md:text-xs lg:text-sm">
                   <span className="font-bold">Stock</span>
-                  <div className="flex items-center gap-1 font-semibold text-xs lg:text-sm">
+                  <div className="flex items-center gap-1 font-semibold">
                     {productData.stock_in_unit ? (
                       productData.stock_in_unit <= 5 * productData.volume ? (
                         <>
@@ -247,7 +247,7 @@ const ProductDetail = () => {
                     )}
                   </div>
                 </div>
-                <div className="w-full flex justify-between items-center my-2">
+                <div className="w-full flex justify-between items-center my-2 text-sm lg:text-base">
                   <div className="flex gap-1">
                     <span className="font-semibold">{productData.stock ? productData.stock.toLocaleString('id') : 0}</span>
                     <span>{productData.unit === 'g' ? 'pack(s)' : 'bottle(s)'}</span>

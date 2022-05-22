@@ -100,7 +100,7 @@ const MessagesAdmin = () => {
         {messages.length ? (
           renderMessages()
         ) : (
-          <div className="w-full h-80 flex items-center justify-center">
+          <div className="w-full h-96 flex items-center justify-center">
             <span className="text-3xl font-thin">You don't have any notifications</span>
           </div>
         )}
