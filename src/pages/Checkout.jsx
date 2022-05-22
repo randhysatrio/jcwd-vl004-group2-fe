@@ -56,7 +56,7 @@ function Checkout() {
       setAddressList(response.data.addresses);
       setAddress(
         response.data.addresses.find((item) => {
-          return item.is_default === true ? item : response.data.addresses[0];
+          return item.is_default === true;
         })
       );
       setIsLoading(false);
@@ -85,7 +85,7 @@ function Checkout() {
     } else {
       navigate('/', { replace: true });
     }
-  }, [userGlobal]);
+  }, []);
 
   const handEditPhone = async (phone_number) => {
     try {
@@ -233,7 +233,11 @@ function Checkout() {
                     </>
                   ) : (
                     <>
-                      <span className="w-36">{phone ? phone : '-'}</span>
+                      <span className="w-36">
+                        {userGlobal?.phone_number
+                          ? userGlobal.phone_number
+                          : '-'}
+                      </span>
                       <FiEdit
                         size={24}
                         color="#0EA5E9"
