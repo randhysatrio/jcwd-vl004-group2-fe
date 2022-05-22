@@ -45,6 +45,14 @@ const ProductDetail = () => {
           limit: 8,
         });
 
+        if (!response.data.product) {
+          navigate('/products', { replace: true });
+          return toast.warning(`The product that you're looking for is currently unavailable`, {
+            position: 'top-center',
+            theme: 'colored',
+          });
+        }
+
         setProductData(response.data.product);
         setRelatedProducts(response.data.relatedProducts);
         setTotalReviews(response.data.product.totalReviews);
