@@ -120,7 +120,7 @@ const AwaitingPayment = () => {
             renderInvoices()
           ) : (
             <div className="w-full h-[60vh] lg:h-96 flex items-center justify-center">
-              <span className="text-2xl md:text-3xl font-thin text-slate-700">You don't have any unpaid invoices</span>
+              <span className="text-2xl md:text-3xl font-thin text-sky-400">You don't have any unpaid invoices</span>
             </div>
           )}
         </div>

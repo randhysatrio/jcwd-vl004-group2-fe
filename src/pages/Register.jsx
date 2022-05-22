@@ -41,7 +41,7 @@ const Register = () => {
     },
     validationSchema: Yup.object({
       name: Yup.string()
-        .matches(/^[a-zA-Z0-9 ]*$/, 'Name cannot contain special characters')
+        .matches(/^[a-zA-Z. ]*$/, 'Name cannot contain number or special characters')
         .required('This field is required'),
       email: Yup.string().email('Please enter a valid email address').required('This field is required'),
       password: Yup.string()
