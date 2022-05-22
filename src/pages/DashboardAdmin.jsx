@@ -191,10 +191,10 @@ const DashboardAdmin = () => {
                   className="text-xs hover:text-sky-300 transition cursor-pointer active:scale-95"
                 />
               </div>
-              <div className="w-[13%] pl-2 flex items-center gap-1 text-gray-600">
+              <div className="w-[13%] pl-2 flex items-center justify-center text-gray-600">
                 <span className="text-sm font-semibold">Profile Pic</span>
               </div>
-              <div className="w-[10%] flex justify-center items-center gap-1 text-gray-600">
+              <div className="w-[10%] flex justify-center items-center text-gray-600">
                 <span className="text-sm font-semibold">Status</span>
               </div>
             </div>
