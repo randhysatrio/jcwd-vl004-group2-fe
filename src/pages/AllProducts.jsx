@@ -237,9 +237,12 @@ const AllProducts = () => {
                   setMaxPrice('');
                   setPriceRange([]);
                   setCurrentPage(1);
+                  if (rangeError) {
+                    setRangeError('');
+                  }
                 }}
                 className={`px-2 rounded-full flex gap-1 items-center bg-rose-100 text-sm text-red-400 hover:brightness-105 transition cursor-pointer ${
-                  minPrice || maxPrice ? 'opacity-100' : 'opacity-0 invisible'
+                  minPrice || maxPrice || rangeError ? 'opacity-100' : 'opacity-0 invisible'
                 }`}
               >
                 <AiOutlineClose />
