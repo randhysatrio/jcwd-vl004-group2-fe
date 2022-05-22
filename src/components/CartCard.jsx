@@ -12,6 +12,7 @@ function CartCard({
   item,
   setCart,
   page,
+  setPage,
   handCheck,
   isLoading,
   setIsLoading,
@@ -104,13 +105,16 @@ function CartCard({
           }
         );
 
-        setCart(response.data);
         dispatch({
           type: 'CART_TOTAL',
           payload: response.data.cartTotal,
         });
         setIsLoading(false);
         Swal.fire(response.data.message);
+        if (response.data?.active_page > response.data?.total_page) {
+          return setPage(response.data?.total_page);
+        }
+        setCart(response.data);
       }
       setIsLoading(false);
     } catch (error) {
