@@ -9,14 +9,13 @@ import { MdOutlineNoAccounts } from 'react-icons/md';
 import { format } from 'date-fns';
 import { toast } from 'react-toastify';
 
-const DeleteAdminModal = ({ adminId, online, setOpenMain, setAdmins, setMaxPage, setTotalAdmins, limit, currentPage }) => {
+const DeleteAdminModal = ({ adminId, setOpenMain, setAdmins, setMaxPage, setTotalAdmins, limit, currentPage }) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   return (
     <>
       <button
-        // disabled={online}
         onClick={() => setOpen(true)}
         className="w-full h-12 rounded-xl bg-gradient-to-r from-red-500 to-rose-500 disabled:from-red-300 disabled:to-rose-300 flex justify-center items-center gap-1 text-lg font-bold text-white cursor-pointer hover:brightness-125 disabled:hover:brightness-100 active:scale-95 disabled:active:scale-100 transition-all disabled:cursor-default"
       >
@@ -47,12 +46,12 @@ const DeleteAdminModal = ({ adminId, online, setOpenMain, setAdmins, setMaxPage,
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-80 scale-100 -translate-y-5"
           >
-            <div className="fixed w-[530px] bg-sky-50 rounded-xl flex flex-col px-10 shadow-md">
+            <div className="fixed w-[550px] bg-sky-50 rounded-xl flex flex-col px-10 shadow-md">
               <div className="pt-6 flex justify-center">
-                <span className="text-xl font-bold">Are you sure you want to delete this account?</span>
+                <span className="text-xl font-bold">Are you sure you want to deactivate this account?</span>
               </div>
               <div className="w-full py-5 flex justify-center">
-                <span className="font-semibold">Once you've deleted this account, this action is irreversible</span>
+                <span className="font-semibold">Once you've deactivate this account, you need to manually reactivate it</span>
               </div>
               <div className="w-full pb-6 pt-2 flex justify-end items-center gap-2">
                 <button
@@ -82,7 +81,7 @@ const DeleteAdminModal = ({ adminId, online, setOpenMain, setAdmins, setMaxPage,
                         setTotalAdmins(response.data.totalAdmins);
                         setLoading(false);
 
-                        toast.success(response.data.message, { position: 'bottom-left', theme: 'colored' });
+                        toast.info(response.data.message, { position: 'bottom-left', theme: 'colored' });
                         setOpen(false);
                         setOpenMain(false);
                       }
