@@ -1,28 +1,20 @@
-import { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
-import { useNavigate, useParams } from 'react-router-dom';
-import { API_URL } from '../assets/constants';
-import { FaPhotoVideo } from 'react-icons/fa';
+import { useState, useEffect, useRef } from "react";
+import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
+import { API_URL } from "../assets/constants";
+import { FaPhotoVideo } from "react-icons/fa";
 
 const EditProduct = () => {
-  const Swal = require('sweetalert2');
+  const Swal = require("sweetalert2");
   // useState([]) is different from useState({}) findAll is array findbyPK is an object
   const [products, setProducts] = useState({});
   const [categories, setCategories] = useState([]);
   const [images, setImage] = useState(null);
   const [category, setCategory] = useState();
   const navigate = useNavigate();
-  const [errMsg, setErrMsg] = useState('');
-  const [submitted, setSubmit] = useState(false);
-  const [newName, setNewName] = useState('');
-  const [priceBuy, setPriceBuy] = useState('');
-  const [priceSell, setPriceSell] = useState('');
-  const [newStock, setNewStock] = useState('');
-  const [unit, setUnit] = useState('');
-  const [newUnit, setNewUnit] = useState('');
-  const [newVolume, setNewVolume] = useState('');
-  const [stockInUnit, setStockInUnit] = useState('');
-  const [newAppearance, setNewAppearance] = useState('');
+  const [priceBuy, setPriceBuy] = useState("");
+  const [unit, setUnit] = useState("");
+  const [newAppearance, setNewAppearance] = useState("");
 
   const { id } = useParams();
 
@@ -35,17 +27,13 @@ const EditProduct = () => {
     setNewAppearance(res.data.product.appearance);
   };
 
-  console.log(category);
-  console.log(unit);
-  console.log(newAppearance);
-
   const fetchCategories = async () => {
     const res = await axios.get(`${API_URL}/category/all`);
     setCategories(res.data);
   };
 
   const fetchImagePreview = async () => {
-    let preview = document.getElementById('imgpreview');
+    let preview = document.getElementById("imgpreview");
     preview.src = `${API_URL}/${images}`;
   };
 
@@ -60,7 +48,6 @@ const EditProduct = () => {
   const price_buy = useRef();
   const price_sell = useRef();
   const stock = useRef();
-  // const unit = useRef();
   const volume = useRef();
   const description = useRef();
   const appearance = useRef();
@@ -81,18 +68,31 @@ const EditProduct = () => {
       categoryId: parseInt(categoryId.current.value),
     };
 
-    formData.append('productData', JSON.stringify(newProduct));
+    formData.append("productData", JSON.stringify(newProduct));
 
     if (images) {
-      formData.append('image', images);
+      formData.append("image", images);
     }
 
     try {
-      await axios.patch(`${API_URL}/product/edit/${id}`, formData);
-      navigate('/dashboard/product');
       Swal.fire({
-        icon: 'success',
-        text: 'Product has been edited!',
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, i want to edit it!",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            await axios.patch(`${API_URL}/product/edit/${id}`, formData);
+            navigate("/dashboard/product");
+            Swal.fire("Edited!", "Your file has been edited.", "success");
+          } catch (error) {
+            console.log(error);
+          }
+        }
       });
     } catch (error) {
       console.log(error);
@@ -101,7 +101,7 @@ const EditProduct = () => {
 
   const onBtAddFile = (e) => {
     setImage(e.target.files[0]);
-    let preview = document.getElementById('imgpreview');
+    let preview = document.getElementById("imgpreview");
     preview.src = URL.createObjectURL(e.target.files[0]);
   };
 
@@ -147,11 +147,21 @@ const EditProduct = () => {
               <label htmlFor="file">
                 <div className="py-1 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl items-center">
                   <div className="flex justify-center items-center">
-                    <FaPhotoVideo htmlColor="tomato" className="shareIcon mr-1" />
+                    <FaPhotoVideo
+                      htmlColor="tomato"
+                      className="shareIcon mr-1"
+                    />
                     <div>Change Photo</div>
                   </div>
                 </div>
-                <input type="file" id="file" name="image" onChange={onBtAddFile} accept="image/*" style={{ display: 'none' }} />
+                <input
+                  type="file"
+                  id="file"
+                  name="image"
+                  onChange={onBtAddFile}
+                  accept="image/*"
+                  style={{ display: "none" }}
+                />
               </label>
             </div>
             <div className="col-start-2">
@@ -202,9 +212,9 @@ const EditProduct = () => {
                   id="ml"
                   className="mr-3"
                   value="ml"
-                  checked={unit === 'ml' ? 'checked' : ''}
+                  checked={unit === "ml" ? "checked" : ""}
                   onChange={(e) => setUnit(e.target.value)}
-                  onClick={() => setUnit('ml')}
+                  onClick={() => setUnit("ml")}
                   required
                 />
                 <label for="ml">ml</label>
@@ -216,9 +226,9 @@ const EditProduct = () => {
                   id="g"
                   className="mr-3"
                   value="g"
-                  checked={unit === 'g' ? 'checked' : ''}
+                  checked={unit === "g" ? "checked" : ""}
                   onChange={(e) => setUnit(e.target.value)}
-                  onClick={() => setUnit('g')}
+                  onClick={() => setUnit("g")}
                   required
                 />
                 <label for="g">g</label>
@@ -261,9 +271,9 @@ const EditProduct = () => {
                   id="Crystal"
                   className="mr-3"
                   value="Crystal"
-                  checked={newAppearance === 'Crystal' ? 'checked' : ''}
+                  checked={newAppearance === "Crystal" ? "checked" : ""}
                   onChange={(e) => setNewAppearance(e.target.value)}
-                  onClick={() => setNewAppearance('Crystal')}
+                  onClick={() => setNewAppearance("Crystal")}
                   required
                 />
                 <label for="Crystal">Crystal</label>
@@ -275,9 +285,9 @@ const EditProduct = () => {
                   id="Powder"
                   className="mr-3"
                   value="Powder"
-                  checked={newAppearance === 'Powder' ? 'checked' : ''}
+                  checked={newAppearance === "Powder" ? "checked" : ""}
                   onChange={(e) => setNewAppearance(e.target.value)}
-                  onClick={() => setNewAppearance('Powder')}
+                  onClick={() => setNewAppearance("Powder")}
                   required
                 />
                 <label for="Powder">Powder</label>
@@ -289,9 +299,9 @@ const EditProduct = () => {
                   id="Liquid"
                   className="mr-3"
                   value="Liquid"
-                  checked={newAppearance === 'Liquid' ? 'checked' : ''}
+                  checked={newAppearance === "Liquid" ? "checked" : ""}
                   onChange={(e) => setNewAppearance(e.target.value)}
-                  onClick={() => setNewAppearance('Liquid')}
+                  onClick={() => setNewAppearance("Liquid")}
                   required
                 />
                 <label for="Liquid">Liquid</label>
@@ -301,7 +311,13 @@ const EditProduct = () => {
               <label className="">Category:</label>
             </div>
             {/* <DropdownCategories /> */}
-            <select name="categoryId" required ref={categoryId} value={category} onChange={(e) => setCategory(e.target.value)}>
+            <select
+              name="categoryId"
+              required
+              ref={categoryId}
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
               <option value="">Choose a category</option>
               {categories.map((item, index) => (
                 <option value={item.id} key={index}>
@@ -312,13 +328,12 @@ const EditProduct = () => {
           </div>
           <div className="flex">
             <button className="mt-8 py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl items-center mr-3">
-              Edit Product
+              Save
             </button>
             <div
               className="mt-8 py-2.5 px-6 text-white bg-red-500 cursor-pointer hover:bg-red-400 transition rounded-xl items-center"
               onClick={() => navigate(-1)}
             >
-              {/* <a href="http://localhost:3000/dashboard/product">Cancel</a> */}
               Cancel
             </div>
           </div>

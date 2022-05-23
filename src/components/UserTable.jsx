@@ -44,10 +44,10 @@ const UserTable = ({ user, setKeyword, beginningIndex }) => {
           className="w-12 m-auto h-12 rounded-full border border-gray-200"
         />
       </td>
-      <td className="justify-center items-center text-center p-4">
+      <td className="justify-center items-center text-left p-4">
         {user.name}
       </td>
-      <td className="justify-center items-center text-center p-4">
+      <td className="justify-center items-center text-left p-4">
         {user.email}
       </td>
       <td className="justify-center items-center text-center p-4">
