@@ -151,8 +151,8 @@ const Dashboard = () => {
                 <th className="bg-white py-4 px-4 text-center">
                   Profile Picture
                 </th>
-                <th className="bg-white py-4 px-4 text-center">Name</th>
-                <th className="bg-white py-4 px-4 text-center">Email</th>
+                <th className="bg-white py-4 px-4 text-left">Name</th>
+                <th className="bg-white py-4 px-4 text-left">Email</th>
                 <th className="bg-white py-4 px-4 text-center">Phone</th>
                 <th className="bg-white py-4 px-4 text-center">Status</th>
                 <th className="bg-white py-4 px-4 text-center">Actions</th>
@@ -198,8 +198,8 @@ const Dashboard = () => {
                 <th className="bg-white py-4 px-4 text-center">
                   Profile Picture
                 </th>
-                <th className="bg-white py-4 px-4 text-center">Name</th>
-                <th className="bg-white py-4 px-4 text-center">Email</th>
+                <th className="bg-white py-4 px-4 text-left">Name</th>
+                <th className="bg-white py-4 px-4 text-left">Email</th>
                 <th className="bg-white py-4 px-4 text-center">Phone</th>
                 <th className="bg-white py-4 px-4 text-center">Status</th>
                 <th className="bg-white py-4 px-4 text-center">Actions</th>

@@ -152,10 +152,10 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
         <td className="justify-center items-center text-center p-4">
           {startNumber + i + 1}
         </td>
-        <td className="justify-center items-center text-center p-4">
+        <td className="justify-center items-center text-left p-4">
           {item.user.name}
         </td>
-        <td className="justify-center items-center text-center p-4">
+        <td className="justify-center items-center text-left p-4">
           {item.address.address}, {item.address.city}, {item.address.province}
         </td>
         <td className="justify-center items-center text-center p-4">

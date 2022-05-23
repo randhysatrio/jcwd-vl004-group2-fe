@@ -167,15 +167,15 @@ const Dashboard = () => {
               className="w-40 aspect-[3/2] rounded-lg border object-cover border-gray-200 m-auto"
             />
           </td>
-          <td className="justify-center items-center text-center p-4">{product.name}</td>
-          <td className="justify-center items-center text-center p-4">Rp. {product.price_buy?.toLocaleString('id')}</td>
-          <td className="justify-center items-center text-center p-4">Rp. {product?.price_sell.toLocaleString('id')}</td>
-          <td className="justify-center items-center text-center p-4">{product.stock?.toLocaleString('id')}</td>
+          <td className="justify-center items-center text-left p-4">{product.name}</td>
+          <td className="justify-center items-center text-left p-4">Rp. {product.price_buy?.toLocaleString('id')}</td>
+          <td className="justify-center items-center text-left p-4">Rp. {product?.price_sell.toLocaleString('id')}</td>
+          <td className="justify-center items-center text-left p-4">{product.stock?.toLocaleString('id')}</td>
           <td className="justify-center items-center text-center p-4">{product.unit}</td>
-          <td className="justify-center items-center text-center p-4">{product.volume?.toLocaleString('id')}</td>
-          <td className="justify-center items-center text-center p-4">{product.stock_in_unit?.toLocaleString('id')}</td>
+          <td className="justify-center items-center text-left p-4">{product.volume?.toLocaleString('id')}</td>
+          <td className="justify-center items-center text-left p-4">{product.stock_in_unit?.toLocaleString('id')}</td>
           <td className="justify-center items-center text-center p-4">{product.appearance}</td>
-          <td className="justify-center items-center text-center p-4">{product.category?.name}</td>
+          <td className="justify-center items-center text-left p-4">{product.category?.name}</td>
           <td className="justify-center items-center text-center p-4">
             <button
               type="button"
@@ -257,9 +257,6 @@ const Dashboard = () => {
       <div className="h-16 bg-white shadow-sm pl-80 pr-8 fixed z-[3] w-10 top-0 left-0 flex items-center">
         <div className="flex justify-center items-center relative">
           <FaSearch
-            // onClick={() => {
-            //   setSearchParams({ keyword }, { replace: true });
-            // }}
             className="absolute left-2 text-gray-400 bg-gray-100 active:scale-95 transition"
           />
           <input
@@ -358,11 +355,11 @@ const Dashboard = () => {
               <tr>
                 <th className="bg-white border-b py-4 px-4 text-center border-gray-200 shadow-sm">No</th>
                 <th className="bg-white border-b py-4 px-4 text-center border-gray-200 shadow-sm">Image</th>
-                <th className="bg-white border-b py-4 px-4 text-center border-gray-200 shadow-sm">Name</th>
+                <th className="bg-white border-b py-4 px-4 text-left border-gray-200 shadow-sm">Name</th>
                 {currentSortPriceBuy === 'price_buy,DESC' ? (
                   <>
                     <th
-                      className="bg-white flex justify-center items-center py-4 px-4 text-center cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
+                      className="bg-white flex justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
                       onClick={sortPriceBuyHandler}
                     >
                       Price Buy
@@ -372,7 +369,7 @@ const Dashboard = () => {
                 ) : currentSortPriceBuy === 'price_buy,ASC' ? (
                   <>
                     <th
-                      className="bg-white flex justify-center items-center py-4 px-4 text-center cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
+                      className="bg-white flex justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
                       onClick={sortPriceBuyHandler}
                     >
                       Price Buy
@@ -381,7 +378,7 @@ const Dashboard = () => {
                   </>
                 ) : (
                   <th
-                    className="bg-white py-4 px-4 text-center cursor-pointer hover:bg-slate-100 border-b border-gray-200 hover:rounded-lg"
+                    className="bg-white py-4 px-4 text-left cursor-pointer hover:bg-slate-100 border-b border-gray-200 hover:rounded-lg"
                     onClick={sortPriceBuyHandler}
                   >
                     Price Buy
@@ -390,7 +387,7 @@ const Dashboard = () => {
                 {currentSortPrice === 'price_sell,DESC' ? (
                   <>
                     <th
-                      className="bg-white flex justify-center items-center py-4 px-4 text-center cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
+                      className="bg-white flex justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
                       onClick={sortPriceSellHandler}
                     >
                       Price Sell
@@ -400,7 +397,7 @@ const Dashboard = () => {
                 ) : currentSortPrice === 'price_sell,ASC' ? (
                   <>
                     <th
-                      className="bg-white flex justify-center items-center py-4 px-4 text-center cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
+                      className="bg-white flex justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
                       onClick={sortPriceSellHandler}
                     >
                       Price Sell
@@ -409,7 +406,7 @@ const Dashboard = () => {
                   </>
                 ) : (
                   <th
-                    className="bg-white py-4 px-4 text-center cursor-pointer hover:bg-slate-100 border-b border-gray-200 hover:rounded-lg"
+                    className="bg-white py-4 px-4 text-left cursor-pointer hover:bg-slate-100 border-b border-gray-200 hover:rounded-lg"
                     onClick={sortPriceSellHandler}
                   >
                     Price Sell
@@ -418,7 +415,7 @@ const Dashboard = () => {
                 {sortStock === 'stock,DESC' ? (
                   <>
                     <th
-                      className="bg-white flex justify-center items-center py-4 px-4 text-center cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
+                      className="bg-white flex justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
                       onClick={sortStockHandler}
                     >
                       Stock
@@ -428,7 +425,7 @@ const Dashboard = () => {
                 ) : sortStock === 'stock,ASC' ? (
                   <>
                     <th
-                      className="bg-white flex justify-center items-center py-4 px-4 text-center cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
+                      className="bg-white flex justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
                       onClick={sortStockHandler}
                     >
                       Stock
@@ -437,7 +434,7 @@ const Dashboard = () => {
                   </>
                 ) : (
                   <th
-                    className="bg-white py-4 px-4 text-center cursor-pointer hover:bg-slate-100 border-b border-gray-200 hover:rounded-lg"
+                    className="bg-white py-4 px-4 text-left cursor-pointer hover:bg-slate-100 border-b border-gray-200 hover:rounded-lg"
                     onClick={sortStockHandler}
                   >
                     Stock
@@ -447,7 +444,7 @@ const Dashboard = () => {
                 {sortVolume === 'volume,DESC' ? (
                   <>
                     <th
-                      className="bg-white flex justify-center items-center py-4 px-4 text-center cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
+                      className="bg-white flex justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
                       onClick={sortVolumeHandler}
                     >
                       Volume
@@ -457,7 +454,7 @@ const Dashboard = () => {
                 ) : sortVolume === 'volume,ASC' ? (
                   <>
                     <th
-                      className="bg-white flex justify-center items-center py-4 px-4 text-center cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
+                      className="bg-white flex justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
                       onClick={sortVolumeHandler}
                     >
                       Volume
@@ -466,7 +463,7 @@ const Dashboard = () => {
                   </>
                 ) : (
                   <th
-                    className="bg-white py-4 px-4 text-center cursor-pointer hover:bg-slate-100 border-b border-gray-200 hover:rounded-lg"
+                    className="bg-white py-4 px-4 text-left cursor-pointer hover:bg-slate-100 border-b border-gray-200 hover:rounded-lg"
                     onClick={sortVolumeHandler}
                   >
                     Volume
@@ -475,7 +472,7 @@ const Dashboard = () => {
                 {sortStockInUnit === 'stock_in_unit,DESC' ? (
                   <>
                     <th
-                      className="bg-white flex justify-center items-center py-4 px-4 text-center cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
+                      className="bg-white flex justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
                       onClick={sortHandler}
                     >
                       Stock in Unit
@@ -485,7 +482,7 @@ const Dashboard = () => {
                 ) : sortStockInUnit === 'stock_in_unit,ASC' ? (
                   <>
                     <th
-                      className="bg-white flex justify-center items-center py-4 px-4 text-center cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
+                      className="bg-white flex justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
                       onClick={sortHandler}
                     >
                       Stock in Unit
@@ -494,14 +491,14 @@ const Dashboard = () => {
                   </>
                 ) : (
                   <th
-                    className="bg-white py-4 px-4 text-center cursor-pointer hover:bg-slate-100 border-b border-gray-200 hover:rounded-lg"
+                    className="bg-white py-4 px-4 text-left cursor-pointer hover:bg-slate-100 border-b border-gray-200 hover:rounded-lg"
                     onClick={sortHandler}
                   >
                     Stock in Unit
                   </th>
                 )}
                 <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Appearance</th>
-                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Category</th>
+                <th className="bg-white border-b py-4 px-4 text-left border-gray-200">Category</th>
                 <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Actions</th>
               </tr>
             </thead>
