@@ -16,6 +16,7 @@ import { FaSearch } from 'react-icons/fa';
 const DashboardAdmin = () => {
   const navigate = useNavigate();
   const dataAdmin = JSON.parse(localStorage.getItem('dataAdmin'));
+  const adminToken = localStorage.getItem('adminToken');
   const socket = useSelector((state) => state.socket.instance);
   const [loading, setLoading] = useState(false);
   const [onlineAdmins, setOnlineAdmins] = useState([]);
@@ -46,7 +47,11 @@ const DashboardAdmin = () => {
 
         setLoading(true);
 
-        const response = await Axios.post(`${API_URL}/admin/account/all?keyword=${keyword}`, query);
+        const response = await Axios.post(`${API_URL}/admin/account/all?keyword=${keyword}`, query, {
+          headers: {
+            Authorization: `Bearer ${adminToken}`,
+          },
+        });
 
         setAdmins(response.data.rows);
         setMaxPage(response.data.maxPage || 1);

@@ -11,6 +11,7 @@ import * as Yup from 'yup';
 import { toast } from 'react-toastify';
 
 const NewAdminModal = ({ setAdmins, setMaxPage, setTotalAdmins, limit, currentPage }) => {
+  const adminToken = localStorage.getItem('adminToken');
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showPass, setShowPass] = useState(false);
@@ -47,7 +48,15 @@ const NewAdminModal = ({ setAdmins, setMaxPage, setTotalAdmins, limit, currentPa
       try {
         setLoading(true);
 
-        const response = await Axios.post(`${API_URL}/admin/account/create`, { data: values, limit: limit, currentPage: currentPage });
+        const response = await Axios.post(
+          `${API_URL}/admin/account/create`,
+          { data: values, limit: limit, currentPage: currentPage },
+          {
+            headers: {
+              Authorization: `Bearer ${adminToken}`,
+            },
+          }
+        );
 
         if (response.data.conflict) {
           setLoading(false);

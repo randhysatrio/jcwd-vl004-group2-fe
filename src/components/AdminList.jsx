@@ -10,6 +10,7 @@ import { format } from 'date-fns';
 import { toast } from 'react-toastify';
 
 const DeleteAdminModal = ({ adminId, setOpenMain, setAdmins, setMaxPage, setTotalAdmins, limit, currentPage }) => {
+  const adminToken = localStorage.getItem('adminToken');
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -66,10 +67,18 @@ const DeleteAdminModal = ({ adminId, setOpenMain, setAdmins, setMaxPage, setTota
                     try {
                       setLoading(true);
 
-                      const response = await Axios.post(`${API_URL}/admin/account/delete/${adminId}`, {
-                        limit: limit,
-                        currentPage: currentPage,
-                      });
+                      const response = await Axios.post(
+                        `${API_URL}/admin/account/delete/${adminId}`,
+                        {
+                          limit: limit,
+                          currentPage: currentPage,
+                        },
+                        {
+                          headers: {
+                            Authorization: `Bearer ${adminToken}`,
+                          },
+                        }
+                      );
 
                       if (response.data.conflict) {
                         setLoading(false);
