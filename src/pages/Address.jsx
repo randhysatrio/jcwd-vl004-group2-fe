@@ -13,7 +13,7 @@ const Address = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [maxPage, setMaxPage] = useState(1);
   const [totalAddress, setTotalAddress] = useState(0);
-  const limit = 6;
+  const limit = 5;
 
   useEffect(() => {
     const fetchAddresses = async () => {

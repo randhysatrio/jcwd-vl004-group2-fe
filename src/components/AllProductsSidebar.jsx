@@ -228,6 +228,7 @@ const AllProductsSidebar = ({
                       }
 
                       setPriceRange(range);
+                      setCurrentPage(1);
                       setOpen(false);
                     }}
                     className="h-9 w-full rounded-lg bg-sky-400 text-white font-semibold cursor-pointer hover:brightness-110 transition"
