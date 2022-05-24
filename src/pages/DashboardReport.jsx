@@ -36,10 +36,9 @@ const DashboardReport = () => {
   const getReport = async (stardDate, endDate, keyword) => {
     try {
       // protect pagination
-      if ((activePage > totalPage && report.length) || activePage < 1) {
+      if (activePage < 1) {
         return;
       }
-
       setIsLoading(true);
       const response = await axios.post(
         `${API_URL}/admin/report/get`,
@@ -332,7 +331,7 @@ const DashboardReport = () => {
                 className="text-center bg-white focus:outline-none w-10 hover:border-sky-500 focus:outline-sky-500 transition cursor-pointer"
                 value={activePage}
                 onChange={(e) =>
-                  e.target.value <= totalPage && setActivePage(e.target.value)
+                  e.target.value <= totalPage && setActivePage(+e.target.value)
                 }
               />{" "}
               of {totalPage}
