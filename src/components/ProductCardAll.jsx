@@ -81,7 +81,7 @@ const ProductCardAll = ({ view, product }) => {
               <img src={`${API_URL}/${product.image}`} className="w-full hover:scale-105 object-contain transition" />
             </div>
           </div>
-          <div className="w-full h-3/5 flex flex-col pb-2 px-2">
+          <div className="w-full h-3/5 flex flex-col pb-3 px-2">
             <div onClick={() => navigate(`/product/${product.id}`)} className="w-full h-[80%] flex flex-col">
               <span className="text-sm font-light text-slate-400">{product.category.name}</span>
               <div className="w-full flex items-center">
@@ -128,7 +128,7 @@ const ProductCardAll = ({ view, product }) => {
                 <button
                   onClick={addToCart}
                   disabled={cartLoading}
-                  className="w-full h-full rounded-md mt-auto mx-auto bg-gradient-to-r from-sky-400 to-sky-600 text-white font-bold hover:brightness-110 cursor-pointer transition active:scale-95 text-sm gap-2 flex justify-center items-center shadow disabled:from-sky-300 disabled:to-sky-500 disabled:active:scale-100"
+                  className="w-full h-full rounded-md mt-auto bg-gradient-to-r from-sky-400 to-sky-600 text-white font-bold hover:brightness-110 cursor-pointer transition active:scale-95 text-sm gap-2 flex justify-center items-center shadow disabled:from-sky-300 disabled:to-sky-500 disabled:active:scale-100"
                 >
                   {cartLoading ? (
                     <>

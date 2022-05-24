@@ -372,7 +372,7 @@ const Profile = () => {
                         <div className="flex justify-center items-center gap-3">
                           <button
                             onClick={() => setOpen(false)}
-                            className="w-36 py-2 rounded-xl bg-gradient-to-r from-red-500 to-rose-400 font-bold text-white hover:brightness-110 active:scale-95 transition"
+                            className="w-36 py-2 rounded-xl bg-gradient-to-r from-red-500 to-rose-400 font-bold text-white hover:brightness-110 active:scale-95 transition shadow"
                           >
                             Nevermind
                           </button>
@@ -380,7 +380,7 @@ const Profile = () => {
                             type="submit"
                             form="update-form"
                             disabled={profileLoading}
-                            className="w-36 py-2 rounded-xl bg-gradient-to-r from-sky-400 to-emerald-400 font-bold text-white hover:brightness-110 active:scale-95 transition flex items-center justify-center gap-2 disabled:from-sky-300 disabled:to-sky-300 disabled:hover:brightness-100 disabled:active:scale-100"
+                            className="w-36 py-2 rounded-xl bg-gradient-to-r from-sky-400 to-emerald-400 font-bold text-white hover:brightness-110 active:scale-95 transition flex items-center justify-center gap-2 disabled:from-sky-300 disabled:to-sky-300 disabled:hover:brightness-100 disabled:active:scale-100 shadow"
                           >
                             {profileLoading ? (
                               <>
