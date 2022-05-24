@@ -298,6 +298,7 @@ const AllProducts = () => {
                     }
 
                     setPriceRange(range);
+                    setCurrentPage(1);
                   }}
                   className="h-10 w-full rounded-lg bg-sky-400 text-white font-semibold cursor-pointer hover:brightness-110 transition"
                 >
