@@ -46,8 +46,8 @@ const ProductDetail = () => {
         });
 
         if (!response.data.product) {
-          navigate('/products', { replace: true });
-          return toast.warning(`The product that you're looking for is currently unavailable`, {
+          navigate('/products/all', { replace: true });
+          return toast.warning(`This product is currently unavailable`, {
             position: 'top-center',
             theme: 'colored',
           });
