@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { API_URL } from "../assets/constants";
 import UserTable from "../components/UserTable";
+import { toast } from "react-toastify";
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(false);
@@ -37,18 +38,25 @@ const Dashboard = () => {
   };
 
   const fetchUsers = async () => {
-    setLoading(true);
-    const userList = await axios.post(
-      `${API_URL}/user/query?keyword=${debouncedSearch}`,
-      {
-        offset: page * limit - limit,
-        active: debouncedStatus,
-        limit,
+    try {
+      if (page < 1) {
+        return;
       }
-    );
-    setUsers(userList.data.users);
-    setMaxPage(Math.ceil(userList.data.length / limit));
-    setTimeout(loadingFalse, 1000);
+      setLoading(true);
+      const userList = await axios.post(
+        `${API_URL}/user/query?keyword=${debouncedSearch}`,
+        {
+          offset: page * limit - limit,
+          active: debouncedStatus,
+          limit,
+        }
+      );
+      setUsers(userList.data.users);
+      setMaxPage(Math.ceil(userList.data.length / limit));
+      setTimeout(loadingFalse, 1000);
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
   };
 
   const debouncedSearch = useDebounce(keyword, 1000);
@@ -78,28 +86,6 @@ const Dashboard = () => {
         />
       );
     });
-  };
-
-  const renderPages = () => {
-    const pagination = [];
-    for (let i = 1; i <= maxPage; i++) {
-      pagination.push(i);
-    }
-    return pagination.map((value) => {
-      return <option key={value}>{value}</option>;
-    });
-  };
-
-  const nextPageHandler = () => {
-    if (page < maxPage) {
-      setPage(page + 1);
-    }
-  };
-
-  const prevPageHandler = () => {
-    if (page > 1) {
-      setPage(page - 1);
-    }
   };
 
   return (
@@ -239,35 +225,35 @@ const Dashboard = () => {
           </table>
           <div className="mt-3 flex justify-center items-center gap-4 pt-3">
             <button
-              onClick={prevPageHandler}
               className={
                 page === 1 ? `hover:cursor-not-allowed` : `hover:cursor-pointer`
               }
               disabled={page === 1}
+              onClick={() => page > 1 && setPage(page - 1)}
             >
+              {" "}
               <FaArrowLeft />
             </button>
             <div>
               Page{" "}
-              {/* eventhough the type is number the value of the option still could be a string make sure add +e.target.value */}
-              <select
+              <input
                 type="number"
+                className="border text-center border-gray-300 rounded-lg bg-white focus:outline-none w-10 hover:border-sky-500 focus:outline-sky-500 transition cursor-pointer"
                 value={page}
-                onChange={(e) => setPage(+e.target.value)}
-                className="border border-gray-300 rounded-lg bg-white focus:outline-none w-10 hover:border-sky-500 focus:outline-sky-500 transition cursor-pointer"
-              >
-                {renderPages()}
-              </select>{" "}
+                onChange={(e) =>
+                  e.target.value <= maxPage && setPage(+e.target.value)
+                }
+              />{" "}
               of {maxPage}
             </div>
             <button
-              onClick={nextPageHandler}
               className={
                 page === maxPage
                   ? `hover:cursor-not-allowed`
                   : `hover:cursor-pointer`
               }
               disabled={page === maxPage}
+              onClick={() => page < maxPage && setPage(page + 1)}
             >
               <FaArrowRight />
             </button>

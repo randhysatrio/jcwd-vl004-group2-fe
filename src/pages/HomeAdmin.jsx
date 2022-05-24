@@ -212,11 +212,11 @@ const HomeAdmin = () => {
             </div>
           </div>
         </div>
-        <div className="w-full justify-between items-center flex flex-col-4 shadow-md bg-white rounded-md">
+        <div className="w-full flex-col-4 shadow-md bg-white rounded-md">
           <div className="flex-col">
             <div className="flex justify-between items-center">
-              <div className="mt-3 text-xl ml-8">Latest Products</div>
-              <div className="mt-5 mr-8">
+              <div className="mt-8 text-xl ml-8">Latest Products</div>
+              <div className="mt-9 mr-8">
                 <button className="hover:bg-gray-100 transition rounded-xl items-center" onClick={() => navigate('/dashboard/product')}>
                   See All
                 </button>

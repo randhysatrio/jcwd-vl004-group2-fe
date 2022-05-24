@@ -78,7 +78,7 @@ const DashboardTransaction = () => {
 
     const getTransaction = async () => {
       try {
-        if (activePage > totalPage || !activePage) {
+        if (activePage < 1) {
           return;
         }
         setLoading(true);
@@ -151,42 +151,12 @@ const DashboardTransaction = () => {
     ));
   };
 
-  const renderPages = () => {
-    const pagination = [];
-    for (let i = 1; i <= totalPage; i++) {
-      pagination.push(i);
-    }
-    return pagination.map((value) => {
-      return (
-        // <AdminPagination key={value} pagination={value} setPage={setPage} />
-        <option key={value}>{value}</option>
-      );
-    });
-  };
-
-  const nextPageHandler = () => {
-    if (activePage < totalPage) {
-      setActivePage(activePage + 1);
-    }
-  };
-
-  const prevPageHandler = () => {
-    if (activePage > 1) {
-      setActivePage(activePage - 1);
-    }
-  };
-
   return (
     <div className="h-full w-full bg-gray-100">
       {/* Search Bar */}
       <div className="h-16 bg-white shadow-sm pl-80 pr-8 fixed z-[3] w-10 top-0 left-0 flex items-center">
         <div className="flex justify-center items-center relative">
-          <FaSearch
-            // onClick={() => {
-            //   setSearchParams({ keyword }, { replace: true });
-            // }}
-            className="absolute left-2 text-gray-400 bg-gray-100 active:scale-95 transition"
-          />
+          <FaSearch className="absolute left-2 text-gray-400 bg-gray-100 active:scale-95 transition" />
           <input
             type="text"
             value={keyword}
@@ -426,36 +396,39 @@ const DashboardTransaction = () => {
           </table>
           <div className="mt-3 flex justify-center items-center gap-4 pt-3">
             <button
-              onClick={prevPageHandler}
               className={
                 activePage === 1
                   ? `hover:cursor-not-allowed`
                   : `hover:cursor-pointer`
               }
               disabled={activePage === 1}
+              onClick={() => activePage > 1 && setActivePage(activePage - 1)}
             >
+              {" "}
               <FaArrowLeft />
             </button>
             <div>
               Page{" "}
-              <select
+              <input
                 type="number"
-                className="mx-2 text-cente border border-gray-300 rounded-lg bg-white focus:outline-none w-10 hover:border-sky-500 focus:outline-sky-500 transition cursor-pointer"
+                className="border text-center border-gray-300 rounded-lg bg-white focus:outline-none w-10 hover:border-sky-500 focus:outline-sky-500 transition cursor-pointer"
                 value={activePage}
-                onChange={(e) => setActivePage(+e.target.value)}
-              >
-                {renderPages()}
-              </select>{" "}
+                onChange={(e) =>
+                  e.target.value <= totalPage && setActivePage(+e.target.value)
+                }
+              />{" "}
               of {totalPage}
             </div>
             <button
-              onClick={nextPageHandler}
               className={
                 activePage === totalPage
                   ? `hover:cursor-not-allowed`
                   : `hover:cursor-pointer`
               }
               disabled={activePage === totalPage}
+              onClick={() =>
+                activePage < totalPage && setActivePage(activePage + 1)
+              }
             >
               <FaArrowRight />
             </button>
