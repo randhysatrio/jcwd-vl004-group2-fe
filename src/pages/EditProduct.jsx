@@ -145,7 +145,7 @@ const EditProduct = () => {
             </div>
             <div className="col-start-2">
               <label htmlFor="file">
-                <div className="py-1 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl items-center">
+                <div className="py-1 px-6 text-white bg-primary cursor-pointer hover:bg-blue-400 transition rounded-xl items-center">
                   <div className="flex justify-center items-center">
                     <FaPhotoVideo
                       htmlColor="tomato"
