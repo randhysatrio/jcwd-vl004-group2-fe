@@ -1,18 +1,18 @@
-import axios from "axios";
-import { useCallback, useEffect, useState } from "react";
-import { DateRangePicker } from "react-date-range";
-import { AiOutlineClose } from "react-icons/ai";
-import { FaArrowLeft, FaArrowRight, FaSearch } from "react-icons/fa";
+import axios from 'axios';
+import { useCallback, useEffect, useState } from 'react';
+import { DateRangePicker } from 'react-date-range';
+import { AiOutlineClose } from 'react-icons/ai';
+import { FaArrowLeft, FaArrowRight, FaSearch } from 'react-icons/fa';
 import {
   FiAward,
   FiCalendar,
   FiFilter,
   FiMoreHorizontal,
-} from "react-icons/fi";
-import { toast } from "react-toastify";
-import Swal from "sweetalert2";
-import { debounce } from "throttle-debounce";
-import { API_URL } from "../assets/constants";
+} from 'react-icons/fi';
+import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
+import { debounce } from 'throttle-debounce';
+import { API_URL } from '../assets/constants';
 
 const DashboardReport = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -24,21 +24,17 @@ const DashboardReport = () => {
   const [totalPage, setTotalPage] = useState(1);
   const [statistic, setStatistic] = useState();
   const [mostSold, setMostSold] = useState();
-  const adminToken = localStorage.getItem("adminToken");
+  const adminToken = localStorage.getItem('adminToken');
   const [selectedDates, setSelectedDates] = useState([
     {
       startDate: new Date(new Date().setDate(1)),
       endDate: new Date(),
-      key: "selection",
+      key: 'selection',
     },
   ]);
 
   const getReport = async (stardDate, endDate, keyword) => {
     try {
-      // protect pagination
-      if (activePage < 1) {
-        return;
-      }
       setIsLoading(true);
       const response = await axios.post(
         `${API_URL}/admin/report/get`,
@@ -80,25 +76,13 @@ const DashboardReport = () => {
 
   useEffect(() => {
     getReport(null, null, keyword);
-  }, [activePage]);
-
-  const searchDebounce = useCallback(
-    debounce(1000, (keyword) => getReport(null, null, keyword)),
-    []
-  );
-
-  useEffect(() => {
-    if (report) {
-      setActivePage(1);
-      searchDebounce(keyword);
-    }
-  }, [keyword]);
+  }, [activePage, keyword]);
 
   const isDefaultDate = () => {
-    let startDate = selectedDates[0].startDate.toLocaleDateString("id");
-    let endDate = selectedDates[0].endDate.toLocaleDateString("id");
-    let firstDate = new Date(new Date().setDate(1)).toLocaleDateString("id");
-    let today = new Date().toLocaleDateString("id");
+    let startDate = selectedDates[0].startDate.toLocaleDateString('id');
+    let endDate = selectedDates[0].endDate.toLocaleDateString('id');
+    let firstDate = new Date(new Date().setDate(1)).toLocaleDateString('id');
+    let today = new Date().toLocaleDateString('id');
 
     if (startDate === firstDate && endDate === today) {
       return true;
@@ -113,17 +97,17 @@ const DashboardReport = () => {
     if (activePage > 1) {
       return setActivePage(1);
     } else if (keyword) {
-      return setKeyword("");
+      return setKeyword('');
     }
     getReport(startDate, endDate);
   };
 
   const renderAlert = () => {
     Swal.fire({
-      text: "Data Not Found!",
-      icon: "question",
-      confirmButtonColor: "#3085d6",
-      confirmButtonText: "Okay",
+      text: 'Data Not Found!',
+      icon: 'question',
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: 'Okay',
     }).then((result) => {
       if (result.isConfirmed) {
         try {
@@ -136,23 +120,56 @@ const DashboardReport = () => {
     });
   };
 
+  const handSearch = useCallback(
+    debounce(1000, (e) => {
+      setKeyword(e.target.value);
+      setActivePage(1);
+    }),
+    []
+  );
+
+  const handChangePage = useCallback(
+    debounce(1000, (e) => {
+      if (e.target.value <= totalPage && e.target.value > 0) {
+        setActivePage(+e.target.value);
+      } else {
+        document.getElementById('inputPage').value = +activePage;
+      }
+    }),
+    [totalPage, activePage]
+  );
+
+  const handNextPage = () => {
+    if (activePage < totalPage && activePage) {
+      setActivePage(+activePage + 1);
+      document.getElementById('inputPage').value = +activePage + 1;
+    }
+  };
+
+  const handPrevPage = () => {
+    if (activePage > 1) {
+      setActivePage(+activePage - 1);
+      document.getElementById('inputPage').value = +activePage - 1;
+    }
+  };
+
   return (
-    <div className="h-full w-full bg-gray-100">
+    <div className="h-full min-w-full w-max bg-gray-100">
       {/* Search Bar */}
       <div className="h-16 bg-white shadow-sm pl-80 pr-8 fixed z-[3] w-10 top-0 left-0 flex items-center">
         <div className="flex justify-center items-center relative">
           <FaSearch className="absolute left-2 text-gray-400 bg-gray-100 active:scale-95 transition" />
           <input
             type="text"
-            value={keyword}
             id="myInput"
             placeholder="Search..."
-            onChange={(e) => setKeyword(e.target.value)}
+            onChange={handSearch}
             className="search block w-72 shadow border-none rounded-3x1 focus:outline-none py-2 bg-gray-100 text-base text-gray-600 pl-11 pr-7"
           />
           <AiOutlineClose
             onClick={() => {
-              setKeyword("");
+              setKeyword('');
+              document.getElementById('myInput').value = '';
             }}
             className="hover:brightness-110 cursor-pointer absolute right-2"
           />
@@ -168,15 +185,15 @@ const DashboardReport = () => {
             <FiFilter size={24} />
             {isDefaultDate() ? (
               <span>this month</span>
-            ) : selectedDates[0].startDate.toLocaleDateString("id") ===
-              selectedDates[0].endDate.toLocaleDateString("id") ? (
+            ) : selectedDates[0].startDate.toLocaleDateString('id') ===
+              selectedDates[0].endDate.toLocaleDateString('id') ? (
               <span>{`${selectedDates[0].startDate.toLocaleDateString(
-                "id"
+                'id'
               )}`}</span>
             ) : (
               <span>{`${selectedDates[0].startDate.toLocaleDateString(
-                "id"
-              )} - ${selectedDates[0].endDate.toLocaleDateString("id")}`}</span>
+                'id'
+              )} - ${selectedDates[0].endDate.toLocaleDateString('id')}`}</span>
             )}
           </div>
           <label
@@ -192,7 +209,7 @@ const DashboardReport = () => {
               <div className="stat">
                 <div className="stat-title text-xs">Profit</div>
                 <div className="stat-value text-xl text-primary">
-                  Rp. {statistic ? statistic.profit.toLocaleString("id") : 0}
+                  Rp. {statistic ? statistic.profit.toLocaleString('id') : 0}
                 </div>
               </div>
               <div className="stat">
@@ -284,24 +301,24 @@ const DashboardReport = () => {
                           {item.name}
                         </td>
                         <td>
-                          Rp. {parseInt(item.price).toLocaleString("id")}/
+                          Rp. {parseInt(item.price).toLocaleString('id')}/
                           {item.unit}
                         </td>
                         <td>{item.total_sales} sales</td>
                         <td>
-                          {parseInt(item.sold_volume).toLocaleString("id")}{" "}
+                          {parseInt(item.sold_volume).toLocaleString('id')}{' '}
                           {item.unit}
                         </td>
                         <td>
-                          Rp. {parseInt(item.capital).toLocaleString("id")}
+                          Rp. {parseInt(item.capital).toLocaleString('id')}
                         </td>
                         <td>
-                          Rp. {parseInt(item.total_bill).toLocaleString("id")}
+                          Rp. {parseInt(item.total_bill).toLocaleString('id')}
                         </td>
                         <td>
-                          Rp.{" "}
+                          Rp.{' '}
                           {(item.total_bill - item.capital).toLocaleString(
-                            "id"
+                            'id'
                           )}
                         </td>
                       </tr>
@@ -311,7 +328,7 @@ const DashboardReport = () => {
               )}
             </tbody>
           </table>
-          <div className="mt-3 flex justify-center items-center gap-4 pt-3">
+          <div className="mt-3 mb-2 flex justify-center items-center gap-4 pt-3">
             <button
               className={
                 activePage === 1
@@ -319,21 +336,20 @@ const DashboardReport = () => {
                   : `hover:cursor-pointer`
               }
               disabled={activePage === 1}
-              onClick={() => activePage > 1 && setActivePage(activePage - 1)}
+              onClick={handPrevPage}
             >
-              {" "}
+              {' '}
               <FaArrowLeft />
             </button>
             <div>
-              Page{" "}
+              Page{' '}
               <input
+                id="inputPage"
                 type="number"
-                className="text-center bg-white focus:outline-none w-10 hover:border-sky-500 focus:outline-sky-500 transition cursor-pointer"
-                value={activePage}
-                onChange={(e) =>
-                  e.target.value <= totalPage && setActivePage(+e.target.value)
-                }
-              />{" "}
+                className="border text-center border-gray-300 rounded-lg bg-white w-10 mx-1 hover:border-sky-500 focus:outline-sky-500 transition cursor-pointer"
+                defaultValue={activePage}
+                onChange={handChangePage}
+              />{' '}
               of {totalPage}
             </div>
             <button
@@ -343,9 +359,7 @@ const DashboardReport = () => {
                   : `hover:cursor-pointer`
               }
               disabled={activePage === totalPage}
-              onClick={() =>
-                activePage < totalPage && setActivePage(activePage + 1)
-              }
+              onClick={handNextPage}
             >
               <FaArrowRight />
             </button>
@@ -413,13 +427,13 @@ const DashboardReport = () => {
               <div className="stat">
                 <div className="stat-title text-xs">Capital</div>
                 <div className="stat-value text-xl">
-                  Rp. {statistic ? statistic.capital.toLocaleString("id") : 0}
+                  Rp. {statistic ? statistic.capital.toLocaleString('id') : 0}
                 </div>
               </div>
               <div className="stat">
                 <div className="stat-title text-xs">Profit</div>
                 <div className="stat-value text-xl text-primary">
-                  Rp. {statistic ? statistic.profit.toLocaleString("id") : 0}
+                  Rp. {statistic ? statistic.profit.toLocaleString('id') : 0}
                 </div>
               </div>
             </div>
@@ -428,7 +442,7 @@ const DashboardReport = () => {
                 <div className="stat">
                   <div className="stat-title">Revenue</div>
                   <div className="stat-value">
-                    Rp. {statistic ? statistic.revenue.toLocaleString("id") : 0}
+                    Rp. {statistic ? statistic.revenue.toLocaleString('id') : 0}
                   </div>
                 </div>
               </div>
@@ -453,7 +467,7 @@ const DashboardReport = () => {
                       <li
                         key={item.id}
                         className={`py-3 ${
-                          i === 2 ? null : "border-b border-gray-200"
+                          i === 2 ? null : 'border-b border-gray-200'
                         } flex justify-between px-2 gap-1`}
                       >
                         <span>{item.name}</span>

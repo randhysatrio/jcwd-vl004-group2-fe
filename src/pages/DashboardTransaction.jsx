@@ -1,19 +1,19 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { FaArrowLeft, FaArrowRight, FaSearch } from "react-icons/fa";
-import { AiOutlineClose } from "react-icons/ai";
-import { FiCalendar, FiMinus, FiFilter } from "react-icons/fi";
-import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { toast } from "react-toastify";
-import { API_URL } from "../assets/constants";
-import { useSelector } from "react-redux";
-import { startOfDay, endOfDay, format } from "date-fns";
-import { DateRangePicker } from "react-date-range";
-import "react-date-range/dist/styles.css";
-import "react-date-range/dist/theme/default.css";
-import Swal from "sweetalert2";
-import TransactionTable from "../components/TransactionTable";
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { FaArrowLeft, FaArrowRight, FaSearch } from 'react-icons/fa';
+import { AiOutlineClose } from 'react-icons/ai';
+import { FiCalendar, FiMinus, FiFilter } from 'react-icons/fi';
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+import { API_URL } from '../assets/constants';
+import { useSelector } from 'react-redux';
+import { startOfDay, endOfDay, format } from 'date-fns';
+import { DateRangePicker } from 'react-date-range';
+import 'react-date-range/dist/styles.css';
+import 'react-date-range/dist/theme/default.css';
+import Swal from 'sweetalert2';
+import TransactionTable from '../components/TransactionTable';
 
 const DashboardTransaction = () => {
   const dispatch = useDispatch();
@@ -24,23 +24,23 @@ const DashboardTransaction = () => {
   const [startNumber, setStartNumber] = useState(1);
   const [maxPage, setMaxPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
-  const [currentSortDate, setCurrentSortDate] = useState("");
-  const [currentSortStatus, setCurrentSortStatus] = useState("");
+  const [currentSortDate, setCurrentSortDate] = useState('');
+  const [currentSortStatus, setCurrentSortStatus] = useState('');
   const { pathname } = useLocation();
   const [loading, setLoading] = useState(false);
-  const [keyword, setKeyword] = useState("");
+  const [keyword, setKeyword] = useState('');
   const [defaultStartDate, setStartDate] = useState(
-    format(startOfDay(Date.now()), "yyyy-MM-dd")
+    format(startOfDay(Date.now()), 'yyyy-MM-dd')
   );
   const [defaultEndDate, setEndDate] = useState(
-    format(endOfDay(Date.now()), "yyyy-MM-dd")
+    format(endOfDay(Date.now()), 'yyyy-MM-dd')
   );
-  const adminToken = localStorage.getItem("adminToken");
+  const adminToken = localStorage.getItem('adminToken');
   const [ranges, setRanges] = useState([
     {
       startDate: new Date(),
       endDate: new Date(),
-      key: "selection",
+      key: 'selection',
     },
   ]);
   const [selectedDates, setSelectedDates] = useState({});
@@ -68,19 +68,21 @@ const DashboardTransaction = () => {
   const debouncedSearch = useDebounce(keyword, 1000);
   const debouncedDate = useDebounce(currentSortDate, 0);
   const debouncedStatus = useDebounce(currentSortStatus, 0);
+  const debouncePage = useDebounce(activePage, 1000);
 
   const loadingFalse = () => {
     setLoading(false);
   };
 
   useEffect(() => {
-    dispatch({ type: "ALERT_CLEAR", payload: "history" });
+    dispatch({ type: 'ALERT_CLEAR', payload: 'history' });
 
     const getTransaction = async () => {
       try {
         if (activePage < 1) {
-          return;
+          return
         }
+        
         setLoading(true);
         const response = await axios.post(
           `${API_URL}/admin/transaction/get?keyword=${debouncedSearch}`,
@@ -111,21 +113,21 @@ const DashboardTransaction = () => {
 
     getTransaction();
 
-    socket?.on("newTransactionNotif", () => {
+    socket?.on('newTransactionNotif', () => {
       getTransaction();
       return;
     });
 
-    socket?.on("newPaymentNotif", () => {
+    socket?.on('newPaymentNotif', () => {
       getTransaction();
       return;
     });
 
     return () => {
-      dispatch({ type: "ALERT_CLEAR", payload: "history" });
+      dispatch({ type: 'ALERT_CLEAR', payload: 'history' });
     };
   }, [
-    activePage,
+    debouncePage,
     defaultStartDate,
     defaultEndDate,
     selectedDates,
@@ -151,8 +153,26 @@ const DashboardTransaction = () => {
     ));
   };
 
+  const handChangePage = (e) => {
+    if (e.target.value <= totalPage && e.target.value >= 0) {
+      setActivePage(e.target.value);
+    } 
+  };
+
+  const handNextPage = () => {
+    if (activePage < totalPage && activePage) {
+      setActivePage(+activePage + 1);
+    }
+  };
+
+  const handPrevPage = () => {
+    if (activePage > 1) {
+      setActivePage(+activePage - 1);
+    }
+  };
+
   return (
-    <div className="h-full w-full bg-gray-100">
+    <div className="h-full min-w-full w-max bg-gray-100">
       {/* Search Bar */}
       <div className="h-16 bg-white shadow-sm pl-80 pr-8 fixed z-[3] w-10 top-0 left-0 flex items-center">
         <div className="flex justify-center items-center relative">
@@ -167,7 +187,7 @@ const DashboardTransaction = () => {
           />
           <AiOutlineClose
             onClick={() => {
-              setKeyword("");
+              setKeyword('');
               navigate(pathname);
             }}
             className="hover:brightness-110 cursor-pointer absolute right-2"
@@ -193,16 +213,16 @@ const DashboardTransaction = () => {
               <span
                 className={`font-semibold flex items-center gap-2 text-sm ${
                   selectedDates.gte && selectedDates.lte
-                    ? "text-sky-500"
-                    : "text-white group-hover:hover:text-white"
+                    ? 'text-sky-500'
+                    : 'text-white group-hover:hover:text-white'
                 } transition`}
               >
                 <FiCalendar size={24} className="text-white" />
                 {selectedDates.gte && selectedDates.lte
                   ? `${selectedDates.gte.toLocaleDateString(
-                      "id"
-                    )} - ${selectedDates.lte.toLocaleDateString("id")}`
-                  : "Select Date"}
+                      'id'
+                    )} - ${selectedDates.lte.toLocaleDateString('id')}`
+                  : 'Select Date'}
               </span>
             </div>
             <div className="w-max p-3 flex flex-col rounded-lg bg-gray-300 backdrop-blur-sm absolute z-[40] right-3 md:right-11 top-8 opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all shadow-lg">
@@ -397,38 +417,34 @@ const DashboardTransaction = () => {
           <div className="mt-3 flex justify-center items-center gap-4 pt-3">
             <button
               className={
-                activePage === 1
+                +activePage === 1
                   ? `hover:cursor-not-allowed`
                   : `hover:cursor-pointer`
               }
               disabled={activePage === 1}
-              onClick={() => activePage > 1 && setActivePage(activePage - 1)}
+              onClick={handPrevPage}
             >
-              {" "}
+              {' '}
               <FaArrowLeft />
             </button>
             <div>
-              Page{" "}
+              Page{' '}
               <input
                 type="number"
-                className="border text-center border-gray-300 rounded-lg bg-white focus:outline-none w-10 hover:border-sky-500 focus:outline-sky-500 transition cursor-pointer"
+                className="border text-center border-gray-300 rounded-lg bg-white w-10 mx-1 hover:border-sky-500 focus:outline-sky-500 transition cursor-pointer"
                 value={activePage}
-                onChange={(e) =>
-                  e.target.value <= totalPage && setActivePage(+e.target.value)
-                }
-              />{" "}
+                onChange={handChangePage}
+              />{' '}
               of {totalPage}
             </div>
             <button
               className={
-                activePage === totalPage
+                +activePage === totalPage
                   ? `hover:cursor-not-allowed`
                   : `hover:cursor-pointer`
               }
               disabled={activePage === totalPage}
-              onClick={() =>
-                activePage < totalPage && setActivePage(activePage + 1)
-              }
+              onClick={handNextPage}
             >
               <FaArrowRight />
             </button>
