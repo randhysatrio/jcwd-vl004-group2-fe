@@ -5,6 +5,8 @@ import axios from "axios";
 import { API_URL } from "../assets/constants";
 import UserTable from "../components/UserTable";
 import { toast } from "react-toastify";
+import { debounce } from "throttle-debounce";
+import { useCallback } from "react";
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(false);
@@ -39,9 +41,6 @@ const Dashboard = () => {
 
   const fetchUsers = async () => {
     try {
-      if (page < 1) {
-        return;
-      }
       setLoading(true);
       const userList = await axios.post(
         `${API_URL}/user/query?keyword=${debouncedSearch}`,
@@ -67,7 +66,17 @@ const Dashboard = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [debouncedSearch, debouncedStatus, page]);
 
-  console.log(users);
+  const handleChangePage = useCallback(
+    debounce(1500, (e) => {
+      if (e.target.value <= maxPage && e.target.value > 0) {
+        setPage(+e.target.value);
+      } else {
+        document.getElementById("inputPage").value = +page;
+      }
+    }),
+    // useCallback feature or requires dependency
+    [maxPage, page]
+  );
 
   useEffect(() => {
     setPage(1);
@@ -237,12 +246,11 @@ const Dashboard = () => {
             <div>
               Page{" "}
               <input
+              id="inputPage"
                 type="number"
                 className="border text-center border-gray-300 rounded-lg bg-white focus:outline-none w-10 hover:border-sky-500 focus:outline-sky-500 transition cursor-pointer"
-                value={page}
-                onChange={(e) =>
-                  e.target.value <= maxPage && setPage(+e.target.value)
-                }
+                defaultValue={page}
+                onChange={handleChangePage}
               />{" "}
               of {maxPage}
             </div>
