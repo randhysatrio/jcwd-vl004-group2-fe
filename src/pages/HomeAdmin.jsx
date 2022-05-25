@@ -187,7 +187,7 @@ const HomeAdmin = () => {
                   {transactions?.map((item, i) => {
                     return (
                       <tr key={item.id}>
-                        <td className="justify-center items-center text-center p-4">{i + 1}</td>
+                        <th className="justify-center items-center text-center p-4">{i + 1}</th>
                         <td className="justify-center items-center text-center p-4">{item.user.name}</td>
                         <td className="justify-center items-center text-center p-4">
                           {item.address.address}, {item.address.city}, {item.address.province}
@@ -222,15 +222,15 @@ const HomeAdmin = () => {
                 </button>
               </div>
             </div>
-            <div className="mb-3 ml-8">
+            <div className="mb-3 ml-3">
               <table className="w-full">
                 <thead></thead>
                 <tbody>
                   {products?.map((item, i) => {
                     return (
                       <tr key={item.id}>
-                        <th className="justify-center p-4 text-sm">{i + 1}</th>
-                        <td className="justify-center p-4 text-sm">{item.name}</td>
+                        <th className="text-sm">{i + 1}</th>
+                        <td className="p-4 text-sm">{item.name}</td>
                       </tr>
                     );
                   })}

@@ -48,8 +48,6 @@ const DashboardTransaction = () => {
 
   const socket = useSelector((state) => state.socket.instance);
 
-  console.log(transactions);
-
   const useDebounce = (value, delay) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
 
@@ -96,7 +94,6 @@ const DashboardTransaction = () => {
             },
           }
         );
-        console.log(currentSortStatus);
         setMaxPage(response.data.data.length);
         setTransactions(response.data.data);
         setTotalPage(response.data.totalPage);
