@@ -14,6 +14,8 @@ import Swal from "sweetalert2";
 import CategoryList from "../components/CategoryList";
 import { API_URL } from "../assets/constants";
 import { toast } from "react-toastify";
+import { debounce } from "throttle-debounce";
+import { useCallback } from "react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -123,7 +125,7 @@ const Dashboard = () => {
   const debouncedPriceBuy = useDebounce(currentSortPriceBuy, 0);
   const debouncedStock = useDebounce(sortStock, 0);
   const debouncedVolume = useDebounce(sortVolume, 0);
-  const debouncedPage = useDebounce(page, 1000);
+  // const debouncedPage = useDebounce(handleChangePage, 1000);
 
   const loadingFalse = () => {
     setLoading(false);
@@ -131,9 +133,6 @@ const Dashboard = () => {
 
   const fetchProducts = async () => {
     try {
-      if (page < 1) {
-        return;
-      }
       setLoading(true);
       const productList = await axios.post(
         `${API_URL}/product/query?search=${debouncedSearch}`,
@@ -192,6 +191,20 @@ const Dashboard = () => {
     debouncedStock,
     debouncedVolume,
   ]);
+
+  const handleChangePage = useCallback(
+    debounce(1500, (e) => {
+      if (e.target.value <= maxPage && e.target.value > 0) {
+        setPage(+e.target.value);
+      } else {
+        document.getElementById("inputPage").value = +page;
+      }
+    }),
+    // useCallback feature or requires dependency
+    [maxPage, page]
+  );
+
+  console.log(maxPage);
 
   const renderProducts = () => {
     const beginningIndex = (page - 1) * limit;
@@ -648,12 +661,11 @@ const Dashboard = () => {
             <div>
               Page{" "}
               <input
+                id="inputPage"
                 type="number"
-                className="border text-center border-gray-300 rounded-lg bg-white w-10 mx-1 hover:border-sky-500 focus:outline-sky-500 transition cursor-pointer"
-                value={page}
-                onChange={(e) =>
-                  e.target.value <= maxPage && setPage(+e.target.value)
-                }
+                className="border text-center border-gray-300 rounded-lg bg-white focus:outline-none w-10 hover:border-sky-500 focus:outline-sky-500 transition cursor-pointer"
+                defaultValue={page}
+                onChange={handleChangePage}
               />{" "}
               of {maxPage}
             </div>
