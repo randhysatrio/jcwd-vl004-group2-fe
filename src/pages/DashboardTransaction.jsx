@@ -78,11 +78,7 @@ const DashboardTransaction = () => {
     dispatch({ type: 'ALERT_CLEAR', payload: 'history' });
 
     const getTransaction = async () => {
-      try {
-        if (activePage < 1) {
-          return
-        }
-        
+      try {      
         setLoading(true);
         const response = await axios.post(
           `${API_URL}/admin/transaction/get?keyword=${debouncedSearch}`,
