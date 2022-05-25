@@ -28,7 +28,7 @@ const AddReviewModal = ({ userId, productId, setTotalReviews, setAvgRating, setR
     enableReinitialize: true,
     validationSchema: Yup.object({
       title: Yup.string().required('Title cannot be empty'),
-      content: Yup.string().max(250, 'Maximum characters reached').required('Content cannot be empty'),
+      content: Yup.string().max(255, 'Maximum characters reached').required('Content cannot be empty'),
       rating: Yup.string(),
       is_anonymus: Yup.boolean(),
     }),
