@@ -28,7 +28,7 @@ const AddReviewModal = ({ userId, productId, setTotalReviews, setAvgRating, setR
     enableReinitialize: true,
     validationSchema: Yup.object({
       title: Yup.string().required('Title cannot be empty'),
-      content: Yup.string().required('Content cannot be empty'),
+      content: Yup.string().max(250, 'Maximum characters reached').required('Content cannot be empty'),
       rating: Yup.string(),
       is_anonymus: Yup.boolean(),
     }),
@@ -189,10 +189,8 @@ const AddReviewModal = ({ userId, productId, setTotalReviews, setAvgRating, setR
                       onBlur={formik.handleBlur}
                       placeholder="Write your reviews.."
                       className={`w-full h-32 p-3 rounded-lg focus:outline-none ring-1 focus:ring ${
-                        formik.touched.content && formik.errors.content
-                          ? 'focus:ring-red-300 ring-red-300'
-                          : 'focus:ring-sky-300 ring-emerald-200'
-                      } focus:ring-sky-300 transition cursor-pointer`}
+                        formik.touched.content && formik.errors.content ? 'ring-red-300 focus:ring-red-300' : 'ring-sky-300'
+                      } transition cursor-pointer`}
                     />
                     {formik.touched.content && formik.errors.content ? (
                       <AiOutlineInfoCircle className="absolute text-lg text-red-400 top-2 right-2" />
