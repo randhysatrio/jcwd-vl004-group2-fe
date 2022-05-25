@@ -133,9 +133,6 @@ const Dashboard = () => {
 
   const fetchProducts = async () => {
     try {
-      if (page < 1) {
-        return;
-      }
       setLoading(true);
       const productList = await axios.post(
         `${API_URL}/product/query?search=${debouncedSearch}`,
