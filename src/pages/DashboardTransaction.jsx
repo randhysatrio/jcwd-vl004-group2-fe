@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { FaArrowLeft, FaArrowRight, FaSearch } from 'react-icons/fa';
 import { AiOutlineClose } from 'react-icons/ai';
 import { FiCalendar, FiMinus, FiFilter } from 'react-icons/fi';
@@ -12,8 +12,9 @@ import { startOfDay, endOfDay, format } from 'date-fns';
 import { DateRangePicker } from 'react-date-range';
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
-import Swal from 'sweetalert2';
 import TransactionTable from '../components/TransactionTable';
+import { debounce } from 'throttle-debounce';
+
 
 const DashboardTransaction = () => {
   const dispatch = useDispatch();
@@ -68,7 +69,6 @@ const DashboardTransaction = () => {
   const debouncedSearch = useDebounce(keyword, 1000);
   const debouncedDate = useDebounce(currentSortDate, 0);
   const debouncedStatus = useDebounce(currentSortStatus, 0);
-  const debouncePage = useDebounce(activePage, 1000);
 
   const loadingFalse = () => {
     setLoading(false);
@@ -123,7 +123,7 @@ const DashboardTransaction = () => {
       dispatch({ type: 'ALERT_CLEAR', payload: 'history' });
     };
   }, [
-    debouncePage,
+    activePage,
     defaultStartDate,
     defaultEndDate,
     selectedDates,
@@ -149,21 +149,28 @@ const DashboardTransaction = () => {
     ));
   };
 
-  const handChangePage = (e) => {
-    if (e.target.value <= totalPage && e.target.value >= 0) {
-      setActivePage(e.target.value);
-    } 
-  };
+  const handChangePage = useCallback(
+    debounce(1000, (e) => {
+      if (e.target.value <= totalPage && e.target.value > 0) {
+        setActivePage(+e.target.value);
+      } else {
+        document.getElementById('inputPage').value = +activePage;
+      }
+    }),
+    [totalPage, activePage]
+  );
 
   const handNextPage = () => {
     if (activePage < totalPage && activePage) {
       setActivePage(+activePage + 1);
+      document.getElementById('inputPage').value = +activePage + 1;
     }
   };
 
   const handPrevPage = () => {
     if (activePage > 1) {
       setActivePage(+activePage - 1);
+      document.getElementById('inputPage').value = +activePage - 1;
     }
   };
 
@@ -426,9 +433,10 @@ const DashboardTransaction = () => {
             <div>
               Page{' '}
               <input
+                id="inputPage"
                 type="number"
-                className="border text-center border-gray-300 rounded-lg bg-white w-10 mx-1 hover:border-sky-500 focus:outline-sky-500 transition cursor-pointer"
-                value={activePage}
+                className="border text-center border-gray-300 rounded-lg bg-white focus:outline-none w-10 hover:border-sky-500 focus:outline-sky-500 transition cursor-pointer"
+                defaultValue={activePage}
                 onChange={handChangePage}
               />{' '}
               of {totalPage}

@@ -346,7 +346,7 @@ const DashboardReport = () => {
               <input
                 id="inputPage"
                 type="number"
-                className="border text-center border-gray-300 rounded-lg bg-white w-10 mx-1 hover:border-sky-500 focus:outline-sky-500 transition cursor-pointer"
+                className="border text-center border-gray-300 rounded-lg bg-white focus:outline-none w-10 hover:border-sky-500 focus:outline-sky-500 transition cursor-pointer"
                 defaultValue={activePage}
                 onChange={handChangePage}
               />{' '}
