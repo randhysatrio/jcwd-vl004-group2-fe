@@ -140,8 +140,10 @@ const TransactionTable = ({ item, startNumber, i, socket }) => {
     let total = 0;
 
     item.invoiceitems.forEach((item) => {
-      total += item.quantity * item.price;
+      total += (item.quantity * item.price);
     });
+
+    total += item.deliveryoption?.cost
 
     return total.toLocaleString();
   };
