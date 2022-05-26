@@ -62,7 +62,7 @@ const AddressMenuButton = ({
                       setTotalAddress(response.data.count);
                       setCurrentPage(1);
 
-                      toast.success('Changed this address as your default!', { position: 'bottom-left', theme: 'colored' });
+                      toast.success(response.data.message, { position: 'bottom-left', theme: 'colored' });
                     } catch (err) {
                       toast.error('Unable to update default address!', { position: 'bottom-left', theme: 'colored' });
                     }
