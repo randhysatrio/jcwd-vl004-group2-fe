@@ -65,8 +65,10 @@ const DashboardAdmin = () => {
         });
 
         setAdmins(response.data.rows);
-        setMaxPage(response.data.maxPage || 1);
-        setTotalAdmins(response.data.totalAdmins);
+        setMaxPage(response.data.maxPage);
+        if (!keyword) {
+          setTotalAdmins(response.data.totalAdmins);
+        }
         setLoading(false);
       } catch (err) {
         setLoading(false);
@@ -229,7 +231,9 @@ const DashboardAdmin = () => {
               renderAdmins()
             ) : (
               <div className="h-96 flex justify-center items-center">
-                <span className="text-2xl font-thin text-slate-800">You currently don't have any admin</span>
+                <span className="text-2xl font-thin text-slate-800">
+                  {keyword ? `No admin found..` : `You currently don't have any admin`}
+                </span>
               </div>
             )}
           </div>

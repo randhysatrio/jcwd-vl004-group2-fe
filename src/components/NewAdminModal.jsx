@@ -135,7 +135,7 @@ const NewAdminModal = ({ setAdmins, setMaxPage, setTotalAdmins, limit, currentPa
                           onChange={formik.handleChange}
                           onBlur={formik.handleBlur}
                           className={`h-10 w-full px-3 rounded-lg focus:outline-none ${
-                            formik.touched.name && formik.errors.name ? 'border-red-300' : 'border-sky-200'
+                            formik.touched.name && formik.errors.name ? 'border-red-300' : 'border-sky-200 focus:border-sky-300'
                           } border transition cursor-pointer placeholder:font-semibold placeholder:text-gray-300`}
                         />
                         {formik.touched.name && formik.errors.name ? (
@@ -159,7 +159,7 @@ const NewAdminModal = ({ setAdmins, setMaxPage, setTotalAdmins, limit, currentPa
                           onChange={formik.handleChange}
                           onBlur={formik.handleBlur}
                           className={`h-10 w-full px-3 rounded-lg focus:outline-none ${
-                            formik.touched.username && formik.errors.username ? 'border-red-300' : 'border-sky-200'
+                            formik.touched.username && formik.errors.username ? 'border-red-300' : 'border-sky-200 focus:border-sky-300'
                           } border transition cursor-pointer placeholder:font-semibold placeholder:text-gray-300`}
                         />
                         {formik.touched.username && formik.errors.username ? (
@@ -185,7 +185,7 @@ const NewAdminModal = ({ setAdmins, setMaxPage, setTotalAdmins, limit, currentPa
                           onChange={formik.handleChange}
                           onBlur={formik.handleBlur}
                           className={`h-10 w-full px-3 rounded-lg focus:outline-none ${
-                            formik.touched.email && formik.errors.email ? 'border-red-300' : 'border-sky-200'
+                            formik.touched.email && formik.errors.email ? 'border-red-300' : 'border-sky-200 focus:border-sky-300'
                           } border transition cursor-pointer placeholder:font-semibold placeholder:text-gray-300`}
                         />
                         {formik.touched.email && formik.errors.email ? (
@@ -209,7 +209,9 @@ const NewAdminModal = ({ setAdmins, setMaxPage, setTotalAdmins, limit, currentPa
                           onChange={formik.handleChange}
                           onBlur={formik.handleBlur}
                           className={`h-10 w-full px-3 rounded-lg focus:outline-none ${
-                            formik.touched.phone_number && formik.errors.phone_number ? 'border-red-300' : 'border-sky-200'
+                            formik.touched.phone_number && formik.errors.phone_number
+                              ? 'border-red-300'
+                              : 'border-sky-200 focus:border-sky-300'
                           } border transition cursor-pointer placeholder:font-semibold placeholder:text-gray-300`}
                         />
                         {formik.touched.phone_number && formik.errors.phone_number ? (
@@ -236,7 +238,7 @@ const NewAdminModal = ({ setAdmins, setMaxPage, setTotalAdmins, limit, currentPa
                             }
                             setShowPass(!showPass);
                           }}
-                          className="absolute left-3 text-sky-500 cursor-pointer hover:brightness-110 transition"
+                          className="absolute left-3 text-sky-300 cursor-pointer hover:brightness-110 transition"
                         >
                           {showPass ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
                         </span>
@@ -248,7 +250,7 @@ const NewAdminModal = ({ setAdmins, setMaxPage, setTotalAdmins, limit, currentPa
                           onChange={formik.handleChange}
                           onBlur={formik.handleBlur}
                           className={`h-10 w-full px-9 rounded-lg focus:outline-none ${
-                            formik.touched.password && formik.errors.password ? 'border-red-300' : 'border-sky-200'
+                            formik.touched.password && formik.errors.password ? 'border-red-300' : 'border-sky-200 focus:border-sky-300'
                           } border transition cursor-pointer placeholder:font-semibold placeholder:text-gray-300`}
                         />
                         {formik.touched.password && formik.errors.password ? (
@@ -271,7 +273,7 @@ const NewAdminModal = ({ setAdmins, setMaxPage, setTotalAdmins, limit, currentPa
                           onChange={formik.handleChange}
                           onBlur={formik.handleBlur}
                           className={`h-24 w-full px-3 py-1 rounded-lg focus:outline-none ${
-                            formik.touched.address && formik.errors.address ? 'border-red-300' : 'border-sky-200'
+                            formik.touched.address && formik.errors.address ? 'border-red-300' : 'border-sky-200 focus:border-sky-300'
                           } border transition cursor-pointer placeholder:font-semibold placeholder:text-gray-300`}
                         />
                         {formik.touched.address && formik.errors.address ? (

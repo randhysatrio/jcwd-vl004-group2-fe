@@ -47,17 +47,17 @@ const DeleteAdminModal = ({ adminId, setOpenMain, setAdmins, setMaxPage, setTota
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-80 scale-100 -translate-y-5"
           >
-            <div className="fixed w-[550px] bg-sky-50 rounded-xl flex flex-col px-10 shadow-md">
-              <div className="pt-6 flex justify-center">
+            <div className="fixed w-[550px] py-6 bg-sky-50 rounded-xl flex flex-col px-10 shadow-md">
+              <div className="flex justify-center">
                 <span className="text-xl font-bold">Are you sure you want to deactivate this account?</span>
               </div>
               <div className="w-full py-5 flex justify-center">
                 <span className="font-semibold">Once you've deactivate this account, you need to manually reactivate it</span>
               </div>
-              <div className="w-full pb-6 pt-2 flex justify-end items-center gap-2">
+              <div className="w-full flex justify-end items-center gap-3">
                 <button
                   onClick={() => setOpen(false)}
-                  className="h-10 w-32 rounded-full bg-gradient-to-r from-red-500 to-rose-400 hover:brightness-125 font-bold text-white active:scale-95 transition"
+                  className="py-3 w-32 rounded-full bg-gradient-to-r from-red-500 to-rose-400 hover:brightness-125 font-bold text-white active:scale-95 transition"
                 >
                   Cancel
                 </button>
@@ -100,7 +100,7 @@ const DeleteAdminModal = ({ adminId, setOpenMain, setAdmins, setMaxPage, setTota
                       toast.error('Unable to delete Admin Account', { position: 'bottom-left', theme: 'colored' });
                     }
                   }}
-                  className="h-10 w-32 rounded-full bg-gradient-to-r from-emerald-500 disabled:from-emerald-300 to-green-400 disabled:to-green-300 hover:brightness-125 disabled:hover:brightness-100 font-bold text-white active:scale-95 disabled:active:scale-100 transition flex justify-center items-center gap-2"
+                  className="py-3 w-32 rounded-full bg-gradient-to-r from-emerald-500 disabled:from-emerald-300 to-green-400 disabled:to-green-300 hover:brightness-125 disabled:hover:brightness-100 font-bold text-white active:scale-95 disabled:active:scale-100 transition flex justify-center items-center gap-2"
                 >
                   {loading ? (
                     <>
