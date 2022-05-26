@@ -7,8 +7,8 @@ import {
 } from "react-icons/fa";
 import { IoAddOutline } from "react-icons/io5";
 import { AiOutlineClose } from "react-icons/ai";
-import { useState, useEffect, useRef } from "react";
-import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 import CategoryList from "../components/CategoryList";
@@ -33,6 +33,13 @@ const Dashboard = () => {
   const [limit, setLimit] = useState(4);
   const [search, setSearch] = useState("");
   const [sortStockInUnit, setSortStockInUnit] = useState("");
+  const [sort, setSort] = useState("");
+
+  if (sort === "stock_in_unit,ASC") {
+    setSort("stock_in_unit,DESC");
+  } else {
+    setSort("stock_in_unit,ASC");
+  }
 
   const sortHandler = () => {
     if (
@@ -165,6 +172,8 @@ const Dashboard = () => {
     }
   };
 
+  console.log(products);
+
   useEffect(() => {
     fetchProducts();
     // dependency uses state outside useEffect otherwise infinite loop will occur
@@ -247,6 +256,9 @@ const Dashboard = () => {
           </td>
           <td className="justify-center items-center text-left p-4">
             {product.category?.name}
+          </td>
+          <td className="justify-center items-center text-left p-4">
+            {product.total_sales}
           </td>
           <td className="justify-center items-center text-center p-4">
             <button
@@ -398,6 +410,9 @@ const Dashboard = () => {
                 </th>
                 <th className="bg-white border-b py-4 px-4 text-center border-gray-200">
                   Category
+                </th>
+                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">
+                  Sales
                 </th>
                 <th className="bg-white border-b py-4 px-4 text-center border-gray-200">
                   Actions
@@ -609,6 +624,9 @@ const Dashboard = () => {
                 </th>
                 <th className="bg-white border-b py-4 px-4 text-left border-gray-200">
                   Category
+                </th>
+                <th className="bg-white border-b py-4 px-4 text-left border-gray-200">
+                  Sales
                 </th>
                 <th className="bg-white border-b py-4 px-4 text-center border-gray-200">
                   Actions
