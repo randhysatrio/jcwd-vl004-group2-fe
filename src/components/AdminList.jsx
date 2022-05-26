@@ -132,14 +132,14 @@ const AdminList = ({ admin, online, setAdmins, setMaxPage, setTotalAdmins, limit
         <div className="w-[7%] flex justify-center items-center">
           <span className="font-bold text-gray-600">{admin.id}</span>
         </div>
-        <div className="w-[20%] pl-2 flex items-center">
-          <span className="font-semibold text-gray-600">{admin.name}</span>
+        <div className="w-[20%] px-2 flex items-center">
+          <span className="font-semibold text-gray-600 truncate">{admin.name}</span>
         </div>
-        <div className="w-[29%] pl-2 flex items-center">
-          <span className="font-semibold text-gray-600">{admin.email}</span>
+        <div className="w-[29%] px-2 flex items-center">
+          <span className="font-semibold text-gray-600 truncate">{admin.email}</span>
         </div>
-        <div className="w-[21%] pl-2 flex items-center">
-          <span className="font-semibold text-gray-600">{admin.username}</span>
+        <div className="w-[21%] px-2 flex items-center">
+          <span className="font-semibold text-gray-600 truncate">{admin.username}</span>
         </div>
         <div className="w-[13%] flex justify-center items-center">
           <div className="h-16 w-16 rounded-full bg-sky-200 flex justify-center items-center">
