@@ -22,90 +22,71 @@ const Dashboard = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [currentCategory, setCurrentCategory] = useState("");
-  const [currentSortPrice, setCurrentSortPrice] = useState("");
-  const [currentSortPriceBuy, setCurrentSortPriceBuy] = useState("");
-  const [sortStock, setSortStock] = useState("");
-  const [sortVolume, setSortVolume] = useState("");
   const [page, setPage] = useState(1);
   const [maxPage, setMaxPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const adminToken = localStorage.getItem("adminToken");
   const [limit, setLimit] = useState(4);
   const [search, setSearch] = useState("");
-  const [sortStockInUnit, setSortStockInUnit] = useState("");
-  const [sort, setSort] = useState("");
+  const [sort, setSort] = useState("createdAt,DESC");
 
-  if (sort === "stock_in_unit,ASC") {
-    setSort("stock_in_unit,DESC");
-  } else {
-    setSort("stock_in_unit,ASC");
-  }
+  const sortSales = () => {
+    if (sort !== "total_sales,DESC" && sort !== "total_sales,ASC") {
+      setSort("total_sales,ASC");
+    } else if (sort !== "total_sales,DESC" && sort !== "") {
+      setSort("total_sales,DESC");
+    } else {
+      setSort("createdAt,DESC");
+    }
+  };
 
   const sortHandler = () => {
-    if (
-      sortStockInUnit !== "stock_in_unit,DESC" &&
-      sortStockInUnit !== "stock_in_unit,ASC"
-    ) {
-      setSortStockInUnit("stock_in_unit,ASC");
-    } else if (
-      sortStockInUnit !== "stock_in_unit,DESC" &&
-      sortStockInUnit !== ""
-    ) {
-      setSortStockInUnit("stock_in_unit,DESC");
+    if (sort !== "stock_in_unit,DESC" && sort !== "stock_in_unit,ASC") {
+      setSort("stock_in_unit,ASC");
+    } else if (sort !== "stock_in_unit,DESC" && sort !== "") {
+      setSort("stock_in_unit,DESC");
     } else {
-      setSortStockInUnit("");
+      setSort("createdAt,DESC");
     }
   };
 
   const sortPriceSellHandler = () => {
-    if (
-      currentSortPrice !== "price_sell,DESC" &&
-      currentSortPrice !== "price_sell,ASC"
-    ) {
-      setCurrentSortPrice("price_sell,ASC");
-    } else if (
-      currentSortPrice !== "price_sell,DESC" &&
-      currentSortPrice !== ""
-    ) {
-      setCurrentSortPrice("price_sell,DESC");
+    if (sort !== "price_sell,DESC" && sort !== "price_sell,ASC") {
+      setSort("price_sell,ASC");
+    } else if (sort !== "price_sell,DESC" && sort !== "") {
+      setSort("price_sell,DESC");
     } else {
-      setCurrentSortPrice("");
+      setSort("createdAt,DESC");
     }
   };
 
   const sortPriceBuyHandler = () => {
-    if (
-      currentSortPriceBuy !== "price_buy,DESC" &&
-      currentSortPriceBuy !== "price_buy,ASC"
-    ) {
-      setCurrentSortPriceBuy("price_buy,ASC");
-    } else if (
-      currentSortPriceBuy !== "price_buy,DESC" &&
-      currentSortPriceBuy !== ""
-    ) {
-      setCurrentSortPriceBuy("price_buy,DESC");
+    if (sort !== "price_buy,DESC" && sort !== "price_buy,ASC") {
+      setSort("price_buy,ASC");
+    } else if (sort !== "price_buy,DESC" && sort !== "") {
+      setSort("price_buy,DESC");
     } else {
-      setCurrentSortPriceBuy("");
+      setSort("createdAt,DESC");
     }
   };
 
   const sortStockHandler = () => {
-    if (sortStock !== "stock,DESC" && sortStock !== "stock,ASC") {
-      setSortStock("stock,ASC");
-    } else if (sortStock !== "stock,DESC" && sortStock !== "") {
-      setSortStock("stock,DESC");
+    if (sort !== "stock,DESC" && sort !== "stock,ASC") {
+      setSort("stock,ASC");
+    } else if (sort !== "stock,DESC" && sort !== "") {
+      setSort("stock,DESC");
     } else {
-      setSortStock("");
+      setSort("createdAt,DESC");
     }
   };
 
   const sortVolumeHandler = () => {
-    if (sortVolume !== "volume,DESC" && sortVolume !== "volume,ASC") {
-      setSortVolume("volume,ASC");
-    } else if (sortVolume !== "volume,DESC" && sortVolume !== "") {
-      setSortVolume("volume,DESC");
+    if (sort !== "volume,DESC" && sort !== "volume,ASC") {
+      setSort("volume,ASC");
+    } else if (sort !== "volume,DESC" && sort !== "") {
+      setSort("volume,DESC");
     } else {
-      setSortVolume("");
+      setSort("createdAt,DESC");
     }
   };
 
@@ -127,12 +108,6 @@ const Dashboard = () => {
 
   const debouncedSearch = useDebounce(search, 1000);
   const debouncedCategory = useDebounce(currentCategory, 0);
-  const debouncedSortPrice = useDebounce(currentSortPrice, 0);
-  const debouncedStockInUnit = useDebounce(sortStockInUnit, 0);
-  const debouncedPriceBuy = useDebounce(currentSortPriceBuy, 0);
-  const debouncedStock = useDebounce(sortStock, 0);
-  const debouncedVolume = useDebounce(sortVolume, 0);
-  // const debouncedPage = useDebounce(handleChangePage, 1000);
 
   const loadingFalse = () => {
     setLoading(false);
@@ -146,11 +121,7 @@ const Dashboard = () => {
         {
           offset: page * limit - limit,
           category: debouncedCategory,
-          sort_price_sell: debouncedSortPrice,
-          sort_stock_in_unit: debouncedStockInUnit,
-          sort_price_buy: debouncedPriceBuy,
-          sort_stock: debouncedStock,
-          sort_volume: debouncedVolume,
+          sort,
           limit,
           fromDashboardAdmin: true,
         },
@@ -172,34 +143,17 @@ const Dashboard = () => {
     }
   };
 
-  console.log(products);
+  console.log(sort);
 
   useEffect(() => {
     fetchProducts();
     // dependency uses state outside useEffect otherwise infinite loop will occur
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [
-    debouncedSearch,
-    debouncedCategory,
-    debouncedSortPrice,
-    debouncedStockInUnit,
-    debouncedPriceBuy,
-    debouncedStock,
-    debouncedVolume,
-    page,
-  ]);
+  }, [debouncedSearch, debouncedCategory, sort, page]);
 
   useEffect(() => {
     setPage(1);
-  }, [
-    debouncedSearch,
-    debouncedCategory,
-    debouncedSortPrice,
-    debouncedStockInUnit,
-    debouncedPriceBuy,
-    debouncedStock,
-    debouncedVolume,
-  ]);
+  }, [debouncedSearch, debouncedCategory, sort]);
 
   const handleChangePage = useCallback(
     debounce(1500, (e) => {
@@ -212,8 +166,6 @@ const Dashboard = () => {
     // useCallback feature or requires dependency
     [maxPage, page]
   );
-
-  console.log(maxPage);
 
   const renderProducts = () => {
     const beginningIndex = (page - 1) * limit;
@@ -357,7 +309,7 @@ const Dashboard = () => {
             <select
               name=""
               id=""
-              onChange={(e) => setCurrentSortPrice(e.target.value)}
+              onChange={(e) => setSort(e.target.value)}
               className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 cursor-pointer transition rounded-xl"
             >
               <option value="">Sort by Price</option>
@@ -464,7 +416,7 @@ const Dashboard = () => {
                 <th className="bg-white border-b py-4 px-4 text-left border-gray-200 shadow-sm">
                   Name
                 </th>
-                {currentSortPriceBuy === "price_buy,DESC" ? (
+                {sort === "price_buy,DESC" ? (
                   <th
                     className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
                     onClick={sortPriceBuyHandler}
@@ -474,7 +426,7 @@ const Dashboard = () => {
                       <FaArrowDown className="ml-1 fill-red-500" />
                     </div>
                   </th>
-                ) : currentSortPriceBuy === "price_buy,ASC" ? (
+                ) : sort === "price_buy,ASC" ? (
                   <th
                     className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
                     onClick={sortPriceBuyHandler}
@@ -492,7 +444,7 @@ const Dashboard = () => {
                     Price Buy
                   </th>
                 )}
-                {currentSortPrice === "price_sell,DESC" ? (
+                {sort === "price_sell,DESC" ? (
                   <th
                     className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
                     onClick={sortPriceSellHandler}
@@ -502,7 +454,7 @@ const Dashboard = () => {
                       <FaArrowDown className="ml-1 fill-red-500" />
                     </div>
                   </th>
-                ) : currentSortPrice === "price_sell,ASC" ? (
+                ) : sort === "price_sell,ASC" ? (
                   <th
                     className="bg-white flex justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
                     onClick={sortPriceSellHandler}
@@ -520,7 +472,7 @@ const Dashboard = () => {
                     Price Sell
                   </th>
                 )}
-                {sortStock === "stock,DESC" ? (
+                {sort === "stock,DESC" ? (
                   <>
                     <th
                       className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
@@ -532,7 +484,7 @@ const Dashboard = () => {
                       </div>
                     </th>
                   </>
-                ) : sortStock === "stock,ASC" ? (
+                ) : sort === "stock,ASC" ? (
                   <>
                     <th
                       className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
@@ -555,7 +507,7 @@ const Dashboard = () => {
                 <th className="bg-white py-4 px-4 text-center border-b border-gray-200">
                   Unit
                 </th>
-                {sortVolume === "volume,DESC" ? (
+                {sort === "volume,DESC" ? (
                   <>
                     <th
                       className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
@@ -567,7 +519,7 @@ const Dashboard = () => {
                       </div>
                     </th>
                   </>
-                ) : sortVolume === "volume,ASC" ? (
+                ) : sort === "volume,ASC" ? (
                   <>
                     <th
                       className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
@@ -587,7 +539,7 @@ const Dashboard = () => {
                     Volume
                   </th>
                 )}
-                {sortStockInUnit === "stock_in_unit,DESC" ? (
+                {sort === "stock_in_unit,DESC" ? (
                   <>
                     <th
                       className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
@@ -599,7 +551,7 @@ const Dashboard = () => {
                       </div>
                     </th>
                   </>
-                ) : sortStockInUnit === "stock_in_unit,ASC" ? (
+                ) : sort === "stock_in_unit,ASC" ? (
                   <>
                     <th
                       className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
@@ -625,9 +577,38 @@ const Dashboard = () => {
                 <th className="bg-white border-b py-4 px-4 text-left border-gray-200">
                   Category
                 </th>
-                <th className="bg-white border-b py-4 px-4 text-left border-gray-200">
-                  Sales
-                </th>
+                {sort === "total_sales,DESC" ? (
+                  <>
+                    <th
+                      className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
+                      onClick={sortSales}
+                    >
+                      <div className="flex">
+                        Sales
+                        <FaArrowDown className="ml-1 fill-red-500" />
+                      </div>
+                    </th>
+                  </>
+                ) : sort === "total_sales,ASC" ? (
+                  <>
+                    <th
+                      className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
+                      onClick={sortSales}
+                    >
+                      <div className="flex">
+                        Sales
+                        <FaArrowUp className="ml-1 fill-primary" />
+                      </div>
+                    </th>
+                  </>
+                ) : (
+                  <th
+                    className="bg-white py-4 px-4 text-left cursor-pointer hover:bg-slate-100 border-b border-gray-200 hover:rounded-lg"
+                    onClick={sortSales}
+                  >
+                    Sales
+                  </th>
+                )}
                 <th className="bg-white border-b py-4 px-4 text-center border-gray-200">
                   Actions
                 </th>
