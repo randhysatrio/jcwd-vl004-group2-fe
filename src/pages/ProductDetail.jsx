@@ -103,15 +103,17 @@ const ProductDetail = () => {
           navigate('/products/all', { replace: true });
           toast.warning(response.data.message, { theme: 'colored', position: 'bottom-left' });
         } else if (response.data.conflict) {
-          setCartLoading(false);
-
-          if (response.data.productData) {
+          if (productData.stock_in_unit !== response.data.productData.stock_in_unit) {
             setProductData(response.data.productData);
           }
 
+          setCartLoading(false);
+
           toast.warning(response.data.message, { theme: 'colored', position: 'bottom-left' });
         } else {
-          setProductData(response.data.productData);
+          if (productData.stock_in_unit !== response.data.productData.stock_in_unit) {
+            setProductData(response.data.productData);
+          }
 
           if (response.data.cartTotal) {
             dispatch({ type: 'CART_TOTAL', payload: response.data.cartTotal });
@@ -128,6 +130,8 @@ const ProductDetail = () => {
         }
       }
     } catch (error) {
+      setCartLoading(false);
+
       toast.error('Unable to add this item to your cart!', { theme: 'colored', position: 'bottom-left' });
     }
   };
