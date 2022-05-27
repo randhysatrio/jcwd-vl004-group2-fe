@@ -82,7 +82,7 @@ const ProductDetail = () => {
     } else {
       setQtyError('');
     }
-  }, [quantity]);
+  }, [quantity, productData]);
 
   const addToCart = async () => {
     try {
@@ -97,8 +97,17 @@ const ProductDetail = () => {
           quantity,
         });
 
-        if (response.data.conflict) {
+        if (response.data.deleted) {
           setCartLoading(false);
+
+          navigate('/products/all', { replace: true });
+          toast.warning(response.data.message, { theme: 'colored', position: 'bottom-left' });
+        } else if (response.data.conflict) {
+          setCartLoading(false);
+
+          if (response.data.productData) {
+            setProductData(response.data.productData);
+          }
 
           toast.warning(response.data.message, { theme: 'colored', position: 'bottom-left' });
         } else {
