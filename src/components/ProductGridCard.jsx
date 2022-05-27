@@ -48,12 +48,18 @@ const ProductGridCard = ({ product, newarrival }) => {
           </span>
           <span className="text-md font-semibold text-sky-500">/{product.unit}</span>
         </div>
-        {product.totalReviews ? (
-          <div className="w-full py-[2px] px-3 flex items-center gap-1 text-sm">
-            <div className="flex text-amber-300">{renderStars(product.avgRating)}</div>
-            <span className="font-semibold text-slate-700">({product.totalReviews})</span>
+        <div className="w-full flex items-center py-[2px] px-3 gap-1">
+          {product.totalReviews ? (
+            <div className="max-w-[50%] flex items-center gap-1 text-sm">
+              <div className="flex text-amber-300">{renderStars(product.avgRating)}</div>
+              <span className="font-semibold text-slate-700">({product.totalReviews})</span>
+              <span className="font-semibold text-slate-300">|</span>
+            </div>
+          ) : null}
+          <div className="max-w-[50%] flex items-center text-sm font-semibold text-gray-700">
+            <span>{product.total_sales} sold</span>
           </div>
-        ) : null}
+        </div>
         <div className="px-3 mb-[2px] flex gap-1 items-center text-sm font-semibold">
           {product.stock_in_unit ? (
             product.stock_in_unit <= 5 * product.volume ? (
