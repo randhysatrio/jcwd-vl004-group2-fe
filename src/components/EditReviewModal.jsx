@@ -37,8 +37,8 @@ const EditReviewModal = ({ review, setReview, setAvgRating }) => {
 
         setReview(response.data.review);
         setAvgRating(response.data.avgRating);
-        setLoading(false);
         formik.resetForm();
+        setLoading(false);
 
         setOpen(false);
         toast.success(response.data.message, { position: 'top-center', theme: 'colored' });

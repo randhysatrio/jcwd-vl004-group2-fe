@@ -111,17 +111,20 @@ const ProductDetail = () => {
 
           toast.warning(response.data.message, { theme: 'colored', position: 'bottom-left' });
         } else {
-          setCartLoading(false);
+          setProductData(response.data.productData);
 
-          toast.success(response.data.message, { position: 'bottom-left', theme: 'colored' });
-
-          dispatch({ type: 'CART_TOTAL', payload: response.data.cartTotal });
+          if (response.data.cartTotal) {
+            dispatch({ type: 'CART_TOTAL', payload: response.data.cartTotal });
+          }
 
           if (!productData.stock) {
             setQuantity(productData.stock_in_unit);
           } else {
             setQuantity(productData.volume);
           }
+
+          setCartLoading(false);
+          toast.success(response.data.message, { position: 'bottom-left', theme: 'colored' });
         }
       }
     } catch (error) {
