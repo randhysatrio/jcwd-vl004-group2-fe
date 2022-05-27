@@ -1,4 +1,10 @@
-import { FaSearch, FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import {
+  FaSearch,
+  FaArrowLeft,
+  FaArrowRight,
+  FaArrowDown,
+  FaArrowUp,
+} from "react-icons/fa";
 import { AiOutlineClose } from "react-icons/ai";
 import { useState, useEffect } from "react";
 import axios from "axios";
@@ -12,8 +18,21 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(false);
   const [keyword, setKeyword] = useState("");
   const [limit, setLimit] = useState(5);
-
   const [users, setUsers] = useState([]);
+  const [page, setPage] = useState(1);
+  const [maxPage, setMaxPage] = useState(0);
+  const [status, setStatus] = useState();
+  const [sort, setSort] = useState("createdAt,DESC");
+
+  const sortName = () => {
+    if (sort !== "name,DESC" && sort !== "name,ASC") {
+      setSort("name,ASC");
+    } else if (sort !== "name,DESC" && sort !== "") {
+      setSort("name,DESC");
+    } else {
+      setSort("createdAt,DESC");
+    }
+  };
 
   const useDebounce = (value, delay) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
@@ -31,9 +50,7 @@ const Dashboard = () => {
     return debouncedValue;
   };
 
-  const [page, setPage] = useState(1);
-  const [maxPage, setMaxPage] = useState(0);
-  const [status, setStatus] = useState();
+  const debouncedSearch = useDebounce(keyword, 1000);
 
   const loadingFalse = () => {
     setLoading(false);
@@ -46,7 +63,8 @@ const Dashboard = () => {
         `${API_URL}/user/query?keyword=${debouncedSearch}`,
         {
           offset: page * limit - limit,
-          active: debouncedStatus,
+          active: status,
+          sort,
           limit,
         }
       );
@@ -58,16 +76,13 @@ const Dashboard = () => {
     }
   };
 
-  const debouncedSearch = useDebounce(keyword, 1000);
-  const debouncedStatus = useDebounce(status, 0);
-
   useEffect(() => {
     fetchUsers();
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [debouncedSearch, debouncedStatus, page]);
+  }, [debouncedSearch, status, page, sort]);
 
   const handleChangePage = useCallback(
-    debounce(1500, (e) => {
+    debounce(2000, (e) => {
       if (e.target.value <= maxPage && e.target.value > 0) {
         setPage(+e.target.value);
       } else {
@@ -80,7 +95,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearch, debouncedStatus]);
+  }, [debouncedSearch, status, sort]);
 
   const renderUsers = () => {
     const beginningIndex = (page - 1) * limit;
@@ -193,7 +208,35 @@ const Dashboard = () => {
                 <th className="bg-white py-4 px-4 text-center">
                   Profile Picture
                 </th>
-                <th className="bg-white py-4 px-4 text-left">Name</th>
+                {sort === "name,DESC" ? (
+                  <th
+                    className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
+                    onClick={sortName}
+                  >
+                    <div className="flex">
+                      Name
+                      <FaArrowDown className="ml-1 fill-red-500" />
+                    </div>
+                  </th>
+                ) : sort === "name,ASC" ? (
+                  <th
+                    className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
+                    onClick={sortName}
+                  >
+                    <div className="flex">
+                      Name
+                      <FaArrowUp className="ml-1 fill-primary" />
+                    </div>
+                  </th>
+                ) : (
+                  <th
+                    className="bg-white py-4 px-4 text-left cursor-pointer hover:bg-slate-100 border-b border-gray-200 hover:rounded-lg"
+                    onClick={sortName}
+                  >
+                    Name
+                  </th>
+                )}
+                {/* <th className="bg-white py-4 px-4 text-left">Name</th> */}
                 <th className="bg-white py-4 px-4 text-left">Email</th>
                 <th className="bg-white py-4 px-4 text-center">Phone</th>
                 <th className="bg-white py-4 px-4 text-center">Status</th>
@@ -246,7 +289,7 @@ const Dashboard = () => {
             <div>
               Page{" "}
               <input
-              id="inputPage"
+                id="inputPage"
                 type="number"
                 className="border text-center border-gray-300 rounded-lg bg-white focus:outline-none w-10 hover:border-sky-500 focus:outline-sky-500 transition cursor-pointer"
                 defaultValue={page}

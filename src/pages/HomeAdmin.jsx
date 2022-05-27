@@ -176,7 +176,7 @@ const HomeAdmin = () => {
                 <thead>
                   <tr className="bg-gray-100 rounded-lg">
                     <th className="bg-gray-100 rounded-lg font-normal">No</th>
-                    <th className="bg-gray-100 rounded-lg font-normal">Username</th>
+                    <th className="bg-gray-100 rounded-lg font-normal">Name</th>
                     <th className="bg-gray-100 rounded-lg font-normal">Address</th>
                     <th className="bg-gray-100 rounded-lg font-normal">Delivery</th>
                     <th className="bg-gray-100 rounded-lg font-normal">Invoice Date</th>
