@@ -115,14 +115,14 @@ const ProductDetail = () => {
             setProductData(response.data.productData);
           }
 
-          if (response.data.cartTotal) {
-            dispatch({ type: 'CART_TOTAL', payload: response.data.cartTotal });
+          if (!response.data.productData.stock) {
+            setQuantity(response.data.productData.stock_in_unit);
+          } else {
+            setQuantity(response.data.productData.volume);
           }
 
-          if (!productData.stock) {
-            setQuantity(productData.stock_in_unit);
-          } else {
-            setQuantity(productData.volume);
+          if (response.data.cartTotal) {
+            dispatch({ type: 'CART_TOTAL', payload: response.data.cartTotal });
           }
 
           setCartLoading(false);
