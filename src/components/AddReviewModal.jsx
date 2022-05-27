@@ -42,13 +42,13 @@ const AddReviewModal = ({ userId, productId, setTotalReviews, setAvgRating, setR
           limit,
         });
 
-        setLoading(false);
         setTotalReviews(response.data.totalReviews);
         setAvgRating(response.data.avgRating);
         setCurrentPage(1);
         setReviews(response.data.rows);
         setMaxPage(response.data.maxPage);
         formik.resetForm();
+        setLoading(false);
 
         setOpen(false);
         toast.success(response.data.message, { position: 'top-center', theme: 'colored' });

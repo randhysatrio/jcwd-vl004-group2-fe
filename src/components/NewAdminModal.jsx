@@ -62,13 +62,12 @@ const NewAdminModal = ({ setAdmins, setMaxPage, setTotalAdmins, limit, currentPa
           setLoading(false);
           toast.error(response.data.conflict, { theme: 'colored', position: 'bottom-left' });
         } else {
-          setLoading(false);
-
           formik.resetForm();
           setAdmins(response.data.rows);
           setMaxPage(response.data.maxPage);
           setTotalAdmins(response.data.totalAdmins);
           toast.success(response.data.message, { theme: 'colored', position: 'bottom-left' });
+          setLoading(false);
           setOpen(false);
         }
       } catch (err) {
