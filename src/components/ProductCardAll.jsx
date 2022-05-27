@@ -35,7 +35,11 @@ const ProductCardAll = ({ view, product }) => {
           quantity: product.volume,
         });
 
-        if (response.data.conflict) {
+        if (response.data.deleted) {
+          setCartLoading(false);
+
+          toast.warning(response.data.message, { theme: 'colored', position: 'top-center' });
+        } else if (response.data.conflict) {
           setCartLoading(false);
 
           toast.warning(response.data.message, { theme: 'colored', position: 'bottom-left' });
@@ -44,13 +48,15 @@ const ProductCardAll = ({ view, product }) => {
 
           dispatch({ type: 'CART_TOTAL', payload: response.data.cartTotal });
 
-          toast.success(`Added ${product.volume?.toLocaleString('id')} ${product.unit} to your cart!`, {
+          toast.success(`Added ${product.volume?.toLocaleString('id')}${product.unit} to your cart!`, {
             position: 'bottom-left',
             theme: 'colored',
           });
         }
       }
     } catch (error) {
+      setCartLoading(false);
+
       toast.error('Unable to add this item to your cart!', { theme: 'colored', position: 'bottom-left' });
     }
   };
