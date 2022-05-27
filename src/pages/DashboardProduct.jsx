@@ -156,7 +156,7 @@ const Dashboard = () => {
   }, [debouncedSearch, debouncedCategory, sort]);
 
   const handleChangePage = useCallback(
-    debounce(1500, (e) => {
+    debounce(2000, (e) => {
       if (e.target.value <= maxPage && e.target.value > 0) {
         setPage(+e.target.value);
       } else {
@@ -312,7 +312,7 @@ const Dashboard = () => {
               onChange={(e) => setSort(e.target.value)}
               className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 cursor-pointer transition rounded-xl"
             >
-              <option value="">Sort by Price</option>
+              <option value="createdAt,DESC">Sort by Price</option>
               <option value="price_sell,ASC">Lowest Price</option>
               <option value="price_sell,DESC">Highest Price</option>
             </select>

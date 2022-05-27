@@ -147,7 +147,7 @@ const DashboardTransaction = () => {
   };
 
   const handChangePage = useCallback(
-    debounce(1000, (e) => {
+    debounce(2000, (e) => {
       if (e.target.value <= totalPage && e.target.value > 0) {
         setActivePage(+e.target.value);
       } else {
