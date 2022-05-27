@@ -44,9 +44,11 @@ const ProductCardAll = ({ view, product }) => {
 
           toast.warning(response.data.message, { theme: 'colored', position: 'bottom-left' });
         } else {
-          setCartLoading(false);
+          if (response.data.cartTotal) {
+            dispatch({ type: 'CART_TOTAL', payload: response.data.cartTotal });
+          }
 
-          dispatch({ type: 'CART_TOTAL', payload: response.data.cartTotal });
+          setCartLoading(false);
 
           toast.success(`Added ${product.volume?.toLocaleString('id')}${product.unit} to your cart!`, {
             position: 'bottom-left',
