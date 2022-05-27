@@ -32,7 +32,7 @@ const ProductCardAll = ({ view, product }) => {
         const response = await Axios.post(`${API_URL}/cart/add`, {
           userId: userGlobal.id,
           productId: product.id,
-          quantity: product.volume,
+          quantity: product.stock ? product.volume : product.stock_in_unit,
         });
 
         if (response.data.deleted) {
@@ -50,10 +50,15 @@ const ProductCardAll = ({ view, product }) => {
 
           setCartLoading(false);
 
-          toast.success(`Added ${product.volume?.toLocaleString('id')}${product.unit} to your cart!`, {
-            position: 'bottom-left',
-            theme: 'colored',
-          });
+          toast.success(
+            `Added ${product.stock ? product.volume?.toLocaleString('id') : product.stock_in_unit?.toLocaleString('id')}${
+              product.unit
+            } to your cart!`,
+            {
+              position: 'bottom-left',
+              theme: 'colored',
+            }
+          );
         }
       }
     } catch (error) {
