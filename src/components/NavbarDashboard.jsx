@@ -11,7 +11,7 @@ const NavbarDashboard = () => {
   const dataAdmin = JSON.parse(localStorage.getItem('dataAdmin'));
 
   return (
-    <div className="h-16 bg-white shadow-sm pl-80 pr-8 fixed z-[3] w-full top-0 left-0 flex items-center">
+    <div className="h-16 bg-white shadow-sm pl-80 pr-8 fixed z-[12] w-full top-0 left-0 flex items-center">
       <div className="ml-auto flex items-center">
         {dataAdmin && <span className="mr-3">Halo, {dataAdmin.name}</span>}
 
