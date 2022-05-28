@@ -192,16 +192,16 @@ const Dashboard = () => {
             Rp. {product?.price_sell.toLocaleString("id")}
           </td>
           <td className="justify-center items-center text-left p-4">
-            {product.stock?.toLocaleString("id")}
-          </td>
-          <td className="justify-center items-center text-center p-4">
-            {product.unit}
-          </td>
-          <td className="justify-center items-center text-left p-4">
             {product.volume?.toLocaleString("id")}
           </td>
           <td className="justify-center items-center text-left p-4">
+            {product.stock?.toLocaleString("id")}
+          </td>
+          <td className="justify-center items-center text-left p-4">
             {product.stock_in_unit?.toLocaleString("id")}
+          </td>
+          <td className="justify-center items-center text-center p-4">
+            {product.unit}
           </td>
           <td className="justify-center items-center text-center p-4">
             {product.appearance}
@@ -346,16 +346,16 @@ const Dashboard = () => {
                   Price Sell
                 </th>
                 <th className="bg-white border-b py-4 px-4 text-center border-gray-200">
-                  Stock
-                </th>
-                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">
-                  Unit
-                </th>
-                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">
                   Volume
                 </th>
                 <th className="bg-white border-b py-4 px-4 text-center border-gray-200">
+                  Stock
+                </th>
+                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">
                   Stock in Unit
+                </th>
+                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">
+                  Unit
                 </th>
                 <th className="bg-white border-b py-4 px-4 text-center border-gray-200">
                   Appearance
@@ -472,41 +472,6 @@ const Dashboard = () => {
                     Price Sell
                   </th>
                 )}
-                {sort === "stock,DESC" ? (
-                  <>
-                    <th
-                      className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
-                      onClick={sortStockHandler}
-                    >
-                      <div className="flex">
-                        Stock
-                        <FaArrowDown className="ml-1 fill-red-500" />
-                      </div>
-                    </th>
-                  </>
-                ) : sort === "stock,ASC" ? (
-                  <>
-                    <th
-                      className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
-                      onClick={sortStockHandler}
-                    >
-                      <div className="flex">
-                        Stock
-                        <FaArrowUp className="ml-1 fill-primary" />
-                      </div>
-                    </th>
-                  </>
-                ) : (
-                  <th
-                    className="bg-white py-4 px-4 text-left cursor-pointer hover:bg-slate-100 border-b border-gray-200 hover:rounded-lg"
-                    onClick={sortStockHandler}
-                  >
-                    Stock
-                  </th>
-                )}
-                <th className="bg-white py-4 px-4 text-center border-b border-gray-200">
-                  Unit
-                </th>
                 {sort === "volume,DESC" ? (
                   <>
                     <th
@@ -537,6 +502,38 @@ const Dashboard = () => {
                     onClick={sortVolumeHandler}
                   >
                     Volume
+                  </th>
+                )}
+                {sort === "stock,DESC" ? (
+                  <>
+                    <th
+                      className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
+                      onClick={sortStockHandler}
+                    >
+                      <div className="flex">
+                        Stock
+                        <FaArrowDown className="ml-1 fill-red-500" />
+                      </div>
+                    </th>
+                  </>
+                ) : sort === "stock,ASC" ? (
+                  <>
+                    <th
+                      className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
+                      onClick={sortStockHandler}
+                    >
+                      <div className="flex">
+                        Stock
+                        <FaArrowUp className="ml-1 fill-primary" />
+                      </div>
+                    </th>
+                  </>
+                ) : (
+                  <th
+                    className="bg-white py-4 px-4 text-left cursor-pointer hover:bg-slate-100 border-b border-gray-200 hover:rounded-lg"
+                    onClick={sortStockHandler}
+                  >
+                    Stock
                   </th>
                 )}
                 {sort === "stock_in_unit,DESC" ? (
@@ -571,6 +568,9 @@ const Dashboard = () => {
                     Stock in Unit
                   </th>
                 )}
+                <th className="bg-white py-4 px-4 text-center border-b border-gray-200">
+                  Unit
+                </th>
                 <th className="bg-white border-b py-4 px-4 text-center border-gray-200">
                   Appearance
                 </th>
