@@ -108,7 +108,7 @@ const MessagesAdmin = () => {
 
   return (
     <>
-      <div className="h-16 shadow-sm pl-80 pr-8 fixed z-[3] w-10 top-0 left-0 flex items-center">
+      <div className="h-16 shadow-sm pl-80 pr-8 fixed z-[15] w-10 top-0 left-0 flex items-center">
         <div className="flex justify-center items-center relative">
           <FaSearch className="absolute left-2 text-gray-400 bg-gray-100 cursor-pointer active:scale-95 transition" />
           <input
