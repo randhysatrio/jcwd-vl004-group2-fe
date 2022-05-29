@@ -66,6 +66,7 @@ const NewAdminModal = ({ setAdmins, setMaxPage, setTotalAdmins, limit, currentPa
           setAdmins(response.data.rows);
           setMaxPage(response.data.maxPage);
           setTotalAdmins(response.data.totalAdmins);
+          setShowPass(false);
           toast.success(response.data.message, { theme: 'colored', position: 'bottom-left' });
           setLoading(false);
           setOpen(false);

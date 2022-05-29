@@ -15,7 +15,6 @@ import 'react-date-range/dist/theme/default.css';
 import TransactionTable from '../components/TransactionTable';
 import { debounce } from 'throttle-debounce';
 
-
 const DashboardTransaction = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -30,12 +29,8 @@ const DashboardTransaction = () => {
   const { pathname } = useLocation();
   const [loading, setLoading] = useState(false);
   const [keyword, setKeyword] = useState('');
-  const [defaultStartDate, setStartDate] = useState(
-    format(startOfDay(Date.now()), 'yyyy-MM-dd')
-  );
-  const [defaultEndDate, setEndDate] = useState(
-    format(endOfDay(Date.now()), 'yyyy-MM-dd')
-  );
+  const [defaultStartDate, setStartDate] = useState(format(startOfDay(Date.now()), 'yyyy-MM-dd'));
+  const [defaultEndDate, setEndDate] = useState(format(endOfDay(Date.now()), 'yyyy-MM-dd'));
   const adminToken = localStorage.getItem('adminToken');
   const [ranges, setRanges] = useState([
     {
@@ -76,7 +71,7 @@ const DashboardTransaction = () => {
     dispatch({ type: 'ALERT_CLEAR', payload: 'history' });
 
     const getTransaction = async () => {
-      try {      
+      try {
         setLoading(true);
         const response = await axios.post(
           `${API_URL}/admin/transaction/get?keyword=${debouncedSearch}`,
@@ -119,31 +114,14 @@ const DashboardTransaction = () => {
     return () => {
       dispatch({ type: 'ALERT_CLEAR', payload: 'history' });
     };
-  }, [
-    activePage,
-    defaultStartDate,
-    defaultEndDate,
-    selectedDates,
-    debouncedSearch,
-    debouncedStatus,
-    debouncedDate,
-    socket,
-  ]);
+  }, [activePage, defaultStartDate, defaultEndDate, selectedDates, debouncedSearch, debouncedStatus, debouncedDate, socket]);
 
   useEffect(() => {
     setActivePage(1);
   }, [debouncedSearch, debouncedStatus, debouncedDate, selectedDates]);
 
   const renderTransactions = () => {
-    return transactions?.map((item, i) => (
-      <TransactionTable
-        key={item.id}
-        item={item}
-        i={i}
-        startNumber={startNumber}
-        socket={socket}
-      />
-    ));
+    return transactions?.map((item, i) => <TransactionTable key={item.id} item={item} i={i} startNumber={startNumber} socket={socket} />);
   };
 
   const handChangePage = useCallback(
@@ -202,26 +180,18 @@ const DashboardTransaction = () => {
         <div className="flex justify-between items-center space-x-4">
           <div className="flex gap-2 items-center mr-5">
             <FiFilter size={24} />
-            {selectedDates.startDate ? (
-              <span>Filtered Date</span>
-            ) : (
-              <span>All Transactions</span>
-            )}
+            {selectedDates.startDate ? <span>Filtered Date</span> : <span>All Transactions</span>}
           </div>
           <div className="relative ml-auto group">
             <div className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 transition rounded-xl cursor-pointer group">
               <span
                 className={`font-semibold flex items-center gap-2 text-sm ${
-                  selectedDates.gte && selectedDates.lte
-                    ? 'text-sky-500'
-                    : 'text-white group-hover:hover:text-white'
+                  selectedDates.gte && selectedDates.lte ? 'text-sky-500' : 'text-white group-hover:hover:text-white'
                 } transition`}
               >
                 <FiCalendar size={24} className="text-white" />
                 {selectedDates.gte && selectedDates.lte
-                  ? `${selectedDates.gte.toLocaleDateString(
-                      'id'
-                    )} - ${selectedDates.lte.toLocaleDateString('id')}`
+                  ? `${selectedDates.gte.toLocaleDateString('id')} - ${selectedDates.lte.toLocaleDateString('id')}`
                   : 'Select Date'}
               </span>
             </div>
@@ -302,16 +272,12 @@ const DashboardTransaction = () => {
           <table className="table w-full">
             <thead>
               <tr>
-                <th className="bg-white border-b border-gray-200 shadow-sm">
-                  No
-                </th>
-                <th className="bg-white border-b border-gray-200">User Name</th>
+                <th className="bg-white border-b border-gray-200 shadow-sm">No</th>
+                <th className="bg-white border-b border-gray-200">Name</th>
                 <th className="bg-white border-b border-gray-200">Address</th>
                 <th className="bg-white border-b border-gray-200">Delivery</th>
                 <th className="bg-white border-b border-gray-200">Notes</th>
-                <th className="bg-white border-b border-gray-200">
-                  Invoice Date
-                </th>
+                <th className="bg-white border-b border-gray-200">Invoice Date</th>
                 <th className="bg-white border-b border-gray-200">Details</th>
                 <th className="bg-white border-b border-gray-200">Status</th>
                 <th className="bg-white border-b border-gray-200">Actions</th>
@@ -319,25 +285,9 @@ const DashboardTransaction = () => {
             </thead>
           </table>
           <div class="flex h-screen w-full items-center justify-center">
-            <button
-              type="button"
-              class="flex items-center rounded-lg bg-primary px-4 py-2 text-white"
-              disabled
-            >
-              <svg
-                class="mr-3 h-5 w-5 animate-spin text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  class="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  stroke-width="4"
-                ></circle>
+            <button type="button" class="flex items-center rounded-lg bg-primary px-4 py-2 text-white" disabled>
+              <svg class="mr-3 h-5 w-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path
                   class="opacity-75"
                   fill="currentColor"
@@ -353,33 +303,15 @@ const DashboardTransaction = () => {
           <table className="table w-full">
             <thead>
               <tr>
-                <th className="bg-white border-b text-center border-gray-200 shadow-sm">
-                  No
-                </th>
-                <th className="bg-white border-b text-center border-gray-200">
-                  User Name
-                </th>
-                <th className="bg-white border-b text-center border-gray-200">
-                  Address
-                </th>
-                <th className="bg-white border-b text-center border-gray-200">
-                  Delivery
-                </th>
-                <th className="bg-white border-b text-center border-gray-200">
-                  Notes
-                </th>
-                <th className="bg-white border-b text-center border-gray-200">
-                  Invoice Date
-                </th>
-                <th className="bg-white border-b text-center border-gray-200">
-                  Details
-                </th>
-                <th className="bg-white border-b text-center border-gray-200">
-                  Status
-                </th>
-                <th className="bg-white border-b text-center border-gray-200">
-                  Actions
-                </th>
+                <th className="bg-white border-b text-center border-gray-200 shadow-sm">No</th>
+                <th className="bg-white border-b text-center border-gray-200">Name</th>
+                <th className="bg-white border-b text-center border-gray-200">Address</th>
+                <th className="bg-white border-b text-center border-gray-200">Delivery</th>
+                <th className="bg-white border-b text-center border-gray-200">Notes</th>
+                <th className="bg-white border-b text-center border-gray-200">Invoice Date</th>
+                <th className="bg-white border-b text-center border-gray-200">Details</th>
+                <th className="bg-white border-b text-center border-gray-200">Status</th>
+                <th className="bg-white border-b text-center border-gray-200">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -392,11 +324,7 @@ const DashboardTransaction = () => {
                   <th className="py-4 px-4 text-center"></th>
                   <td>
                     <div class="flex h-screen w-full items-center justify-center">
-                      <button
-                        type="button"
-                        class="flex items-center rounded-lg bg-warning px-4 py-2 text-white"
-                        disabled
-                      >
+                      <button type="button" class="flex items-center rounded-lg bg-warning px-4 py-2 text-white" disabled>
                         <span class="font-medium">Transaction Not Found!</span>
                       </button>
                     </div>
@@ -416,11 +344,7 @@ const DashboardTransaction = () => {
           </table>
           <div className="mt-3 flex justify-center items-center gap-4 pt-3">
             <button
-              className={
-                +activePage === 1
-                  ? `hover:cursor-not-allowed`
-                  : `hover:cursor-pointer`
-              }
+              className={+activePage === 1 ? `hover:cursor-not-allowed` : `hover:cursor-pointer`}
               disabled={activePage === 1}
               onClick={handPrevPage}
             >
@@ -439,11 +363,7 @@ const DashboardTransaction = () => {
               of {totalPage}
             </div>
             <button
-              className={
-                +activePage === totalPage
-                  ? `hover:cursor-not-allowed`
-                  : `hover:cursor-pointer`
-              }
+              className={+activePage === totalPage ? `hover:cursor-not-allowed` : `hover:cursor-pointer`}
               disabled={activePage === totalPage}
               onClick={handNextPage}
             >

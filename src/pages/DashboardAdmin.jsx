@@ -31,7 +31,10 @@ const DashboardAdmin = () => {
   const limit = 5;
 
   const debouncedKeyword = useCallback(
-    debounce(1000, (val) => setKeyword(val)),
+    debounce(1000, (val) => {
+      setKeyword(val);
+      setCurrentPage(1);
+    }),
     []
   );
 
