@@ -78,7 +78,10 @@ const MessagesAdmin = () => {
   }, [currentPage, keyword, socket]);
 
   const debouncedKeyword = useCallback(
-    debounce(1000, (val) => setKeyword(val)),
+    debounce(1000, (val) => {
+      setKeyword(val);
+      setCurrentPage(1);
+    }),
     []
   );
 
