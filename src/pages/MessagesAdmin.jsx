@@ -47,6 +47,8 @@ const MessagesAdmin = () => {
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } catch (err) {
+        setLoading(false);
+
         toast.error('Unable to fetch Admin Messages', { position: 'bottom-left', theme: 'colored' });
       }
     };
