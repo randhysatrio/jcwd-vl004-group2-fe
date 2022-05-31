@@ -124,6 +124,7 @@ const Profile = () => {
         });
 
         if (response.data.conflict) {
+          setProfileLoading(false);
           toast.warning(response.data.message, { position: 'bottom-left', theme: 'colored' });
           return setOpen(false);
         }
@@ -188,8 +189,8 @@ const Profile = () => {
           return toast.warning(response.data.message, { position: 'bottom-left', theme: 'colored' });
         }
 
-        toast.success(response.data, { position: 'bottom-left', theme: 'colored' });
         formikPassword.resetForm();
+        toast.success(response.data, { position: 'bottom-left', theme: 'colored' });
       } catch (err) {
         setPasswordLoading(false);
 
@@ -214,7 +215,7 @@ const Profile = () => {
           </div>
           <div className="w-full mt-4 mb-2 px-3 py-2 rounded-box border border-emerald-200 relative flex flex-col">
             <span className="text-sm font-semibold text-sky-400 bg-white px-1 absolute -top-3 left-4">Email:</span>
-            <span type="text" className="text-lg font-light text-emerald-400">
+            <span type="text" className="text-lg font-light text-emerald-400 cursor-default">
               {userData.email}
             </span>
           </div>
@@ -327,9 +328,11 @@ const Profile = () => {
                 <button
                   onClick={() => setOpen(true)}
                   disabled={
-                    (formik.values.name === userData.name &&
-                      (formik.values.username === userData.username || formik.values.username === '') &&
-                      (formik.values.phone_number === userData.phone_number || formik.values.phone_number === '') &&
+                    ((formik.values.name === userData.name || formik.errors.name) &&
+                      (formik.values.username === userData.username || formik.values.username === '' || formik.errors.username) &&
+                      (formik.values.phone_number === userData.phone_number ||
+                        formik.values.phone_number === '' ||
+                        formik.errors.phone_number) &&
                       !profileImage) ||
                     profileLoading
                   }
