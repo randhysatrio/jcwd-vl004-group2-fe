@@ -11,6 +11,7 @@ import { MdPayment } from 'react-icons/md';
 
 const User = () => {
   const navigate = useNavigate();
+  const userGlobal = useSelector((state) => state.user);
   const notification = useSelector((state) => state.notification.alert);
   const history = useSelector((state) => state.notification.history);
   const awaiting = useSelector((state) => state.notification.awaiting);
@@ -19,12 +20,12 @@ const User = () => {
     const userToken = localStorage.getItem('userToken');
     const adminToken = localStorage.getItem('adminToken');
 
-    if (!userToken) {
+    if (!userToken || !userGlobal.id) {
       navigate('/', { replace: true });
     } else if (adminToken) {
       navigate('/dashboard', { replace: true });
     }
-  }, []);
+  }, [userGlobal]);
 
   const SidebarLink = ({ children, icon, to, end, notification }) => {
     return (

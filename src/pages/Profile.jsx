@@ -96,7 +96,7 @@ const Profile = () => {
     enableReinitialize: true,
     validationSchema: Yup.object({
       name: Yup.string()
-        .matches(/^[a-zA-Z0-9 ]*$/, 'Name cannot contain special characters')
+        .matches(/^[a-zA-Z. ]*$/, 'Name cannot contain number or special characters')
         .required('This field cannot be empty'),
       username: Yup.string()
         .matches(/^[a-zA-Z0-9._]*$/, 'Only alphanumeric characters, contain no spaces, (-), (_), and (.) is allowed')
@@ -123,8 +123,6 @@ const Profile = () => {
           },
         });
 
-        setProfileLoading(false);
-
         if (response.data.conflict) {
           toast.warning(response.data.message, { position: 'bottom-left', theme: 'colored' });
           return setOpen(false);
@@ -136,6 +134,8 @@ const Profile = () => {
         document.getElementById('profile-picture').src = `${API_URL}/${response.data.user.profile_picture}`;
 
         toast.success(response.data.message, { position: 'bottom-left', theme: 'colored' });
+
+        setProfileLoading(false);
 
         setOpen(false);
         setEditMode(false);
