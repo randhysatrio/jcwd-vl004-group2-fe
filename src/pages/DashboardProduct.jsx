@@ -1,92 +1,86 @@
-import {
-  FaArrowLeft,
-  FaArrowRight,
-  FaSearch,
-  FaArrowDown,
-  FaArrowUp,
-} from "react-icons/fa";
-import { IoAddOutline } from "react-icons/io5";
-import { AiOutlineClose } from "react-icons/ai";
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import Swal from "sweetalert2";
-import CategoryList from "../components/CategoryList";
-import { API_URL } from "../assets/constants";
-import { toast } from "react-toastify";
-import { debounce } from "throttle-debounce";
-import { useCallback } from "react";
+import { FaArrowLeft, FaArrowRight, FaSearch, FaArrowDown, FaArrowUp } from 'react-icons/fa';
+import { IoAddOutline } from 'react-icons/io5';
+import { AiOutlineClose } from 'react-icons/ai';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import Swal from 'sweetalert2';
+import CategoryList from '../components/CategoryList';
+import { API_URL } from '../assets/constants';
+import { toast } from 'react-toastify';
+import { debounce } from 'throttle-debounce';
+import { useCallback } from 'react';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [currentCategory, setCurrentCategory] = useState("");
+  const [currentCategory, setCurrentCategory] = useState('');
   const [page, setPage] = useState(1);
   const [maxPage, setMaxPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const adminToken = localStorage.getItem("adminToken");
+  const adminToken = localStorage.getItem('adminToken');
   const [limit, setLimit] = useState(4);
-  const [search, setSearch] = useState("");
-  const [sort, setSort] = useState("createdAt,DESC");
+  const [search, setSearch] = useState('');
+  const [sort, setSort] = useState('createdAt,DESC');
 
   const sortSales = () => {
-    if (sort !== "total_sales,DESC" && sort !== "total_sales,ASC") {
-      setSort("total_sales,ASC");
-    } else if (sort !== "total_sales,DESC" && sort !== "") {
-      setSort("total_sales,DESC");
+    if (sort !== 'total_sales,DESC' && sort !== 'total_sales,ASC') {
+      setSort('total_sales,ASC');
+    } else if (sort !== 'total_sales,DESC' && sort !== '') {
+      setSort('total_sales,DESC');
     } else {
-      setSort("createdAt,DESC");
+      setSort('createdAt,DESC');
     }
   };
 
   const sortHandler = () => {
-    if (sort !== "stock_in_unit,DESC" && sort !== "stock_in_unit,ASC") {
-      setSort("stock_in_unit,ASC");
-    } else if (sort !== "stock_in_unit,DESC" && sort !== "") {
-      setSort("stock_in_unit,DESC");
+    if (sort !== 'stock_in_unit,DESC' && sort !== 'stock_in_unit,ASC') {
+      setSort('stock_in_unit,ASC');
+    } else if (sort !== 'stock_in_unit,DESC' && sort !== '') {
+      setSort('stock_in_unit,DESC');
     } else {
-      setSort("createdAt,DESC");
+      setSort('createdAt,DESC');
     }
   };
 
   const sortPriceSellHandler = () => {
-    if (sort !== "price_sell,DESC" && sort !== "price_sell,ASC") {
-      setSort("price_sell,ASC");
-    } else if (sort !== "price_sell,DESC" && sort !== "") {
-      setSort("price_sell,DESC");
+    if (sort !== 'price_sell,DESC' && sort !== 'price_sell,ASC') {
+      setSort('price_sell,ASC');
+    } else if (sort !== 'price_sell,DESC' && sort !== '') {
+      setSort('price_sell,DESC');
     } else {
-      setSort("createdAt,DESC");
+      setSort('createdAt,DESC');
     }
   };
 
   const sortPriceBuyHandler = () => {
-    if (sort !== "price_buy,DESC" && sort !== "price_buy,ASC") {
-      setSort("price_buy,ASC");
-    } else if (sort !== "price_buy,DESC" && sort !== "") {
-      setSort("price_buy,DESC");
+    if (sort !== 'price_buy,DESC' && sort !== 'price_buy,ASC') {
+      setSort('price_buy,ASC');
+    } else if (sort !== 'price_buy,DESC' && sort !== '') {
+      setSort('price_buy,DESC');
     } else {
-      setSort("createdAt,DESC");
+      setSort('createdAt,DESC');
     }
   };
 
   const sortStockHandler = () => {
-    if (sort !== "stock,DESC" && sort !== "stock,ASC") {
-      setSort("stock,ASC");
-    } else if (sort !== "stock,DESC" && sort !== "") {
-      setSort("stock,DESC");
+    if (sort !== 'stock,DESC' && sort !== 'stock,ASC') {
+      setSort('stock,ASC');
+    } else if (sort !== 'stock,DESC' && sort !== '') {
+      setSort('stock,DESC');
     } else {
-      setSort("createdAt,DESC");
+      setSort('createdAt,DESC');
     }
   };
 
   const sortVolumeHandler = () => {
-    if (sort !== "volume,DESC" && sort !== "volume,ASC") {
-      setSort("volume,ASC");
-    } else if (sort !== "volume,DESC" && sort !== "") {
-      setSort("volume,DESC");
+    if (sort !== 'volume,DESC' && sort !== 'volume,ASC') {
+      setSort('volume,ASC');
+    } else if (sort !== 'volume,DESC' && sort !== '') {
+      setSort('volume,DESC');
     } else {
-      setSort("createdAt,DESC");
+      setSort('createdAt,DESC');
     }
   };
 
@@ -143,12 +137,10 @@ const Dashboard = () => {
     }
   };
 
-  console.log(sort);
-
   useEffect(() => {
     fetchProducts();
     // dependency uses state outside useEffect otherwise infinite loop will occur
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [debouncedSearch, debouncedCategory, sort, page]);
 
   useEffect(() => {
@@ -160,7 +152,7 @@ const Dashboard = () => {
       if (e.target.value <= maxPage && e.target.value > 0) {
         setPage(+e.target.value);
       } else {
-        document.getElementById("inputPage").value = +page;
+        document.getElementById('inputPage').value = +page;
       }
     }),
     // useCallback feature or requires dependency
@@ -172,9 +164,7 @@ const Dashboard = () => {
     return products.map((product, i) => {
       return (
         <tr className="text-sm border-b border-gray-200" key={product.id}>
-          <td className="justify-center items-center text-center p-4">
-            {beginningIndex + i + 1}
-          </td>
+          <td className="justify-center items-center text-center p-4">{beginningIndex + i + 1}</td>
           <td className="justify-center items-center text-center p-4">
             <img
               src={`${API_URL}/${product.image}`}
@@ -182,36 +172,16 @@ const Dashboard = () => {
               className="w-40 aspect-[3/2] rounded-lg border object-cover border-gray-200 m-auto"
             />
           </td>
-          <td className="justify-center items-center text-left p-4">
-            {product.name}
-          </td>
-          <td className="justify-center items-center text-left p-4">
-            Rp. {product.price_buy?.toLocaleString("id")}
-          </td>
-          <td className="justify-center items-center text-left p-4">
-            Rp. {product?.price_sell.toLocaleString("id")}
-          </td>
-          <td className="justify-center items-center text-left p-4">
-            {product.volume?.toLocaleString("id")}
-          </td>
-          <td className="justify-center items-center text-left p-4">
-            {product.stock?.toLocaleString("id")}
-          </td>
-          <td className="justify-center items-center text-left p-4">
-            {product.stock_in_unit?.toLocaleString("id")}
-          </td>
-          <td className="justify-center items-center text-center p-4">
-            {product.unit}
-          </td>
-          <td className="justify-center items-center text-center p-4">
-            {product.appearance}
-          </td>
-          <td className="justify-center items-center text-left p-4">
-            {product.category?.name}
-          </td>
-          <td className="justify-center items-center text-left p-4">
-            {product.total_sales}
-          </td>
+          <td className="justify-center items-center text-left p-4">{product.name}</td>
+          <td className="justify-center items-center text-left p-4">Rp. {product.price_buy?.toLocaleString('id')}</td>
+          <td className="justify-center items-center text-left p-4">Rp. {product?.price_sell.toLocaleString('id')}</td>
+          <td className="justify-center items-center text-left p-4">{product.volume?.toLocaleString('id')}</td>
+          <td className="justify-center items-center text-left p-4">{product.stock?.toLocaleString('id')}</td>
+          <td className="justify-center items-center text-left p-4">{product.stock_in_unit?.toLocaleString('id')}</td>
+          <td className="justify-center items-center text-center p-4">{product.unit}</td>
+          <td className="justify-center items-center text-center p-4">{product.appearance}</td>
+          <td className="justify-center items-center text-left p-4">{product.category?.name}</td>
+          <td className="justify-center items-center text-left p-4">{product.total_sales}</td>
           <td className="justify-center items-center text-center p-4">
             <button
               type="button"
@@ -243,25 +213,25 @@ const Dashboard = () => {
 
   const handleDeleteClick = (id) => {
     Swal.fire({
-      title: "Are you sure?",
+      title: 'Are you sure?',
       text: "You won't be able to revert this!",
-      icon: "warning",
+      icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
           await axios.delete(`${API_URL}/product/delete/${id}`);
-          Swal.fire("Deleted!", "Your file has been deleted.", "success");
+          Swal.fire('Deleted!', 'Your file has been deleted.', 'success');
           fetchProducts();
         } catch (error) {
           console.log(error);
         }
       }
       fetchProducts();
-      setSearch("");
+      setSearch('');
     });
   };
 
@@ -281,7 +251,7 @@ const Dashboard = () => {
           />
           <AiOutlineClose
             onClick={() => {
-              setSearch("");
+              setSearch('');
             }}
             className="hover:brightness-110 cursor-pointer absolute right-2"
           />
@@ -330,68 +300,26 @@ const Dashboard = () => {
           <table className="table w-full">
             <thead>
               <tr>
-                <th className="bg-white border-b py-4 px-4 text-center border-gray-200 shadow-sm">
-                  No
-                </th>
-                <th className="bg-white border-b py-4 px-4 text-center border-gray-200 shadow-sm">
-                  Image
-                </th>
-                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">
-                  Name
-                </th>
-                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">
-                  Price Buy
-                </th>
-                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">
-                  Price Sell
-                </th>
-                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">
-                  Volume
-                </th>
-                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">
-                  Stock
-                </th>
-                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">
-                  Stock in Unit
-                </th>
-                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">
-                  Unit
-                </th>
-                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">
-                  Appearance
-                </th>
-                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">
-                  Category
-                </th>
-                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">
-                  Sales
-                </th>
-                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">
-                  Actions
-                </th>
+                <th className="bg-white border-b py-4 px-4 text-center border-gray-200 shadow-sm">No</th>
+                <th className="bg-white border-b py-4 px-4 text-center border-gray-200 shadow-sm">Image</th>
+                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Name</th>
+                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Price Buy</th>
+                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Price Sell</th>
+                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Volume</th>
+                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Stock</th>
+                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Stock in Unit</th>
+                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Unit</th>
+                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Appearance</th>
+                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Category</th>
+                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Sales</th>
+                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Actions</th>
               </tr>
             </thead>
           </table>
           <div class="flex h-screen w-full items-center justify-center">
-            <button
-              type="button"
-              class="flex items-center rounded-lg bg-primary px-4 py-2 text-white"
-              disabled
-            >
-              <svg
-                class="mr-3 h-5 w-5 animate-spin text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  class="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  stroke-width="4"
-                ></circle>
+            <button type="button" class="flex items-center rounded-lg bg-primary px-4 py-2 text-white" disabled>
+              <svg class="mr-3 h-5 w-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path
                   class="opacity-75"
                   fill="currentColor"
@@ -407,16 +335,10 @@ const Dashboard = () => {
           <table className="table w-full">
             <thead>
               <tr>
-                <th className="bg-white border-b py-4 px-4 text-center border-gray-200 shadow-sm">
-                  No
-                </th>
-                <th className="bg-white border-b py-4 px-4 text-center border-gray-200 shadow-sm">
-                  Image
-                </th>
-                <th className="bg-white border-b py-4 px-4 text-left border-gray-200 shadow-sm">
-                  Name
-                </th>
-                {sort === "price_buy,DESC" ? (
+                <th className="bg-white border-b py-4 px-4 text-center border-gray-200 shadow-sm">No</th>
+                <th className="bg-white border-b py-4 px-4 text-center border-gray-200 shadow-sm">Image</th>
+                <th className="bg-white border-b py-4 px-4 text-left border-gray-200 shadow-sm">Name</th>
+                {sort === 'price_buy,DESC' ? (
                   <th
                     className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
                     onClick={sortPriceBuyHandler}
@@ -426,7 +348,7 @@ const Dashboard = () => {
                       <FaArrowDown className="ml-1 fill-red-500" />
                     </div>
                   </th>
-                ) : sort === "price_buy,ASC" ? (
+                ) : sort === 'price_buy,ASC' ? (
                   <th
                     className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
                     onClick={sortPriceBuyHandler}
@@ -444,7 +366,7 @@ const Dashboard = () => {
                     Price Buy
                   </th>
                 )}
-                {sort === "price_sell,DESC" ? (
+                {sort === 'price_sell,DESC' ? (
                   <th
                     className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
                     onClick={sortPriceSellHandler}
@@ -454,7 +376,7 @@ const Dashboard = () => {
                       <FaArrowDown className="ml-1 fill-red-500" />
                     </div>
                   </th>
-                ) : sort === "price_sell,ASC" ? (
+                ) : sort === 'price_sell,ASC' ? (
                   <th
                     className="bg-white flex justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
                     onClick={sortPriceSellHandler}
@@ -472,7 +394,7 @@ const Dashboard = () => {
                     Price Sell
                   </th>
                 )}
-                {sort === "volume,DESC" ? (
+                {sort === 'volume,DESC' ? (
                   <>
                     <th
                       className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
@@ -484,7 +406,7 @@ const Dashboard = () => {
                       </div>
                     </th>
                   </>
-                ) : sort === "volume,ASC" ? (
+                ) : sort === 'volume,ASC' ? (
                   <>
                     <th
                       className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
@@ -504,7 +426,7 @@ const Dashboard = () => {
                     Volume
                   </th>
                 )}
-                {sort === "stock,DESC" ? (
+                {sort === 'stock,DESC' ? (
                   <>
                     <th
                       className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
@@ -516,7 +438,7 @@ const Dashboard = () => {
                       </div>
                     </th>
                   </>
-                ) : sort === "stock,ASC" ? (
+                ) : sort === 'stock,ASC' ? (
                   <>
                     <th
                       className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
@@ -536,7 +458,7 @@ const Dashboard = () => {
                     Stock
                   </th>
                 )}
-                {sort === "stock_in_unit,DESC" ? (
+                {sort === 'stock_in_unit,DESC' ? (
                   <>
                     <th
                       className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
@@ -548,7 +470,7 @@ const Dashboard = () => {
                       </div>
                     </th>
                   </>
-                ) : sort === "stock_in_unit,ASC" ? (
+                ) : sort === 'stock_in_unit,ASC' ? (
                   <>
                     <th
                       className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
@@ -568,16 +490,10 @@ const Dashboard = () => {
                     Stock in Unit
                   </th>
                 )}
-                <th className="bg-white py-4 px-4 text-center border-b border-gray-200">
-                  Unit
-                </th>
-                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">
-                  Appearance
-                </th>
-                <th className="bg-white border-b py-4 px-4 text-left border-gray-200">
-                  Category
-                </th>
-                {sort === "total_sales,DESC" ? (
+                <th className="bg-white py-4 px-4 text-center border-b border-gray-200">Unit</th>
+                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Appearance</th>
+                <th className="bg-white border-b py-4 px-4 text-left border-gray-200">Category</th>
+                {sort === 'total_sales,DESC' ? (
                   <>
                     <th
                       className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
@@ -589,7 +505,7 @@ const Dashboard = () => {
                       </div>
                     </th>
                   </>
-                ) : sort === "total_sales,ASC" ? (
+                ) : sort === 'total_sales,ASC' ? (
                   <>
                     <th
                       className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
@@ -609,9 +525,7 @@ const Dashboard = () => {
                     Sales
                   </th>
                 )}
-                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">
-                  Actions
-                </th>
+                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -625,11 +539,7 @@ const Dashboard = () => {
                   <th className="py-4 px-4 text-center"></th>
                   <td>
                     <div class="flex h-screen w-full items-center justify-center">
-                      <button
-                        type="button"
-                        class="flex items-center rounded-lg bg-warning px-4 py-2 text-white"
-                        disabled
-                      >
+                      <button type="button" class="flex items-center rounded-lg bg-warning px-4 py-2 text-white" disabled>
                         <span class="font-medium"> Product Not Found! </span>
                       </button>
                     </div>
@@ -648,32 +558,26 @@ const Dashboard = () => {
           </table>
           <div className="mt-3 flex justify-center items-center gap-4 pt-3">
             <button
-              className={
-                page === 1 ? `hover:cursor-not-allowed` : `hover:cursor-pointer`
-              }
+              className={page === 1 ? `hover:cursor-not-allowed` : `hover:cursor-pointer`}
               disabled={page === 1}
               onClick={() => page > 1 && setPage(page - 1)}
             >
-              {" "}
+              {' '}
               <FaArrowLeft />
             </button>
             <div>
-              Page{" "}
+              Page{' '}
               <input
                 id="inputPage"
                 type="number"
                 className="border text-center border-gray-300 rounded-lg bg-white focus:outline-none w-10 hover:border-sky-500 focus:outline-sky-500 transition cursor-pointer"
                 defaultValue={page}
                 onChange={handleChangePage}
-              />{" "}
+              />{' '}
               of {maxPage}
             </div>
             <button
-              className={
-                page === maxPage
-                  ? `hover:cursor-not-allowed`
-                  : `hover:cursor-pointer`
-              }
+              className={page === maxPage ? `hover:cursor-not-allowed` : `hover:cursor-pointer`}
               disabled={page === maxPage}
               onClick={() => page < maxPage && setPage(page + 1)}
             >

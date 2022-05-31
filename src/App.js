@@ -95,6 +95,10 @@ function App() {
       } else if (response.data.conflict) {
         localStorage.removeItem('userToken');
 
+        dispatch({
+          type: 'USER_LOGOUT',
+        });
+
         toast.warning(response.data.message, { position: 'top-center', theme: 'colored' });
       } else {
         localStorage.setItem('userToken', response.data.token);
