@@ -37,10 +37,8 @@ const Verify = () => {
         if (response.data.conflict) {
           setDone(true);
           toast.warning(response.data.conflict, { position: 'top-center', theme: 'colored' });
-          return navigate('/', { replace: true });
-        }
-
-        if (response.data.success) {
+          navigate('/', { replace: true });
+        } else {
           setDone(true);
           localStorage.setItem('userToken', response.data.token);
           dispatch({
@@ -57,7 +55,7 @@ const Verify = () => {
       }
     };
     verifyAccount();
-  });
+  }, []);
 
   return (
     <div className="h-screen flex justify-center items-center bg-gradient-to-t from-white to-sky-400">
