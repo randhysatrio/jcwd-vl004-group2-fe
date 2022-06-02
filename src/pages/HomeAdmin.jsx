@@ -176,7 +176,7 @@ const HomeAdmin = () => {
                 <thead>
                   <tr className="bg-gray-100 rounded-lg">
                     <th className="bg-gray-100 rounded-lg font-normal">No</th>
-                    <th className="bg-gray-100 rounded-lg font-normal">Username</th>
+                    <th className="bg-gray-100 rounded-lg font-normal">Name</th>
                     <th className="bg-gray-100 rounded-lg font-normal">Address</th>
                     <th className="bg-gray-100 rounded-lg font-normal">Delivery</th>
                     <th className="bg-gray-100 rounded-lg font-normal">Invoice Date</th>
@@ -187,7 +187,7 @@ const HomeAdmin = () => {
                   {transactions?.map((item, i) => {
                     return (
                       <tr key={item.id}>
-                        <td className="justify-center items-center text-center p-4">{i + 1}</td>
+                        <th className="justify-center items-center text-center p-4">{i + 1}</th>
                         <td className="justify-center items-center text-center p-4">{item.user.name}</td>
                         <td className="justify-center items-center text-center p-4">
                           {item.address.address}, {item.address.city}, {item.address.province}
@@ -212,25 +212,25 @@ const HomeAdmin = () => {
             </div>
           </div>
         </div>
-        <div className="w-full justify-between items-center flex flex-col-4 shadow-md bg-white rounded-md">
+        <div className="w-full flex-col-4 shadow-md bg-white rounded-md">
           <div className="flex-col">
             <div className="flex justify-between items-center">
-              <div className="mt-3 text-xl ml-8">Latest Products</div>
-              <div className="mt-5 mr-8">
+              <div className="mt-8 text-xl ml-8">Latest Products</div>
+              <div className="mt-9 mr-8">
                 <button className="hover:bg-gray-100 transition rounded-xl items-center" onClick={() => navigate('/dashboard/product')}>
                   See All
                 </button>
               </div>
             </div>
-            <div className="mb-3 ml-8">
+            <div className="mb-3 ml-3">
               <table className="w-full">
                 <thead></thead>
                 <tbody>
                   {products?.map((item, i) => {
                     return (
                       <tr key={item.id}>
-                        <th className="justify-center p-4 text-sm">{i + 1}</th>
-                        <td className="justify-center p-4 text-sm">{item.name}</td>
+                        <th className="text-sm">{i + 1}</th>
+                        <td className="p-4 text-sm">{item.name}</td>
                       </tr>
                     );
                   })}

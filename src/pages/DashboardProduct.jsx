@@ -1,77 +1,86 @@
 import { FaArrowLeft, FaArrowRight, FaSearch, FaArrowDown, FaArrowUp } from 'react-icons/fa';
 import { IoAddOutline } from 'react-icons/io5';
 import { AiOutlineClose } from 'react-icons/ai';
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import CategoryList from '../components/CategoryList';
 import { API_URL } from '../assets/constants';
+import { toast } from 'react-toastify';
+import { debounce } from 'throttle-debounce';
+import { useCallback } from 'react';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [currentCategory, setCurrentCategory] = useState('');
-  const [currentSortPrice, setCurrentSortPrice] = useState('');
-  const [currentSortPriceBuy, setCurrentSortPriceBuy] = useState('');
-  const [sortStock, setSortStock] = useState('');
-  const [sortVolume, setSortVolume] = useState('');
   const [page, setPage] = useState(1);
   const [maxPage, setMaxPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const adminToken = localStorage.getItem('adminToken');
   const [limit, setLimit] = useState(4);
   const [search, setSearch] = useState('');
-  const [sortStockInUnit, setSortStockInUnit] = useState('');
+  const [sort, setSort] = useState('createdAt,DESC');
+
+  const sortSales = () => {
+    if (sort !== 'total_sales,DESC' && sort !== 'total_sales,ASC') {
+      setSort('total_sales,ASC');
+    } else if (sort !== 'total_sales,DESC' && sort !== '') {
+      setSort('total_sales,DESC');
+    } else {
+      setSort('createdAt,DESC');
+    }
+  };
 
   const sortHandler = () => {
-    if (sortStockInUnit !== 'stock_in_unit,DESC' && sortStockInUnit !== 'stock_in_unit,ASC') {
-      setSortStockInUnit('stock_in_unit,ASC');
-    } else if (sortStockInUnit !== 'stock_in_unit,DESC' && sortStockInUnit !== '') {
-      setSortStockInUnit('stock_in_unit,DESC');
+    if (sort !== 'stock_in_unit,DESC' && sort !== 'stock_in_unit,ASC') {
+      setSort('stock_in_unit,ASC');
+    } else if (sort !== 'stock_in_unit,DESC' && sort !== '') {
+      setSort('stock_in_unit,DESC');
     } else {
-      setSortStockInUnit('');
+      setSort('createdAt,DESC');
     }
   };
 
   const sortPriceSellHandler = () => {
-    if (currentSortPrice !== 'price_sell,DESC' && currentSortPrice !== 'price_sell,ASC') {
-      setCurrentSortPrice('price_sell,ASC');
-    } else if (currentSortPrice !== 'price_sell,DESC' && currentSortPrice !== '') {
-      setCurrentSortPrice('price_sell,DESC');
+    if (sort !== 'price_sell,DESC' && sort !== 'price_sell,ASC') {
+      setSort('price_sell,ASC');
+    } else if (sort !== 'price_sell,DESC' && sort !== '') {
+      setSort('price_sell,DESC');
     } else {
-      setCurrentSortPrice('');
+      setSort('createdAt,DESC');
     }
   };
 
   const sortPriceBuyHandler = () => {
-    if (currentSortPriceBuy !== 'price_buy,DESC' && currentSortPriceBuy !== 'price_buy,ASC') {
-      setCurrentSortPriceBuy('price_buy,ASC');
-    } else if (currentSortPriceBuy !== 'price_buy,DESC' && currentSortPriceBuy !== '') {
-      setCurrentSortPriceBuy('price_buy,DESC');
+    if (sort !== 'price_buy,DESC' && sort !== 'price_buy,ASC') {
+      setSort('price_buy,ASC');
+    } else if (sort !== 'price_buy,DESC' && sort !== '') {
+      setSort('price_buy,DESC');
     } else {
-      setCurrentSortPriceBuy('');
+      setSort('createdAt,DESC');
     }
   };
 
   const sortStockHandler = () => {
-    if (sortStock !== 'stock,DESC' && sortStock !== 'stock,ASC') {
-      setSortStock('stock,ASC');
-    } else if (sortStock !== 'stock,DESC' && sortStock !== '') {
-      setSortStock('stock,DESC');
+    if (sort !== 'stock,DESC' && sort !== 'stock,ASC') {
+      setSort('stock,ASC');
+    } else if (sort !== 'stock,DESC' && sort !== '') {
+      setSort('stock,DESC');
     } else {
-      setSortStock('');
+      setSort('createdAt,DESC');
     }
   };
 
   const sortVolumeHandler = () => {
-    if (sortVolume !== 'volume,DESC' && sortVolume !== 'volume,ASC') {
-      setSortVolume('volume,ASC');
-    } else if (sortVolume !== 'volume,DESC' && sortVolume !== '') {
-      setSortVolume('volume,DESC');
+    if (sort !== 'volume,DESC' && sort !== 'volume,ASC') {
+      setSort('volume,ASC');
+    } else if (sort !== 'volume,DESC' && sort !== '') {
+      setSort('volume,DESC');
     } else {
-      setSortVolume('');
+      setSort('createdAt,DESC');
     }
   };
 
@@ -93,66 +102,62 @@ const Dashboard = () => {
 
   const debouncedSearch = useDebounce(search, 1000);
   const debouncedCategory = useDebounce(currentCategory, 0);
-  const debouncedSortPrice = useDebounce(currentSortPrice, 0);
-  const debouncedStockInUnit = useDebounce(sortStockInUnit, 0);
-  const debouncedPriceBuy = useDebounce(currentSortPriceBuy, 0);
-  const debouncedStock = useDebounce(sortStock, 0);
-  const debouncedVolume = useDebounce(sortVolume, 0);
-
-  const fetchProducts = async () => {
-    setLoading(true);
-    const productList = await axios.post(
-      `${API_URL}/product/query?search=${debouncedSearch}`,
-      {
-        offset: page * limit - limit,
-        category: debouncedCategory,
-        sort_price_sell: debouncedSortPrice,
-        sort_stock_in_unit: debouncedStockInUnit,
-        sort_price_buy: debouncedPriceBuy,
-        sort_stock: debouncedStock,
-        sort_volume: debouncedVolume,
-        limit,
-        fromDashboardAdmin: true,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${adminToken}`,
-        },
-      }
-    );
-    console.log(productList.data.products.length);
-
-    const categoryList = await axios.get(`${API_URL}/category/all`);
-    setCategories(categoryList.data);
-    // nested objects
-    setProducts(productList.data.products);
-    setMaxPage(Math.ceil(productList.data.length / limit));
-    // i need to use a function to use setTimeout
-    setTimeout(loadingFalse, 1000);
-  };
 
   const loadingFalse = () => {
     setLoading(false);
+  };
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const productList = await axios.post(
+        `${API_URL}/product/query?search=${debouncedSearch}`,
+        {
+          offset: page * limit - limit,
+          category: debouncedCategory,
+          sort,
+          limit,
+          fromDashboardAdmin: true,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${adminToken}`,
+          },
+        }
+      );
+      const categoryList = await axios.get(`${API_URL}/category/all`);
+      setCategories(categoryList.data);
+      // nested objects
+      setProducts(productList.data.products);
+      setMaxPage(Math.ceil(productList.data.length / limit));
+      // i need to use a function to use setTimeout
+      setTimeout(loadingFalse, 1000);
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
   };
 
   useEffect(() => {
     fetchProducts();
     // dependency uses state outside useEffect otherwise infinite loop will occur
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [
-    debouncedSearch,
-    debouncedCategory,
-    debouncedSortPrice,
-    debouncedStockInUnit,
-    debouncedPriceBuy,
-    debouncedStock,
-    debouncedVolume,
-    page,
-  ]);
+  }, [debouncedSearch, debouncedCategory, sort, page]);
 
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearch, debouncedCategory, debouncedSortPrice, debouncedStockInUnit, debouncedPriceBuy, debouncedStock, debouncedVolume]);
+  }, [debouncedSearch, debouncedCategory, sort]);
+
+  const handleChangePage = useCallback(
+    debounce(2000, (e) => {
+      if (e.target.value <= maxPage && e.target.value > 0) {
+        setPage(+e.target.value);
+      } else {
+        document.getElementById('inputPage').value = +page;
+      }
+    }),
+    // useCallback feature or requires dependency
+    [maxPage, page]
+  );
 
   const renderProducts = () => {
     const beginningIndex = (page - 1) * limit;
@@ -167,15 +172,16 @@ const Dashboard = () => {
               className="w-40 aspect-[3/2] rounded-lg border object-cover border-gray-200 m-auto"
             />
           </td>
-          <td className="justify-center items-center text-center p-4">{product.name}</td>
-          <td className="justify-center items-center text-center p-4">Rp. {product.price_buy?.toLocaleString('id')}</td>
-          <td className="justify-center items-center text-center p-4">Rp. {product?.price_sell.toLocaleString('id')}</td>
-          <td className="justify-center items-center text-center p-4">{product.stock?.toLocaleString('id')}</td>
+          <td className="justify-center items-center text-left p-4">{product.name}</td>
+          <td className="justify-center items-center text-left p-4">Rp. {product.price_buy?.toLocaleString('id')}</td>
+          <td className="justify-center items-center text-left p-4">Rp. {product?.price_sell.toLocaleString('id')}</td>
+          <td className="justify-center items-center text-left p-4">{product.volume?.toLocaleString('id')}</td>
+          <td className="justify-center items-center text-left p-4">{product.stock?.toLocaleString('id')}</td>
+          <td className="justify-center items-center text-left p-4">{product.stock_in_unit?.toLocaleString('id')}</td>
           <td className="justify-center items-center text-center p-4">{product.unit}</td>
-          <td className="justify-center items-center text-center p-4">{product.volume?.toLocaleString('id')}</td>
-          <td className="justify-center items-center text-center p-4">{product.stock_in_unit?.toLocaleString('id')}</td>
           <td className="justify-center items-center text-center p-4">{product.appearance}</td>
-          <td className="justify-center items-center text-center p-4">{product.category?.name}</td>
+          <td className="justify-center items-center text-left p-4">{product.category?.name}</td>
+          <td className="justify-center items-center text-left p-4">{product.total_sales}</td>
           <td className="justify-center items-center text-center p-4">
             <button
               type="button"
@@ -194,16 +200,6 @@ const Dashboard = () => {
           </td>
         </tr>
       );
-    });
-  };
-
-  const renderPages = () => {
-    const pagination = [];
-    for (let i = 1; i <= maxPage; i++) {
-      pagination.push(i);
-    }
-    return pagination.map((value) => {
-      return <option key={value}>{value}</option>;
     });
   };
 
@@ -239,29 +235,12 @@ const Dashboard = () => {
     });
   };
 
-  const nextPageHandler = () => {
-    if (page < maxPage) {
-      setPage(page + 1);
-    }
-  };
-
-  const prevPageHandler = () => {
-    if (page > 1) {
-      setPage(page - 1);
-    }
-  };
-
   return (
-    <div className="h-full w-full bg-gray-100">
+    <div className="h-full min-w-full w-max bg-gray-100">
       {/* Search Bar */}
-      <div className="h-16 bg-white shadow-sm pl-80 pr-8 fixed z-[3] w-10 top-0 left-0 flex items-center">
+      <div className="h-16 bg-white shadow-sm pl-80 pr-8 fixed z-[12] w-10 top-0 left-0 flex items-center">
         <div className="flex justify-center items-center relative">
-          <FaSearch
-            // onClick={() => {
-            //   setSearchParams({ keyword }, { replace: true });
-            // }}
-            className="absolute left-2 text-gray-400 bg-gray-100 active:scale-95 transition"
-          />
+          <FaSearch className="absolute left-2 text-gray-400 bg-gray-100 active:scale-95 transition" />
           <input
             type="text"
             value={search}
@@ -296,15 +275,14 @@ const Dashboard = () => {
               ))}
             </select>
           </div>
-
           <div>
             <select
               name=""
               id=""
-              onChange={(e) => setCurrentSortPrice(e.target.value)}
+              onChange={(e) => setSort(e.target.value)}
               className="py-2.5 px-6 text-white bg-primary hover:bg-blue-400 cursor-pointer transition rounded-xl"
             >
-              <option value="">Sort by Price</option>
+              <option value="createdAt,DESC">Sort by Price</option>
               <option value="price_sell,ASC">Lowest Price</option>
               <option value="price_sell,DESC">Highest Price</option>
             </select>
@@ -327,12 +305,13 @@ const Dashboard = () => {
                 <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Name</th>
                 <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Price Buy</th>
                 <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Price Sell</th>
-                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Stock</th>
-                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Unit</th>
                 <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Volume</th>
+                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Stock</th>
                 <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Stock in Unit</th>
+                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Unit</th>
                 <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Appearance</th>
                 <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Category</th>
+                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Sales</th>
                 <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Actions</th>
               </tr>
             </thead>
@@ -358,150 +337,194 @@ const Dashboard = () => {
               <tr>
                 <th className="bg-white border-b py-4 px-4 text-center border-gray-200 shadow-sm">No</th>
                 <th className="bg-white border-b py-4 px-4 text-center border-gray-200 shadow-sm">Image</th>
-                <th className="bg-white border-b py-4 px-4 text-center border-gray-200 shadow-sm">Name</th>
-                {currentSortPriceBuy === 'price_buy,DESC' ? (
-                  <>
-                    <th
-                      className="bg-white flex justify-center items-center py-4 px-4 text-center cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
-                      onClick={sortPriceBuyHandler}
-                    >
+                <th className="bg-white border-b py-4 px-4 text-left border-gray-200 shadow-sm">Name</th>
+                {sort === 'price_buy,DESC' ? (
+                  <th
+                    className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
+                    onClick={sortPriceBuyHandler}
+                  >
+                    <div className="flex">
                       Price Buy
                       <FaArrowDown className="ml-1 fill-red-500" />
-                    </th>
-                  </>
-                ) : currentSortPriceBuy === 'price_buy,ASC' ? (
-                  <>
-                    <th
-                      className="bg-white flex justify-center items-center py-4 px-4 text-center cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
-                      onClick={sortPriceBuyHandler}
-                    >
+                    </div>
+                  </th>
+                ) : sort === 'price_buy,ASC' ? (
+                  <th
+                    className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
+                    onClick={sortPriceBuyHandler}
+                  >
+                    <div className="flex">
                       Price Buy
                       <FaArrowUp className="ml-1 fill-primary" />
-                    </th>
-                  </>
+                    </div>
+                  </th>
                 ) : (
                   <th
-                    className="bg-white py-4 px-4 text-center cursor-pointer hover:bg-slate-100 border-b border-gray-200 hover:rounded-lg"
+                    className="bg-white py-4 px-4 text-left cursor-pointer hover:bg-slate-100 border-b border-gray-200 hover:rounded-lg"
                     onClick={sortPriceBuyHandler}
                   >
                     Price Buy
                   </th>
                 )}
-                {currentSortPrice === 'price_sell,DESC' ? (
-                  <>
-                    <th
-                      className="bg-white flex justify-center items-center py-4 px-4 text-center cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
-                      onClick={sortPriceSellHandler}
-                    >
+                {sort === 'price_sell,DESC' ? (
+                  <th
+                    className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
+                    onClick={sortPriceSellHandler}
+                  >
+                    <div className="flex">
                       Price Sell
                       <FaArrowDown className="ml-1 fill-red-500" />
-                    </th>
-                  </>
-                ) : currentSortPrice === 'price_sell,ASC' ? (
-                  <>
-                    <th
-                      className="bg-white flex justify-center items-center py-4 px-4 text-center cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
-                      onClick={sortPriceSellHandler}
-                    >
+                    </div>
+                  </th>
+                ) : sort === 'price_sell,ASC' ? (
+                  <th
+                    className="bg-white flex justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
+                    onClick={sortPriceSellHandler}
+                  >
+                    <div className="flex">
                       Price Sell
                       <FaArrowUp className="ml-1 fill-primary" />
-                    </th>
-                  </>
+                    </div>
+                  </th>
                 ) : (
                   <th
-                    className="bg-white py-4 px-4 text-center cursor-pointer hover:bg-slate-100 border-b border-gray-200 hover:rounded-lg"
+                    className="bg-white py-4 px-4 text-left cursor-pointer hover:bg-slate-100 border-b border-gray-200 hover:rounded-lg"
                     onClick={sortPriceSellHandler}
                   >
                     Price Sell
                   </th>
                 )}
-                {sortStock === 'stock,DESC' ? (
+                {sort === 'volume,DESC' ? (
                   <>
                     <th
-                      className="bg-white flex justify-center items-center py-4 px-4 text-center cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
-                      onClick={sortStockHandler}
+                      className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
+                      onClick={sortVolumeHandler}
                     >
-                      Stock
-                      <FaArrowDown className="ml-1 fill-red-500" />
+                      <div className="flex">
+                        Volume
+                        <FaArrowDown className="ml-1 fill-red-500" />
+                      </div>
                     </th>
                   </>
-                ) : sortStock === 'stock,ASC' ? (
+                ) : sort === 'volume,ASC' ? (
                   <>
                     <th
-                      className="bg-white flex justify-center items-center py-4 px-4 text-center cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
-                      onClick={sortStockHandler}
+                      className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
+                      onClick={sortVolumeHandler}
                     >
-                      Stock
-                      <FaArrowUp className="ml-1 fill-primary" />
+                      <div className="flex">
+                        Volume
+                        <FaArrowUp className="ml-1 fill-primary" />
+                      </div>
                     </th>
                   </>
                 ) : (
                   <th
-                    className="bg-white py-4 px-4 text-center cursor-pointer hover:bg-slate-100 border-b border-gray-200 hover:rounded-lg"
-                    onClick={sortStockHandler}
-                  >
-                    Stock
-                  </th>
-                )}
-                <th className="bg-white py-4 px-4 text-center border-b border-gray-200">Unit</th>
-                {sortVolume === 'volume,DESC' ? (
-                  <>
-                    <th
-                      className="bg-white flex justify-center items-center py-4 px-4 text-center cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
-                      onClick={sortVolumeHandler}
-                    >
-                      Volume
-                      <FaArrowDown className="ml-1 fill-red-500" />
-                    </th>
-                  </>
-                ) : sortVolume === 'volume,ASC' ? (
-                  <>
-                    <th
-                      className="bg-white flex justify-center items-center py-4 px-4 text-center cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
-                      onClick={sortVolumeHandler}
-                    >
-                      Volume
-                      <FaArrowUp className="ml-1 fill-primary" />
-                    </th>
-                  </>
-                ) : (
-                  <th
-                    className="bg-white py-4 px-4 text-center cursor-pointer hover:bg-slate-100 border-b border-gray-200 hover:rounded-lg"
+                    className="bg-white py-4 px-4 text-left cursor-pointer hover:bg-slate-100 border-b border-gray-200 hover:rounded-lg"
                     onClick={sortVolumeHandler}
                   >
                     Volume
                   </th>
                 )}
-                {sortStockInUnit === 'stock_in_unit,DESC' ? (
+                {sort === 'stock,DESC' ? (
                   <>
                     <th
-                      className="bg-white flex justify-center items-center py-4 px-4 text-center cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
-                      onClick={sortHandler}
+                      className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
+                      onClick={sortStockHandler}
                     >
-                      Stock in Unit
-                      <FaArrowDown className="ml-1 fill-red-500" />
+                      <div className="flex">
+                        Stock
+                        <FaArrowDown className="ml-1 fill-red-500" />
+                      </div>
                     </th>
                   </>
-                ) : sortStockInUnit === 'stock_in_unit,ASC' ? (
+                ) : sort === 'stock,ASC' ? (
                   <>
                     <th
-                      className="bg-white flex justify-center items-center py-4 px-4 text-center cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
-                      onClick={sortHandler}
+                      className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
+                      onClick={sortStockHandler}
                     >
-                      Stock in Unit
-                      <FaArrowUp className="ml-1 fill-primary" />
+                      <div className="flex">
+                        Stock
+                        <FaArrowUp className="ml-1 fill-primary" />
+                      </div>
                     </th>
                   </>
                 ) : (
                   <th
-                    className="bg-white py-4 px-4 text-center cursor-pointer hover:bg-slate-100 border-b border-gray-200 hover:rounded-lg"
+                    className="bg-white py-4 px-4 text-left cursor-pointer hover:bg-slate-100 border-b border-gray-200 hover:rounded-lg"
+                    onClick={sortStockHandler}
+                  >
+                    Stock
+                  </th>
+                )}
+                {sort === 'stock_in_unit,DESC' ? (
+                  <>
+                    <th
+                      className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
+                      onClick={sortHandler}
+                    >
+                      <div className="flex">
+                        Stock in Unit
+                        <FaArrowDown className="ml-1 fill-red-500" />
+                      </div>
+                    </th>
+                  </>
+                ) : sort === 'stock_in_unit,ASC' ? (
+                  <>
+                    <th
+                      className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
+                      onClick={sortHandler}
+                    >
+                      <div className="flex">
+                        Stock in Unit
+                        <FaArrowUp className="ml-1 fill-primary" />
+                      </div>
+                    </th>
+                  </>
+                ) : (
+                  <th
+                    className="bg-white py-4 px-4 text-left cursor-pointer hover:bg-slate-100 border-b border-gray-200 hover:rounded-lg"
                     onClick={sortHandler}
                   >
                     Stock in Unit
                   </th>
                 )}
+                <th className="bg-white py-4 px-4 text-center border-b border-gray-200">Unit</th>
                 <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Appearance</th>
-                <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Category</th>
+                <th className="bg-white border-b py-4 px-4 text-left border-gray-200">Category</th>
+                {sort === 'total_sales,DESC' ? (
+                  <>
+                    <th
+                      className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
+                      onClick={sortSales}
+                    >
+                      <div className="flex">
+                        Sales
+                        <FaArrowDown className="ml-1 fill-red-500" />
+                      </div>
+                    </th>
+                  </>
+                ) : sort === 'total_sales,ASC' ? (
+                  <>
+                    <th
+                      className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
+                      onClick={sortSales}
+                    >
+                      <div className="flex">
+                        Sales
+                        <FaArrowUp className="ml-1 fill-primary" />
+                      </div>
+                    </th>
+                  </>
+                ) : (
+                  <th
+                    className="bg-white py-4 px-4 text-left cursor-pointer hover:bg-slate-100 border-b border-gray-200 hover:rounded-lg"
+                    onClick={sortSales}
+                  >
+                    Sales
+                  </th>
+                )}
                 <th className="bg-white border-b py-4 px-4 text-center border-gray-200">Actions</th>
               </tr>
             </thead>
@@ -535,28 +558,28 @@ const Dashboard = () => {
           </table>
           <div className="mt-3 flex justify-center items-center gap-4 pt-3">
             <button
-              onClick={prevPageHandler}
               className={page === 1 ? `hover:cursor-not-allowed` : `hover:cursor-pointer`}
               disabled={page === 1}
+              onClick={() => page > 1 && setPage(page - 1)}
             >
+              {' '}
               <FaArrowLeft />
             </button>
             <div>
               Page{' '}
-              <select
+              <input
+                id="inputPage"
                 type="number"
-                value={page}
-                onChange={(e) => setPage(+e.target.value)}
-                className="border border-gray-300 rounded-lg bg-white focus:outline-none w-10 hover:border-sky-500 focus:outline-sky-500 transition cursor-pointer"
-              >
-                {renderPages()}
-              </select>{' '}
+                className="border text-center border-gray-300 rounded-lg bg-white focus:outline-none w-10 hover:border-sky-500 focus:outline-sky-500 transition cursor-pointer"
+                defaultValue={page}
+                onChange={handleChangePage}
+              />{' '}
               of {maxPage}
             </div>
             <button
-              onClick={nextPageHandler}
               className={page === maxPage ? `hover:cursor-not-allowed` : `hover:cursor-pointer`}
               disabled={page === maxPage}
+              onClick={() => page < maxPage && setPage(page + 1)}
             >
               <FaArrowRight />
             </button>

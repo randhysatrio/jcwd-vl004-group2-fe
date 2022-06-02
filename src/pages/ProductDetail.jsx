@@ -46,8 +46,8 @@ const ProductDetail = () => {
         });
 
         if (!response.data.product) {
-          navigate('/products', { replace: true });
-          return toast.warning(`The product that you're looking for is currently unavailable`, {
+          navigate('/products/all', { replace: true });
+          return toast.warning(`This product is currently unavailable`, {
             position: 'top-center',
             theme: 'colored',
           });
@@ -82,7 +82,7 @@ const ProductDetail = () => {
     } else {
       setQtyError('');
     }
-  }, [quantity]);
+  }, [quantity, productData]);
 
   const addToCart = async () => {
     try {
@@ -97,25 +97,41 @@ const ProductDetail = () => {
           quantity,
         });
 
-        if (response.data.conflict) {
+        if (response.data.deleted) {
+          setCartLoading(false);
+
+          navigate('/products/all', { replace: true });
+          toast.warning(response.data.message, { theme: 'colored', position: 'bottom-left' });
+        } else if (response.data.conflict) {
+          if (productData.stock_in_unit !== response.data.productData.stock_in_unit) {
+            setProductData(response.data.productData);
+          }
+
           setCartLoading(false);
 
           toast.warning(response.data.message, { theme: 'colored', position: 'bottom-left' });
         } else {
-          setCartLoading(false);
-
-          toast.success(response.data.message, { position: 'bottom-left', theme: 'colored' });
-
-          dispatch({ type: 'CART_TOTAL', payload: response.data.cartTotal });
-
-          if (!productData.stock) {
-            setQuantity(productData.stock_in_unit);
-          } else {
-            setQuantity(productData.volume);
+          if (productData.stock_in_unit !== response.data.productData.stock_in_unit) {
+            setProductData(response.data.productData);
           }
+
+          if (!response.data.productData.stock) {
+            setQuantity(response.data.productData.stock_in_unit);
+          } else {
+            setQuantity(response.data.productData.volume);
+          }
+
+          if (response.data.cartTotal) {
+            dispatch({ type: 'CART_TOTAL', payload: response.data.cartTotal });
+          }
+
+          setCartLoading(false);
+          toast.success(response.data.message, { position: 'bottom-left', theme: 'colored' });
         }
       }
     } catch (error) {
+      setCartLoading(false);
+
       toast.error('Unable to add this item to your cart!', { theme: 'colored', position: 'bottom-left' });
     }
   };

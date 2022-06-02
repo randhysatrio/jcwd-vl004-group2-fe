@@ -276,14 +276,15 @@ function Checkout() {
                       >
                         Add Address
                       </label>
-
-                      <label
-                        htmlFor="modal-change-address"
-                        href="#modal-change-address"
-                        className="btn btn-sm"
-                      >
-                        Change Address
-                      </label>
+                      {addressList?.length > 1 && (
+                        <label
+                          htmlFor="modal-change-address"
+                          href="#modal-change-address"
+                          className="btn btn-sm"
+                        >
+                          Change Address
+                        </label>
+                      )}
                     </div>
                   )}
                 </div>

@@ -15,10 +15,10 @@ const LoginAdmin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const token = localStorage.getItem('adminToken');
 
   useEffect(() => {
-    const token = localStorage.getItem('adminToken');
-    if (token) navigate('/admin', { replace: true });
+    if (token) navigate('/dashboard', { replace: true });
   }, []);
 
   // validation
@@ -57,7 +57,7 @@ const LoginAdmin = () => {
         setIsLoading(false);
 
         toast.success(response.data.message);
-        navigate('/dashboard');
+        navigate('/dashboard', { replace: true });
       } catch (error) {
         setIsLoading(false);
         toast.error(error.response.data.message);

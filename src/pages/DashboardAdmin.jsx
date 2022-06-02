@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
-import { useSearchParams, useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Axios from 'axios';
 import { API_URL } from '../assets/constants';
+import { debounce } from 'throttle-debounce';
 
 import AdminList from '../components/AdminList';
 import { BsArrowDownUp } from 'react-icons/bs';
@@ -16,6 +17,7 @@ import { FaSearch } from 'react-icons/fa';
 const DashboardAdmin = () => {
   const navigate = useNavigate();
   const dataAdmin = JSON.parse(localStorage.getItem('dataAdmin'));
+  const adminToken = localStorage.getItem('adminToken');
   const socket = useSelector((state) => state.socket.instance);
   const [loading, setLoading] = useState(false);
   const [onlineAdmins, setOnlineAdmins] = useState([]);
@@ -24,8 +26,21 @@ const DashboardAdmin = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [maxPage, setMaxPage] = useState(0);
   const [sort, setSort] = useState('');
+  const [search, setSearch] = useState('');
   const [keyword, setKeyword] = useState('');
   const limit = 5;
+
+  const debouncedKeyword = useCallback(
+    debounce(1000, (val) => {
+      setKeyword(val);
+      setCurrentPage(1);
+    }),
+    []
+  );
+
+  useEffect(() => {
+    debouncedKeyword(search);
+  }, [search]);
 
   useEffect(() => {
     const fetchAdmins = async () => {
@@ -46,11 +61,17 @@ const DashboardAdmin = () => {
 
         setLoading(true);
 
-        const response = await Axios.post(`${API_URL}/admin/account/all?keyword=${keyword}`, query);
+        const response = await Axios.post(`${API_URL}/admin/account/all?keyword=${keyword}`, query, {
+          headers: {
+            Authorization: `Bearer ${adminToken}`,
+          },
+        });
 
         setAdmins(response.data.rows);
-        setMaxPage(response.data.maxPage || 1);
-        setTotalAdmins(response.data.totalAdmins);
+        setMaxPage(response.data.maxPage);
+        if (!keyword) {
+          setTotalAdmins(response.data.totalAdmins);
+        }
         setLoading(false);
       } catch (err) {
         setLoading(false);
@@ -110,20 +131,20 @@ const DashboardAdmin = () => {
 
   return (
     <div className="h-full flex flex-col px-10">
-      <div className="h-16 bg-white shadow-sm pl-80 pr-8 fixed z-[3] w-10 top-0 left-0 flex items-center">
+      <div className="h-16 bg-white shadow-sm pl-80 pr-8 fixed z-[12] w-10 top-0 left-0 flex items-center">
         <div className="flex justify-center items-center relative">
           <FaSearch className="absolute left-2 text-gray-400 bg-gray-100 cursor-pointer active:scale-95 transition" />
           <input
             type="text"
             id="myInput"
-            value={keyword}
+            value={search}
             placeholder="Search..."
-            onChange={(e) => setKeyword(e.target.value)}
+            onChange={(e) => setSearch(e.target.value)}
             className="search block w-72 shadow border-none rounded-3x1 focus:outline-none py-2 bg-gray-100 text-base text-gray-600 pl-11 pr-7"
           />
           <AiOutlineClose
             onClick={() => {
-              setKeyword('');
+              setSearch('');
             }}
             className="hover:brightness-110 cursor-pointer absolute right-2"
           />
@@ -213,7 +234,9 @@ const DashboardAdmin = () => {
               renderAdmins()
             ) : (
               <div className="h-96 flex justify-center items-center">
-                <span className="text-2xl font-thin text-slate-800">You currently don't have any admin</span>
+                <span className="text-2xl font-thin text-slate-800">
+                  {keyword ? `No admin found..` : `You currently don't have any admin`}
+                </span>
               </div>
             )}
           </div>

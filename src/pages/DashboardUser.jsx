@@ -1,16 +1,38 @@
-import { FaSearch, FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import {
+  FaSearch,
+  FaArrowLeft,
+  FaArrowRight,
+  FaArrowDown,
+  FaArrowUp,
+} from "react-icons/fa";
 import { AiOutlineClose } from "react-icons/ai";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { API_URL } from "../assets/constants";
 import UserTable from "../components/UserTable";
+import { toast } from "react-toastify";
+import { debounce } from "throttle-debounce";
+import { useCallback } from "react";
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(false);
   const [keyword, setKeyword] = useState("");
   const [limit, setLimit] = useState(5);
-
   const [users, setUsers] = useState([]);
+  const [page, setPage] = useState(1);
+  const [maxPage, setMaxPage] = useState(0);
+  const [status, setStatus] = useState();
+  const [sort, setSort] = useState("createdAt,DESC");
+
+  const sortName = () => {
+    if (sort !== "name,DESC" && sort !== "name,ASC") {
+      setSort("name,ASC");
+    } else if (sort !== "name,DESC" && sort !== "") {
+      setSort("name,DESC");
+    } else {
+      setSort("createdAt,DESC");
+    }
+  };
 
   const useDebounce = (value, delay) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
@@ -28,42 +50,52 @@ const Dashboard = () => {
     return debouncedValue;
   };
 
-  const [page, setPage] = useState(1);
-  const [maxPage, setMaxPage] = useState(0);
-  const [status, setStatus] = useState();
+  const debouncedSearch = useDebounce(keyword, 1000);
 
   const loadingFalse = () => {
     setLoading(false);
   };
 
   const fetchUsers = async () => {
-    setLoading(true);
-    const userList = await axios.post(
-      `${API_URL}/user/query?keyword=${debouncedSearch}`,
-      {
-        offset: page * limit - limit,
-        active: debouncedStatus,
-        limit,
-      }
-    );
-    setUsers(userList.data.users);
-    setMaxPage(Math.ceil(userList.data.length / limit));
-    setTimeout(loadingFalse, 1000);
+    try {
+      setLoading(true);
+      const userList = await axios.post(
+        `${API_URL}/user/query?keyword=${debouncedSearch}`,
+        {
+          offset: page * limit - limit,
+          active: status,
+          sort,
+          limit,
+        }
+      );
+      setUsers(userList.data.users);
+      setMaxPage(Math.ceil(userList.data.length / limit));
+      setTimeout(loadingFalse, 1000);
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
   };
-
-  const debouncedSearch = useDebounce(keyword, 1000);
-  const debouncedStatus = useDebounce(status, 0);
 
   useEffect(() => {
     fetchUsers();
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [debouncedSearch, debouncedStatus, page]);
+  }, [debouncedSearch, status, page, sort]);
 
-  console.log(users);
+  const handleChangePage = useCallback(
+    debounce(2000, (e) => {
+      if (e.target.value <= maxPage && e.target.value > 0) {
+        setPage(+e.target.value);
+      } else {
+        document.getElementById("inputPage").value = +page;
+      }
+    }),
+    // useCallback feature or requires dependency
+    [maxPage, page]
+  );
 
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearch, debouncedStatus]);
+  }, [debouncedSearch, status, sort]);
 
   const renderUsers = () => {
     const beginningIndex = (page - 1) * limit;
@@ -80,32 +112,10 @@ const Dashboard = () => {
     });
   };
 
-  const renderPages = () => {
-    const pagination = [];
-    for (let i = 1; i <= maxPage; i++) {
-      pagination.push(i);
-    }
-    return pagination.map((value) => {
-      return <option key={value}>{value}</option>;
-    });
-  };
-
-  const nextPageHandler = () => {
-    if (page < maxPage) {
-      setPage(page + 1);
-    }
-  };
-
-  const prevPageHandler = () => {
-    if (page > 1) {
-      setPage(page - 1);
-    }
-  };
-
   return (
     <div className="h-full w-full bg-gray-100">
       {/* Search Bar */}
-      <div className="h-16 bg-white shadow-sm pl-80 pr-8 fixed z-[3] w-10 top-0 left-0 flex items-center">
+      <div className="h-16 bg-white shadow-sm pl-80 pr-8 fixed z-[12] w-10 top-0 left-0 flex items-center">
         <div className="flex justify-center items-center relative">
           <FaSearch className="absolute left-2 text-gray-400 bg-gray-100 active:scale-95 transition" />
           <input
@@ -151,8 +161,8 @@ const Dashboard = () => {
                 <th className="bg-white py-4 px-4 text-center">
                   Profile Picture
                 </th>
-                <th className="bg-white py-4 px-4 text-center">Name</th>
-                <th className="bg-white py-4 px-4 text-center">Email</th>
+                <th className="bg-white py-4 px-4 text-left">Name</th>
+                <th className="bg-white py-4 px-4 text-left">Email</th>
                 <th className="bg-white py-4 px-4 text-center">Phone</th>
                 <th className="bg-white py-4 px-4 text-center">Status</th>
                 <th className="bg-white py-4 px-4 text-center">Actions</th>
@@ -198,8 +208,36 @@ const Dashboard = () => {
                 <th className="bg-white py-4 px-4 text-center">
                   Profile Picture
                 </th>
-                <th className="bg-white py-4 px-4 text-center">Name</th>
-                <th className="bg-white py-4 px-4 text-center">Email</th>
+                {sort === "name,DESC" ? (
+                  <th
+                    className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
+                    onClick={sortName}
+                  >
+                    <div className="flex">
+                      Name
+                      <FaArrowDown className="ml-1 fill-red-500" />
+                    </div>
+                  </th>
+                ) : sort === "name,ASC" ? (
+                  <th
+                    className="bg-white justify-center items-center py-4 px-4 text-left cursor-pointer border-b border-gray-200 hover:bg-slate-100 hover:rounded-lg"
+                    onClick={sortName}
+                  >
+                    <div className="flex">
+                      Name
+                      <FaArrowUp className="ml-1 fill-primary" />
+                    </div>
+                  </th>
+                ) : (
+                  <th
+                    className="bg-white py-4 px-4 text-left cursor-pointer hover:bg-slate-100 border-b border-gray-200 hover:rounded-lg"
+                    onClick={sortName}
+                  >
+                    Name
+                  </th>
+                )}
+                {/* <th className="bg-white py-4 px-4 text-left">Name</th> */}
+                <th className="bg-white py-4 px-4 text-left">Email</th>
                 <th className="bg-white py-4 px-4 text-center">Phone</th>
                 <th className="bg-white py-4 px-4 text-center">Status</th>
                 <th className="bg-white py-4 px-4 text-center">Actions</th>
@@ -239,35 +277,34 @@ const Dashboard = () => {
           </table>
           <div className="mt-3 flex justify-center items-center gap-4 pt-3">
             <button
-              onClick={prevPageHandler}
               className={
                 page === 1 ? `hover:cursor-not-allowed` : `hover:cursor-pointer`
               }
               disabled={page === 1}
+              onClick={() => page > 1 && setPage(page - 1)}
             >
+              {" "}
               <FaArrowLeft />
             </button>
             <div>
               Page{" "}
-              {/* eventhough the type is number the value of the option still could be a string make sure add +e.target.value */}
-              <select
+              <input
+                id="inputPage"
                 type="number"
-                value={page}
-                onChange={(e) => setPage(+e.target.value)}
-                className="border border-gray-300 rounded-lg bg-white focus:outline-none w-10 hover:border-sky-500 focus:outline-sky-500 transition cursor-pointer"
-              >
-                {renderPages()}
-              </select>{" "}
+                className="border text-center border-gray-300 rounded-lg bg-white focus:outline-none w-10 hover:border-sky-500 focus:outline-sky-500 transition cursor-pointer"
+                defaultValue={page}
+                onChange={handleChangePage}
+              />{" "}
               of {maxPage}
             </div>
             <button
-              onClick={nextPageHandler}
               className={
                 page === maxPage
                   ? `hover:cursor-not-allowed`
                   : `hover:cursor-pointer`
               }
               disabled={page === maxPage}
+              onClick={() => page < maxPage && setPage(page + 1)}
             >
               <FaArrowRight />
             </button>

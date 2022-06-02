@@ -9,6 +9,7 @@ import logo from '../assets/images/logos/heizenberg.png';
 import { BsFillPatchCheckFill } from 'react-icons/bs';
 import { BiErrorCircle } from 'react-icons/bi';
 import { AiOutlineHome, AiOutlineLoading3Quarters } from 'react-icons/ai';
+import { toast } from 'react-toastify';
 
 const Verify = () => {
   const params = useParams();
@@ -32,7 +33,12 @@ const Verify = () => {
             },
           }
         );
-        if (response.data.success) {
+
+        if (response.data.conflict) {
+          setDone(true);
+          toast.warning(response.data.conflict, { position: 'top-center', theme: 'colored' });
+          navigate('/', { replace: true });
+        } else {
           setDone(true);
           localStorage.setItem('userToken', response.data.token);
           dispatch({
@@ -49,7 +55,7 @@ const Verify = () => {
       }
     };
     verifyAccount();
-  });
+  }, []);
 
   return (
     <div className="h-screen flex justify-center items-center bg-gradient-to-t from-white to-sky-400">
